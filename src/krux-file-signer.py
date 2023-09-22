@@ -327,6 +327,8 @@ def scanAndCreateSignature(**kwargs) -> str:
     Kwargs:
         :param verbose
     """
+    verbose = kwargs.get('verbose')
+    
     _ = input(f"[{now()}] Press enter to scan signature")
 
     if(verbose):
