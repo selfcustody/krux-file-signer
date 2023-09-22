@@ -147,7 +147,7 @@ if args.command == "sign" and args.file_to_sign is not None:
     signature_file = f'{file_name}.sig'
     print("\n")
     print("Saving a signature file:", signature_file)
-    with open(signature_file, "wb") as f::x
+    with open(signature_file, "wb") as f:
         f.write(binary_signature)
 
     # Scans the public key
