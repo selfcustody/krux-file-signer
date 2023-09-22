@@ -17,6 +17,8 @@ from io import StringIO
 import cv2
 from qrcode import QRCode
 
+PEM_PREPEND = '3036301006072A8648CE3D020106052B8104000A032200'
+
 parser = argparse.ArgumentParser(
     prog="krux_file_signer",
     description="This python script is aimed to help"
@@ -27,12 +29,13 @@ parser = argparse.ArgumentParser(
 
 subparsers = parser.add_subparsers(help="sub-command help", dest="command")
 signer = subparsers.add_parser("sign", help="sign a file")
-signer.add_argument("--file", dest="file_to_sign", help="path to file to sign")
+signer.add_argument("-f, --file", dest="file_to_sign", help="path to file to sign")
+signer.add_argument("-s, --signer", dest="file_signer", help="the owner's name of signature")
 
 verifier = subparsers.add_parser("verify", help="verify signature")
-verifier.add_argument("--file", dest="verify_file", help="path to file to verify")
-verifier.add_argument("--sig-file", dest="sig_file", help="path to signature file")
-verifier.add_argument("--pub-file", dest="pub_file", help="path to pubkey file")
+verifier.add_argument("-f, --file", dest="verify_file", help="path to file to verify")
+verifier.add_argument("-s, --sig-file", dest="sig_file", help="path to signature file")
+verifier.add_argument("-p, --pub-file", dest="pub_file", help="path to pubkey file")
 
 
 def print_qr_code(data):
@@ -117,8 +120,9 @@ if args.command == "sign" and args.file_to_sign is not None:
     print(__readable_hash__ + "\n")
 
     # Saves a hash file
-    __hash_file__ = file_name + ".sha256sum.txt"
+    __hash_file__ = f'{file_name}.sha256sum.txt'
     print("Saving a hash file:", __hash_file__)
+    
     with open(__hash_file__, mode="w", encoding="utf-8") as f:
         f.write(__readable_hash__)
 
@@ -126,7 +130,8 @@ if args.command == "sign" and args.file_to_sign is not None:
     print(" (a) load a 24 words key;")
     print(" (b) use the Sign->Message feature;")
     print(" (c) and scan this QR code below.")
-
+    print("\n")
+    
     # Prints the QR code
     print_qr_code(__readable_hash__)
 
@@ -134,36 +139,37 @@ if args.command == "sign" and args.file_to_sign is not None:
     _ = input("Press enter to scan signature")
     signature = scan()
     binary_signature = base64.b64decode(signature.encode())
+        
     # Prints signature
     print("Signature:", signature)
+    
     # Saves a signature file
-    signature_file = file_name + ".sig"
+    signature_file = f'{file_name}.sig'
+    print("\n")
     print("Saving a signature file:", signature_file)
-    with open(signature_file, "wb") as f:
+    with open(signature_file, "wb") as f::x
         f.write(binary_signature)
 
     # Scans the public key
+    print("\n")
     _ = input("Press enter to scan public key")
     public_key = scan()
 
     # Prints public key
     print("Public key:", public_key)
 
-    # Saves a PEM public key file
-    __public_key_data__ = f"3036301006072A8648CE3D020106052B8104000A032200{public_key}"
-    public_key_base64 = base64.b64encode(bytes.fromhex(__public_key_data__)).decode(
-        "utf-8"
-    )
-    __pem_pub_key__ = "\n".join(
-        ["-----BEGIN PUBLIC KEY-----", public_key_base64, "-----END PUBLIC KEY-----"]
-    )
-    __pub_key_file__ = "public_key.PEM"
+    # Create PEM Data
+    __public_key_data__ = f'{PEM_PREPEND}{public_key}'
+    public_key_base64 = base64.b64encode(bytes.fromhex(__public_key_data__)).decode("utf-8")
+    __pem_pub_key__ = "\n".join(["-----BEGIN PUBLIC KEY-----", public_key_base64, "-----END PUBLIC KEY-----"])
+    
+    # Save PEM data to a file
+    # with filename as owner's name
+    
+    __pub_key_file__ = f'{args.file_signer}.pem'
     print("Saving public key file:", __pub_key_file__)
     with open(__pub_key_file__, mode="w", encoding="utf-8") as f:
         f.write(__pem_pub_key__)
-
-    # Verify signature
-    verify(file_name, __pub_key_file__, signature_file)
 
 # Else if the verify command was given
 elif (
