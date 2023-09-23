@@ -21,8 +21,9 @@
 # THE SOFTWARE.
 
 """
-This python script is aimed to help and teach how Krux can be used to sign
-files and create PEM public keys so openssl can be used to verify
+This python script is a tool to create air-gapped signatures of files using Krux.
+The script can also converts hex publics exported from Krux to PEM public keys so
+signatures can be verified using openssl.
 
 Requirements:
     - opencv, qrcode
@@ -89,7 +90,7 @@ parser = argparse.ArgumentParser(
     prog="ksigner",
     description="".join(
         [
-            "This python script is aimed to help",
+            "This script is aimed to help",
             "and teach how Krux can be used to sign files"
             "and create public-key certificates so openssl can be",
             "used to verify",
@@ -140,13 +141,13 @@ verifier.add_argument("-p", "--pub-file", dest="pub_file", help="path to pubkey 
 
 
 def now() -> str:
-    """returned some time"""
+    """Return some formated time"""
     return time.strftime("%X %x %Z")
 
 
-def verbose_log(data: str):
-    """Print some `data` prepended by data"""
-    print(f"[{now()}] {data}")
+def verbose_log(v_data):
+    """Prints verbose data preceded by current time"""
+    print(f"[{now()}] {v_data}")
 
 
 def make_qr_code(**kwargs) -> str:
@@ -159,22 +160,31 @@ def make_qr_code(**kwargs) -> str:
         :param verbose
             Apply verbose or not
     """
-    data = kwargs.get("data")
+    qr_data = kwargs.get("data")
     verbose = kwargs.get("verbose")
 
     qr_code = QRCode()
 
     if verbose:
-        verbose_log(f"Adding (data={data})")
+        verbose_log(f"Adding (data={qr_data})")
 
-    qr_code.add_data(data)
+    qr_code.add_data(qr_data)
     qr_string = StringIO()
     qr_code.print_ascii(out=qr_string, invert=True)
     return qr_string.getvalue()
 
 
 def scan(**kwargs) -> str:
-    """Opens a scan window and uses cv2 to detect and decode a QR code, returning its data"""
+    """
+    Opens a scan window
+    and uses cv2 to detect 
+    and decode a QR code,
+    returning its data
+
+    Kwargs:
+        :param verbose
+            Apply or not verbose
+    """
     verbose = kwargs.get("versbose")
 
     if verbose:
@@ -192,14 +202,20 @@ def scan(**kwargs) -> str:
         # to avoid the W0612 'Unused variable' pylint message
         _ret, frame = vid.read()
 
+        # Cameras have different configurations
+        # and behaviours, so try apply some normalization
+        # @see https://stackoverflow.com/questions/61016954/controlling-contrast-and-brightness-of-video-stream-in-opencv-and-python
         cv2.normalize(frame, frame, 0, 255, cv2.NORM_MINMAX)
-        cv2.imshow('frame',frame)
         
+        # Verbose some data
         if verbose:
-            verbose_log(f"reading (_ret={_ret}, frame={frame})")
+            verbose_log(f"reading (_ret={_ret})")
+            verbose_log(f"reading (frame={frame})")
 
+        # Detect qrcode
         qr_data, _bbox, _straight_qrcode = detector.detectAndDecode(frame)
 
+        # Verbose some data
         if verbose:
             verbose_log(f"reading (qr_data={qr_data})")
             verbose_log(f"reading (_bbox={_bbox}")
@@ -215,6 +231,8 @@ def scan(**kwargs) -> str:
         # Display the resulting frame
         if verbose:
             verbose_log(f"Showing (frame={frame})")
+        
+        # Show image
         cv2.imshow("frame", frame)
 
         # the 'q' button is set as the
@@ -222,13 +240,19 @@ def scan(**kwargs) -> str:
         # desired button of your choice
         if cv2.waitKey(1) & 0xFF == ord("q"):
             if verbose:
-                verbose_log("quiting...")
+                verbose_log("quiting QRCode detection...")
             break
 
     # After the loop release the cap object
+    if verbose:
+        verbose_log("Releasing video...")
+
     vid.release()
 
     # Destroy all the windows
+    if (verbose):
+        verbose_log("Destroying all ksigner windows...")
+
     cv2.destroyAllWindows()
 
     return qr_data
@@ -249,7 +273,7 @@ def verify(**kwargs):
             Apply verbose or no
             
     """
-    print("Verifying signature:")
+    verbose_log("Verifying signature:")
 
     file2verify = kwargs.get("filename")
     pub_key_file = kwargs.get("pubkey")
@@ -258,7 +282,7 @@ def verify(**kwargs):
 
     __command__ = " ".join(
         [
-            f"openssl sha256 {file2verify} -binary",
+            f"openssl sha256 <{file2verify} -binary",
             "|",
             f"openssl pkeyutl -verify -pubin -inkey {pub_key_file}",
             f"-sigfile {sig_file}",
@@ -274,9 +298,9 @@ def verify(**kwargs):
         ) from __exc__
 
 
-def read_file_to_be_signed(**kwargs) -> str:
+def open_and_hash_file(**kwargs) -> str:
     """ "
-    Read file from --file argument on `sign` command
+    Read file from --file argument on `sign` command and return its hash
 
     Kwargs:
         :param path
@@ -299,6 +323,7 @@ def read_file_to_be_signed(**kwargs) -> str:
             # Prints the hash of the file
             if verbose:
                 verbose_log(f"Hash of {__filename__}: {__readable_hash__}")
+            
             return __readable_hash__
     except FileNotFoundError as exc:
         raise FileNotFoundError(
@@ -323,16 +348,16 @@ def save_hashed_file(**kwargs):
     __path__ = kwargs.get("path")
     verbose = kwargs.get("verbose")
 
-    __hashfile__ = f"{__path__}.sha256sum.txt"
+    __hash_file__ = f"{__path__}.sha256sum.txt"
 
     if verbose:
-        verbose_log(f"Saving a hash file: {__hashfile__}")
+        verbose_log(f"Saving a hash file: {__hash_file__}")
 
-    with open(__hashfile__, mode="w", encoding="utf-8") as f_hash:
-        f_hash.write(f"{__data__} {__hashfile__}")
+    with open(__hash_file__, mode="w", encoding="utf-8") as hash_file:
+        hash_file.write(f"{__data__} {__hash_file__}")
 
 
-def scan_and_create_signature(**kwargs) -> str:
+def scan_and_save_signature(**kwargs):
     """
     Scan with camera the generated signatue
 
@@ -354,12 +379,12 @@ def scan_and_create_signature(**kwargs) -> str:
 
     # Saves a signature file
     signature_file = f"{args.file_to_sign}.sig"
-    verbose_log(f"Saving a signature file:{signature_file}")
-    with open(signature_file, "wb") as f_sig:
-        f_sig.write(binary_signature)
+    verbose_log("Saving a signature file: {signature_file}")
+    with open(signature_file, "wb") as sig_file:
+        sig_file.write(binary_signature)
 
 
-def scan_and_create_public_key(**kwargs) -> str:
+def scan_public_key(**kwargs) -> str:
     """
     Scan with camera the generated public key
 
@@ -395,8 +420,7 @@ def scan_and_create_public_key_certificate(**kwargs):
         :param verbose
             Apply verbose or not
     """
-
-    pubkey = kwargs.get("pubkey")
+    hex_pubkey = kwargs.get("pubkey")
     uncompressed = kwargs.get("uncompressed")
     owner = kwargs.get("owner")
     verbose = kwargs.get("verbose")
@@ -404,17 +428,30 @@ def scan_and_create_public_key_certificate(**kwargs):
     if uncompressed:
         if verbose:
             verbose_log("Creating uncompressed public key certificate")
-        __public_key_data__ = f"{UNCOMPRESSED_PUBKEY_PREPEND}{pubkey}"
+        
+        __public_key_data__ = f"{UNCOMPRESSED_PUBKEY_PREPEND}{hex_pubkey}"
     else:
         if verbose:
             verbose_log("Creating compressed public key certificate")
-        __public_key_data__ = f"{COMPRESSED_PUBKEY_PREPEND}{pubkey}"
+        __public_key_data__ = f"{COMPRESSED_PUBKEY_PREPEND}{hex_pubkey}"
 
-    public_key_base64 = base64.b64decode(
-        bytes.fromhex(__public_key_data__)
-    ).decode("utf-8")
+    # Convert pubkey data to bytes
+    __public_key_data_bytes__ = bytes.fromhex(__public_key_data__)
+    if verbose:
+        verbose_log(f"pubkey bytes: {__public_key_data_bytes__}")
+
+    # Decode to utf8
+    __public_key_data_utf8__ = __public_key_data_bytes__.decode("utf-8")
+    if verbose:
+        verbose_log(f"pubkey utf8: {__public_key_data_utf8__}")
+    
+    # Encode to formated base64
     __pem_pub_key__ = "\n".join(
-        ["-----BEGIN PUBLIC KEY-----", public_key_base64, "-----END PUBLIC KEY-----"]
+        [
+            "-----BEGIN PUBLIC KEY-----",
+            base64.b64encode(__public_key_data_utf8__),
+            "-----END PUBLIC KEY-----"
+        ]
     )
 
     if verbose:
@@ -423,8 +460,9 @@ def scan_and_create_public_key_certificate(**kwargs):
     __pub_key_file__ = f"{owner}.pem"
     if verbose:
         verbose_log(f"Saving public key file: {__pub_key_file__}")
-    with open(__pub_key_file__, mode="w", encoding="utf-8") as f_pubkey:
-        f_pubkey.write(__pem_pub_key__)
+    
+    with open(__pub_key_file__, mode="w", encoding="utf-8") as pubkey_file:
+        pubkey_file.write(__pem_pub_key__)
 
 
 def on_sign():
@@ -434,7 +472,10 @@ def on_sign():
     # If the signergn command was given
     if args.command == "sign" and args.file_to_sign is not None:
         # read file
-        data = read_file_to_be_signed(path=args.file_to_sign, verbose=args.verbose)
+        data = open_and_hash_file(
+            path=args.file_to_sign,
+            verbose=args.verbose
+        )
 
         # Saves a hash file
         save_hashed_file(data=data, path=args.file_to_sign, verbose=args.verbose)
@@ -450,7 +491,7 @@ def on_sign():
         print(f"\n{__qrcode__}")
 
         # Scans the signature QR code
-        scan_and_create_signature(verbose=args.verbose)
+        scan_and_save_signature(verbose=args.verbose)
 
         # Scans the public KeyboardInterrupt
         pubkey = scan_and_create_public_key(verbose=args.verbose)
