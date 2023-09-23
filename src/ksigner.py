@@ -86,16 +86,42 @@ from qrcode import QRCode
 UNCOMPRESSED_PUBKEY_PREPEND = "3056301006072A8648CE3D020106052B8104000A034200"
 COMPRESSED_PUBKEY_PREPEND = "3036301006072A8648CE3D020106052B8104000A032200"
 
-parser = argparse.ArgumentParser(
-    prog="ksigner",
-    description="".join(
-        [
-            "This script is aimed to help",
-            "and teach how Krux can be used to sign files"
-            "and create public-key certificates so openssl can be",
-            "used to verify",
-        ]
-    ),
+DESCRIPTION = "".join(
+    [
+        "This script is aimed to help",
+        "and teach how Krux can be used to sign files"
+        "and create public-key certificates so openssl can be",
+        "used to verify",
+    ]
+)
+parser = argparse.ArgumentParser(prog="ksigner", description=DESCRIPTION)
+
+# Verbose messages
+parser.add_argument(
+    "--verbose",
+    dest="verbose",
+    action="store_true",
+    help="verbose output (default: False)",
+    default=False,
+)
+
+# Capture pos-processing camera flags
+parser.add_argument(
+    "-n",
+    "--normalize",
+    dest="is_normalized",
+    action="store_true",
+    help="normalizes the image of camera (default: False)",
+    default=False,
+)
+
+parser.add_argument(
+    "-g",
+    "--gray-scale",
+    dest="is_gray_scale",
+    action="store_true",
+    help="apply gray-scale filter on camera's image (default: False)",
+    default=False,
 )
 
 subparsers = parser.add_subparsers(help="sub-command help", dest="command")
@@ -120,15 +146,6 @@ signer.add_argument(
     help="flag to create a uncompreesed public key (default: False)",
 )
 
-signer.add_argument(
-    "-l",
-    "--verbose-log",
-    dest="verbose",
-    action="store_true",
-    help="verbose output (default: False)",
-    default=False,
-)
-
 # Verify command
 verifier = subparsers.add_parser("verify", help="verify signature")
 verifier.add_argument("-f", "--file", dest="verify_file", help="path to file to verify")
@@ -140,6 +157,9 @@ verifier.add_argument(
 verifier.add_argument("-p", "--pub-file", dest="pub_file", help="path to pubkey file")
 
 
+############
+# FUNCTIONS
+############
 def now() -> str:
     """Return some formated time"""
     return time.strftime("%X %x %Z")
@@ -174,27 +194,77 @@ def make_qr_code(**kwargs) -> str:
     return qr_string.getvalue()
 
 
+def normalization_transform(**kwargs):
+    """ "
+    Apply Gray scale on frames
+
+    Kwargs
+        :param frame
+            The frame which will be applyed the transformation
+        :param verbose
+            Apply verbose messages
+    """
+    frame = kwargs.get("frame")
+    verbose = kwargs.get("verbose")
+
+    # Cameras have different configurations
+    # and behaviours, so try apply some normalization
+    # @see https://stackoverflow.com/questions/61016954/
+    # controlling-contrast-and-brightness-of-video-stream-in-opencv-and-python
+    cv2.normalize(frame, frame, 0, 255, cv2.NORM_MINMAX)
+
+    # Verbose some data
+    if verbose:
+        verbose_log(f"normalized (frame={frame})")
+
+
+def gray_transform(**kwargs):
+    """ "
+    Apply Gray scale on frames
+
+    Kwargs
+        :param ret
+        :param frame
+            The frame which will be applyed the transformation
+        :param verbose
+            Apply verbose messages
+    """
+    frame = kwargs.get("frame")
+    verbose = kwargs.get("verbose")
+
+    # Convert frame to grayscale
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+    # verbose_loge some data
+    if verbose:
+        verbose_log(f"gray scale (frame={frame})")
+
+
 def scan(**kwargs) -> str:
     """
-    Opens a scan window
-    and uses cv2 to detect 
-    and decode a QR code,
-    returning its data
+    Opens a scan window and uses cv2 to detect
+    and decode a QR code, returning its data.
+    Can be applyed some normalization
+    or gray scale
 
     Kwargs:
+        :is_normalized
+            Apply some normalization
+        :is_gray_scale
+            Apply some gray scale
         :param verbose
-            Apply or not verbose
+            Apply or not verify
     """
     verbose = kwargs.get("versbose")
+    is_normalized = kwargs.get("is_normalized")
+    is_gray_scale = kwargs.get("is_gray_scale")
 
-    if verbose:
-        verbose_log("Opening camera")
+    verbose_log("Opening camera")
     vid = cv2.VideoCapture(0)
 
-    if verbose:
-        verbose_log("Setup QRCodeDetector")
-
+    verbose_log("Starting detection")
     detector = cv2.QRCodeDetector()
+
     qr_data = None
     while True:
         # Capture the video frame by frame
@@ -202,15 +272,13 @@ def scan(**kwargs) -> str:
         # to avoid the W0612 'Unused variable' pylint message
         _ret, frame = vid.read()
 
-        # Cameras have different configurations
-        # and behaviours, so try apply some normalization
-        # @see https://stackoverflow.com/questions/61016954/controlling-contrast-and-brightness-of-video-stream-in-opencv-and-python
-        cv2.normalize(frame, frame, 0, 255, cv2.NORM_MINMAX)
-        
-        # Verbose some data
-        if verbose:
-            verbose_log(f"reading (_ret={_ret})")
-            verbose_log(f"reading (frame={frame})")
+        # Apply some normalization if wanted
+        if is_normalized:
+            normalization_transform(frame=frame, verbose=verbose)
+
+        # Apply gray scale if wanted
+        if is_gray_scale:
+            gray_transform(frame=frame)
 
         # Detect qrcode
         qr_data, _bbox, _straight_qrcode = detector.detectAndDecode(frame)
@@ -231,7 +299,7 @@ def scan(**kwargs) -> str:
         # Display the resulting frame
         if verbose:
             verbose_log(f"Showing (frame={frame})")
-        
+
         # Show image
         cv2.imshow("frame", frame)
 
@@ -250,7 +318,7 @@ def scan(**kwargs) -> str:
     vid.release()
 
     # Destroy all the windows
-    if (verbose):
+    if verbose:
         verbose_log("Destroying all ksigner windows...")
 
     cv2.destroyAllWindows()
@@ -261,7 +329,7 @@ def scan(**kwargs) -> str:
 def verify(**kwargs):
     """
     Uses openssl to verify the signature and public key
-    
+
     Kwargs:
         :param filename
             The path of file to be veryfied
@@ -271,7 +339,7 @@ def verify(**kwargs):
             The path of signature file that will be used to verify `filename`
         :param verbose
             Apply verbose or no
-            
+
     """
     verbose_log("Verifying signature:")
 
@@ -323,7 +391,7 @@ def open_and_hash_file(**kwargs) -> str:
             # Prints the hash of the file
             if verbose:
                 verbose_log(f"Hash of {__filename__}: {__readable_hash__}")
-            
+
             return __readable_hash__
     except FileNotFoundError as exc:
         raise FileNotFoundError(
@@ -362,22 +430,27 @@ def scan_and_save_signature(**kwargs):
     Scan with camera the generated signatue
 
     Kwargs:
+        :is_normalized
+            Apply normalization on video
+        :is_gray_scale
+            Apply some gray scale on video
         :param verbose
     """
+    is_normalized = kwargs.get("is_normalized")
+    is_gray_scale = kwargs.get("is_gray_scale")
     verbose = kwargs.get("verbose")
 
     _ = input(f"[{now()}] Press enter to scan signature")
+    signature = scan(
+        is_normalized=is_normalized, is_gray_scale=is_gray_scale, verbose=verbose
+    )
 
-    if verbose:
-        verbose_log("Scanning...")
-
-    signature = scan()
+    # Encode data
     binary_signature = base64.b64decode(signature.encode())
-
     if verbose:
         verbose_log(f"Signature: {binary_signature}")
 
-    # Saves a signature file
+    # Saves a signature FileExistsError
     signature_file = f"{args.file_to_sign}.sig"
     verbose_log("Saving a signature file: {signature_file}")
     with open(signature_file, "wb") as sig_file:
@@ -389,16 +462,20 @@ def scan_public_key(**kwargs) -> str:
     Scan with camera the generated public key
 
     Kwargs:
+        :is_normalized
+            Apply or not normalization on image
+        :is_gray_scale
+            Apply or not gray scale on image
         :param verbose
     """
-    verbose = kwargs.get('verbose')
+    is_normalized = kwargs.get("is_normalized")
+    is_gray_scale = kwargs.get("is_gray_scale")
+    verbose = kwargs.get("verbose")
 
     _ = input(f"[{now()}] Press enter to scan public key")
-
-    if verbose:
-        verbose_log("Scanning...")
-
-    public_key = scan()
+    public_key = scan(
+        is_normalized=is_normalized, is_gray_scale=is_gray_scale, verbose=verbose
+    )
 
     if verbose:
         verbose_log(f"Public key: {public_key}")
@@ -406,7 +483,7 @@ def scan_public_key(**kwargs) -> str:
     return public_key
 
 
-def scan_and_create_public_key_certificate(**kwargs):
+def create_public_key_certificate(**kwargs):
     """
     Create public key certifficate file (.pem)
 
@@ -417,6 +494,10 @@ def scan_and_create_public_key_certificate(**kwargs):
             Flag to create a uncompressed public key certificate
         :param owner
             Owner of public key certificate
+        :is_normalized
+            Apply or not normalization on image
+        :is_gray_scale
+            Apply or not gray scale on image
         :param verbose
             Apply verbose or not
     """
@@ -425,11 +506,12 @@ def scan_and_create_public_key_certificate(**kwargs):
     owner = kwargs.get("owner")
     verbose = kwargs.get("verbose")
 
+    # Choose if will be compressed or uncompressed
     if uncompressed:
         if verbose:
             verbose_log("Creating uncompressed public key certificate")
-        
         __public_key_data__ = f"{UNCOMPRESSED_PUBKEY_PREPEND}{hex_pubkey}"
+
     else:
         if verbose:
             verbose_log("Creating compressed public key certificate")
@@ -444,38 +526,35 @@ def scan_and_create_public_key_certificate(**kwargs):
     __public_key_data_utf8__ = __public_key_data_bytes__.decode("utf-8")
     if verbose:
         verbose_log(f"pubkey utf8: {__public_key_data_utf8__}")
-    
+
     # Encode to formated base64
     __pem_pub_key__ = "\n".join(
         [
             "-----BEGIN PUBLIC KEY-----",
             base64.b64encode(__public_key_data_utf8__),
-            "-----END PUBLIC KEY-----"
+            "-----END PUBLIC KEY-----",
         ]
     )
 
     if verbose:
         verbose_log(__pem_pub_key__)
 
-    __pub_key_file__ = f"{owner}.pem"
+    __pem_key_file__ = f"{owner}.pem"
     if verbose:
-        verbose_log(f"Saving public key file: {__pub_key_file__}")
-    
-    with open(__pub_key_file__, mode="w", encoding="utf-8") as pubkey_file:
-        pubkey_file.write(__pem_pub_key__)
+        verbose_log(f"Saving public key file: {__pem_key_file__}")
+
+    with open(file=__pem_key_file__, mode="w", encoding="utf-8") as pem_file:
+        pem_file.write(__pem_pub_key__)
 
 
 def on_sign():
     """
-    onSign is executed when `sign` command is called 
+    onSign is executed when `sign` command is called
     """
     # If the signergn command was given
     if args.command == "sign" and args.file_to_sign is not None:
         # read file
-        data = open_and_hash_file(
-            path=args.file_to_sign,
-            verbose=args.verbose
-        )
+        data = open_and_hash_file(path=args.file_to_sign, verbose=args.verbose)
 
         # Saves a hash file
         save_hashed_file(data=data, path=args.file_to_sign, verbose=args.verbose)
@@ -491,15 +570,23 @@ def on_sign():
         print(f"\n{__qrcode__}")
 
         # Scans the signature QR code
-        scan_and_save_signature(verbose=args.verbose)
+        scan_and_save_signature(
+            is_normalized=args.is_normalized,
+            is_gray_scale=args.is_gray_scale,
+            verbose=args.verbose,
+        )
 
         # Scans the public KeyboardInterrupt
-        pubkey = scan_and_create_public_key(verbose=args.verbose)
+        pubkey = scan_public_key(
+            is_normalized=args.is_normalized,
+            is_gray_scale=args.is_gray_scale,
+            verbose=args.verbose,
+        )
 
         # Create PEM data
         # Save PEM data to a file
         # with filename as owner's name
-        scan_and_create_public_key_certificate(
+        create_public_key_certificate(
             pubkey=pubkey,
             uncompressed=args.uncompressed_pub_key,
             owner=args.file_owner,
@@ -522,14 +609,14 @@ def on_verify():
             filename=args.verify_file,
             pubkey=args.pub_file,
             sigfile=args.sig_file,
-            verbose=args.verbose
+            verbose=args.verbose,
         )
     # If command was not found
     else:
         parser.print_help()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     args = parser.parse_args()
     on_sign()
     on_verify()
