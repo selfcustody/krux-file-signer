@@ -1,4 +1,4 @@
-# Krux File Signer
+# Krux File Signer (aka __ksigner__)
 
 Is a python script to help make airgapped signatures
 and verification of signatures of any file with a 
@@ -14,7 +14,7 @@ git clone https://github.com/selfcustody/krux-file-signer.git
 
 ### Install dev tools
 
-The krux-file-signer code is a Python script
+The `ksigner` code is a Python script
 that should be installed with Poetry. To generate
 a new `poetry.lock` file use: `poetry lock --no-update`.
 
@@ -43,22 +43,22 @@ poetry run pylint ./src
 ### Build executable
 
 ```bash
-poetry run pyinstaller ./src/krux-file-signer.py
+poetry run pyinstaller ./src/ksigner.py
 ```
 
 The generated executable will be placed on 
-`dist/krux-file-signer/krux-file-signer`
+`dist/ksigner/ksigner`
 
 ### Commands
 
 #### Help
 
-Running `./dist/krux-file-signer/krux-file-signer --help` will show:
+Running `./dist/ksigner/ksigner --help` will show:
 
 ```bash
-usage: krux_file_signer [-h] {sign,verify} ...
+usage: ksigner [-h] {sign,verify} ...
 
-This python script is aimed to help and teach how Krux can be used to sign files and create PEM public keys so openssl can be used to verify
+This python script is aimed to helpand teach how Krux can be used to sign filesand create public-key certificates so openssl can beused to verify
 
 positional arguments:
   {sign,verify}  sub-command help
@@ -71,14 +71,20 @@ options:
 
 #### sign
 
-Running `./dist/krux-file-signer/krux-file-signer sign --help`, will show:
+Running `./dist/ksigner/ksigner sign --help`, will show:
 
 ```bash
-usage: krux_file_signer sign [-h] [--file FILE_TO_SIGN]
+usage: ksigner sign [-h] [-f FILE_TO_SIGN] [-o FILE_OWNER] [-u] [-l]
 
 options:
-  -h, --help           show this help message and exit
-  --file FILE_TO_SIGN  path to file to sign
+  -h, --help            show this help message and exit
+  -f FILE_TO_SIGN, --file FILE_TO_SIGN
+                        path to file to sign
+  -o FILE_OWNER, --owner FILE_OWNER
+                        the owner's name of public key certificate, i.e, the .pem file (default: 'pubkey')
+  -u, --uncompressed    flag to create a uncompreesed public key (default: False)
+  -l, --verbose-log     verbose output (default: False)
+
 ```
 
 #### verify
@@ -86,11 +92,14 @@ options:
 Running `/dist/krux-file-signer/krux-file-signer verify --help`, will show:
 
 ```bash
-usage: krux_file_signer verify [-h] [--file VERIFY_FILE] [--sig-file SIG_FILE] [--pub-file PUB_FILE]
+usage: ksigner verify [-h] [-f VERIFY_FILE] [-s SIG_FILE] [-p PUB_FILE]
 
 options:
-  -h, --help           show this help message and exit
-  --file VERIFY_FILE   path to file to verify
-  --sig-file SIG_FILE  path to signature file
-  --pub-file PUB_FILE  path to pubkey file
+  -h, --help            show this help message and exit
+  -f VERIFY_FILE, --file VERIFY_FILE
+                        path to file to verify
+  -s SIG_FILE, --sig-file SIG_FILE
+                        path to signature file
+  -p PUB_FILE, --pub-file PUB_FILE
+                        path to pubkey file
 ```
