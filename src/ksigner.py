@@ -194,6 +194,28 @@ def make_qr_code(**kwargs) -> str:
     return qr_string.getvalue()
 
 
+def make_qr_code_image(**kwargs) -> str:
+    """
+    Creates a QR code image 
+
+    Kwargs:
+        :param data
+            The data to be encoded in qrcode
+        :param verbose
+            Apply verbose or not
+    """
+    qr_data = kwargs.get("data")
+    verbose = kwargs.get("verbose")
+
+    qr_code = QRCode()
+
+    if verbose:
+        verbose_log(f"Adding (data={qr_data})")
+
+    qr_code.add_data(qr_data)
+    qr_image = qr_code.make_image()
+    return qr_image
+
 def normalization_transform(**kwargs):
     """ "
     Apply Gray scale on frames
