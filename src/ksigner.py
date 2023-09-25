@@ -22,7 +22,7 @@
 
 """
 This python script is a tool to create air-gapped signatures of files using Krux.
-The script can also converts hex publics exported from Krux to PEM public keys so
+The script can also convert hex publics exported from Krux to PEM public keys so
 signatures can be verified using openssl.
 
 Requirements:
@@ -88,10 +88,9 @@ COMPRESSED_PUBKEY_PREPEND = "3036301006072A8648CE3D020106052B8104000A032200"
 
 DESCRIPTION = "".join(
     [
-        "This script is aimed to help",
-        "and teach how Krux can be used to sign files"
-        "and create public-key certificates so openssl can be",
-        "used to verify",
+        "This python script is a tool to create air-gapped signatures of files using Krux. ",
+        "The script can also convert hex publics exported from Krux to PEM public keys so ",
+        "signatures can be verified using openssl.",
     ]
 )
 parser = argparse.ArgumentParser(prog="ksigner", description=DESCRIPTION)
@@ -196,7 +195,7 @@ def make_qr_code(**kwargs) -> str:
 
 def make_qr_code_image(**kwargs) -> str:
     """
-    Creates a QR code image 
+    Creates a QR code image
 
     Kwargs:
         :param data
@@ -215,6 +214,7 @@ def make_qr_code_image(**kwargs) -> str:
     qr_code.add_data(qr_data)
     qr_image = qr_code.make_image()
     return qr_image
+
 
 def normalization_transform(**kwargs):
     """ "
@@ -472,9 +472,9 @@ def scan_and_save_signature(**kwargs):
     if verbose:
         verbose_log(f"Signature: {binary_signature}")
 
-    # Saves a signature FileExistsError
+    # Saves a signature
     signature_file = f"{args.file_to_sign}.sig"
-    verbose_log("Saving a signature file: {signature_file}")
+    verbose_log(f"Saving a signature file: {signature_file}")
     with open(signature_file, "wb") as sig_file:
         sig_file.write(binary_signature)
 

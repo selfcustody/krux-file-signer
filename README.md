@@ -1,8 +1,8 @@
 # Krux File Signer (aka __ksigner__)
 
-Is a python script to help make airgapped signatures
-and verification of signatures of any file with a 
-supported device with krux firmware.
+Is a python script to help make airgapped signatures with Krux devices.
+It also can verify the signatures.
+There's also a GUI version in development
 
 ## Development
 
@@ -49,6 +49,25 @@ poetry run pyinstaller ./src/ksigner.py
 The generated executable will be placed on 
 `dist/ksigner/ksigner`
 
+
+### Run the GUI version
+
+```bash
+poetry run python src/ksignerGUI.py
+```
+
+### Build the GUI version executable
+
+```bash
+poetry run pyinstaller ./src/ksignerGUI.py
+```
+
+The generated executable will be placed on 
+`dist/ksignerGUI/ksignerGUI`
+
+
+## Usage
+
 ### Commands
 
 #### Help
@@ -58,7 +77,8 @@ Running `./dist/ksigner/ksigner --help` will show:
 ```bash
 usage: ksigner [-h] {sign,verify} ...
 
-This python script is aimed to helpand teach how Krux can be used to sign filesand create public-key certificates so openssl can beused to verify
+This python script is a tool to create air-gapped signatures of files using Krux. The script can also convert hex
+publics exported from Krux to PEM public keys so signatures can be verified using openssl.
 
 positional arguments:
   {sign,verify}  sub-command help
@@ -103,3 +123,4 @@ options:
   -p PUB_FILE, --pub-file PUB_FILE
                         path to pubkey file
 ```
+
