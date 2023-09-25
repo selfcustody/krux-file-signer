@@ -47,14 +47,13 @@ from io import StringIO
 # Thrid party libraries
 #######################
 import cv2
-from qrcode import QRCode
-from pyzbar.pyzbar import decode
 
 #################
 # Local libraries
 #################
 from constants import *
 from logutils import *
+from qrutils import *
 parser = argparse.ArgumentParser(prog="ksigner", description=KSIGNER_CLI_DESCRIPTION)
 
 # Verbose messages
@@ -117,52 +116,6 @@ verifier.add_argument(
 )
 
 verifier.add_argument("-p", "--pub-file", dest="pub_file", help="path to pubkey file")
-
-def make_qr_code(**kwargs) -> str:
-    """
-    Builds the ascii data to QR code
-
-    Kwargs:
-        :param data
-            The data to be encoded in qrcode
-        :param verbose
-            Apply verbose or not
-    """
-    qr_data = kwargs.get("data")
-    verbose = kwargs.get("verbose")
-
-    qr_code = QRCode()
-
-    if verbose:
-        verbose_log(f"Adding (data={qr_data})")
-
-    qr_code.add_data(qr_data)
-    qr_string = StringIO()
-    qr_code.print_ascii(out=qr_string, invert=True)
-    return qr_string.getvalue()
-
-
-def make_qr_code_image(**kwargs) -> str:
-    """
-    Creates a QR code image
-
-    Kwargs:
-        :param data
-            The data to be encoded in qrcode
-        :param verbose
-            Apply verbose or not
-    """
-    qr_data = kwargs.get("data")
-    verbose = kwargs.get("verbose")
-
-    qr_code = QRCode()
-
-    if verbose:
-        verbose_log(f"Adding (data={qr_data})")
-
-    qr_code.add_data(qr_data)
-    qr_image = qr_code.make_image()
-    return qr_image
 
 
 def normalization_transform(**kwargs):
