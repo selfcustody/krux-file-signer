@@ -48,55 +48,18 @@ from io import StringIO
 #######################
 import cv2
 from qrcode import QRCode
+from pyzbar.pyzbar import decode
 
-# PUBKEY pre-String:
-# ASN.1 STRUCTURE FOR PUBKEY (uncompressed and compressed):
-#   30  <-- declares the start of an ASN.1 sequence
-#   56  <-- length of following sequence (dez 86)
-#   30  <-- length declaration is following
-#   10  <-- length of integer in bytes (dez 16)
-#   06  <-- declares the start of an "octet string"
-#   07  <-- length of integer in bytes (dez 7)
-#   2a 86 48 ce 3d 02 01 <-- Object Identifier: 1.2.840.10045.2.1
-#                            = ecPublicKey, ANSI X9.62 public key type
-#   06  <-- declares the start of an "octet string"
-#   05  <-- length of integer in bytes (dez 5)
-#   2b 81 04 00 0a <-- Object Identifier: 1.3.132.0.10
-#                      = secp256k1, SECG (Certicom) named eliptic curve
-#   03  <-- declares the start of an "octet string"
-#   42  <-- length of bit string to follow (66 bytes)
-#   00  <-- Start pubkey??
-#
-# example for setup of 'pre' public key strings above:
-#   openssl ecparam -name secp256k1 -genkey -out ec-priv.pem
-#   openssl ec -in ec-priv.pem -pubout -out ec-pub.pem
-#   openssl ec -in ec-priv.pem -pubout -conv_form compressed -out ec-pub_c.pem
-#   cat ec-pub.pem
-#   cat ec-pub_c.pem
-#   echo "MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEAd+5gxspjAfO7HA8qq0/    \
-#         7NbHrtTA3z9QNeI5TZ8v0l1pMJ1+mkg3d6zZVUXzMQZ/Y41iID+JAx/ \
-#         sQrY+wqVU/g==" | base64 -D - > ec-pub_uc.hex
-#   echo "MDYwEAYHKoZIzj0CAQYFK4EEAAoDIgACAd+5gxspjAfO7HA8qq0/7Nb \
-#         HrtTA3z9QNeI5TZ8v0l0=" | base64 -D - > ec-pub_c.hex
-#   hexdump -C ec-pub_uc.hex
-#   hexdump -C ec-pub_c.hex
-#
-# @see https://github.com/selfcustody/krux/blob/a63dc4ae917afc7ecd7773e6a4b13c23ea2da4d3/krux#L139
-# @see https://github.com/pebwindkraft/trx_cl_suite/blob/master/tcls_key2pem.sh#L134
-UNCOMPRESSED_PUBKEY_PREPEND = "3056301006072A8648CE3D020106052B8104000A034200"
-COMPRESSED_PUBKEY_PREPEND = "3036301006072A8648CE3D020106052B8104000A032200"
-
-DESCRIPTION = "".join(
-    [
-        "This python script is a tool to create air-gapped signatures of files using Krux. ",
-        "The script can also convert hex publics exported from Krux to PEM public keys so ",
-        "signatures can be verified using openssl.",
-    ]
-)
-parser = argparse.ArgumentParser(prog="ksigner", description=DESCRIPTION)
+#################
+# Local libraries
+#################
+from constants import *
+from logutils import *
+parser = argparse.ArgumentParser(prog="ksigner", description=KSIGNER_CLI_DESCRIPTION)
 
 # Verbose messages
 parser.add_argument(
+    "-V",
     "--verbose",
     dest="verbose",
     action="store_true",
@@ -154,20 +117,6 @@ verifier.add_argument(
 )
 
 verifier.add_argument("-p", "--pub-file", dest="pub_file", help="path to pubkey file")
-
-
-############
-# FUNCTIONS
-############
-def now() -> str:
-    """Return some formated time"""
-    return time.strftime("%X %x %Z")
-
-
-def verbose_log(v_data):
-    """Prints verbose data preceded by current time"""
-    print(f"[{now()}] {v_data}")
-
 
 def make_qr_code(**kwargs) -> str:
     """
@@ -532,12 +481,12 @@ def create_public_key_certificate(**kwargs):
     if uncompressed:
         if verbose:
             verbose_log("Creating uncompressed public key certificate")
-        __public_key_data__ = f"{UNCOMPRESSED_PUBKEY_PREPEND}{hex_pubkey}"
+        __public_key_data__ = f"{KSIGNER_UNCOMPRESSED_PUBKEY_PREPEND}{hex_pubkey}"
 
     else:
         if verbose:
             verbose_log("Creating compressed public key certificate")
-        __public_key_data__ = f"{COMPRESSED_PUBKEY_PREPEND}{hex_pubkey}"
+        __public_key_data__ = f"{KSIGNER_COMPRESSED_PUBKEY_PREPEND}{hex_pubkey}"
 
     # Convert pubkey data to bytes
     __public_key_data_bytes__ = bytes.fromhex(__public_key_data__)
