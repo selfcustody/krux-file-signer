@@ -38,9 +38,7 @@ Requirements:
 ####################
 import argparse
 import hashlib
-import subprocess
 import base64
-
 
 #################
 # Local libraries
@@ -50,6 +48,7 @@ from logutils import *
 from qrutils import *
 from videoutils import *
 from processingutils import *
+from signandverifyutils import verify
 
 ################
 # Command parser
@@ -118,46 +117,6 @@ verifier.add_argument(
 verifier.add_argument("-p", "--pub-file", dest="pub_file", help="path to pubkey file")
 
   
-def verify(**kwargs):
-    """
-    Uses openssl to verify the signature and public key
-
-    Kwargs:
-        :param filename
-            The path of file to be veryfied
-        :param pubkey
-            The path of file that be used to verify `filename`
-        :param sigfile
-            The path of signature file that will be used to verify `filename`
-        :param verbose
-            Apply verbose or no
-
-    """
-    verbose_log("Verifying signature:")
-
-    file2verify = kwargs.get("filename")
-    pub_key_file = kwargs.get("pubkey")
-    sig_file = kwargs.get("sigfile")
-    verbose = kwargs.get("verbose")
-
-    __command__ = " ".join(
-        [
-            f"openssl sha256 <{file2verify} -binary",
-            "|",
-            f"openssl pkeyutl -verify -pubin -inkey {pub_key_file}",
-            f"-sigfile {sig_file}",
-        ]
-    )
-    try:
-        if verbose:
-            print(__command__)
-        subprocess.run(__command__, check=True, shell=True)
-    except subprocess.CalledProcessError as __exc__:
-        raise subprocess.CalledProcessError(
-            "Invalid command", cmd=__command__
-        ) from __exc__
-
-
 def open_and_hash_file(**kwargs) -> str:
     """ "
     Read file from --file argument on `sign` command and return its hash
