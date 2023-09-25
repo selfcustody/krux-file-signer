@@ -40,8 +40,6 @@ import argparse
 import hashlib
 import subprocess
 import base64
-import time
-from io import StringIO
 
 #######################
 # Thrid party libraries
@@ -54,6 +52,11 @@ import cv2
 from constants import *
 from logutils import *
 from qrutils import *
+from processingutils import *
+
+################
+# Command parser
+################
 parser = argparse.ArgumentParser(prog="ksigner", description=KSIGNER_CLI_DESCRIPTION)
 
 # Verbose messages
@@ -116,52 +119,6 @@ verifier.add_argument(
 )
 
 verifier.add_argument("-p", "--pub-file", dest="pub_file", help="path to pubkey file")
-
-
-def normalization_transform(**kwargs):
-    """ "
-    Apply Gray scale on frames
-
-    Kwargs
-        :param frame
-            The frame which will be applyed the transformation
-        :param verbose
-            Apply verbose messages
-    """
-    frame = kwargs.get("frame")
-    verbose = kwargs.get("verbose")
-
-    # Cameras have different configurations
-    # and behaviours, so try apply some normalization
-    # @see https://stackoverflow.com/questions/61016954/
-    # controlling-contrast-and-brightness-of-video-stream-in-opencv-and-python
-    cv2.normalize(frame, frame, 0, 255, cv2.NORM_MINMAX)
-
-    # Verbose some data
-    if verbose:
-        verbose_log(f"normalized (frame={frame})")
-
-
-def gray_transform(**kwargs):
-    """ "
-    Apply Gray scale on frames
-
-    Kwargs
-        :param ret
-        :param frame
-            The frame which will be applyed the transformation
-        :param verbose
-            Apply verbose messages
-    """
-    frame = kwargs.get("frame")
-    verbose = kwargs.get("verbose")
-
-    # Convert frame to grayscale
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-    # verbose_loge some data
-    if verbose:
-        verbose_log(f"gray scale (frame={frame})")
 
 
 def scan(**kwargs) -> str:

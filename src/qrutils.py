@@ -1,7 +1,22 @@
-from logutils import verbose_log
-from qrcode import QRCodeCode
+####################
+# Standart libraries
+####################
+from io import StringIO
+
+#######################
+# Thrid party libraries
+#######################
+from qrcode import QRCode
 from pyzbar.pyzbar import decode
 
+#################
+# Local libraries
+#################
+from logutils import verbose_log
+
+###########
+# Functions
+###########
 def make_qr_code(**kwargs) -> str:
     """
     Builds the ascii data to QR code
@@ -21,8 +36,13 @@ def make_qr_code(**kwargs) -> str:
         verbose_log(f"Adding (data={qr_data})")
 
     qr_code.add_data(qr_data)
+    
+    if verbose:
+        verbose_log("Converting data to ascii")
+        
     qr_string = StringIO()
     qr_code.print_ascii(out=qr_string, invert=True)
+    
     return qr_string.getvalue()
 
 
@@ -45,6 +65,9 @@ def make_qr_code_image(**kwargs) -> str:
         verbose_log(f"Adding (data={qr_data})")
 
     qr_code.add_data(qr_data)
+    
+    if verbose:
+        verbose_log(f"Creating image")
+    
     qr_image = qr_code.make_image()
     return qr_image
-
