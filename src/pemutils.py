@@ -1,5 +1,24 @@
-from constants import *
-from logutils import *
+"""
+pemutils.py
+
+Utility for create public key certificates (aka .pem files),
+in uncompressed or compressed formats
+
+@see src/constants.py::KSIGNER_UNCOMPRESSED_PUBKEY_PREPEND
+@see src/constants.py::KSIGNER_COMPRESSED_PUBKEY_PREPEND
+"""
+
+####################
+# Stardard libraries
+####################
+import base64
+
+#################
+# Local libraries
+#################
+from constants import KSIGNER_COMPRESSED_PUBKEY_PREPEND
+from constants import KSIGNER_UNCOMPRESSED_PUBKEY_PREPEND
+from logutils import verbose_log
 
 
 def create_public_key_certificate(**kwargs):
