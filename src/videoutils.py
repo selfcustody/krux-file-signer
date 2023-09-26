@@ -9,6 +9,7 @@ import cv2
 from logutils import *
 from processingutils import *
 
+
 def scan(**kwargs) -> str:
     """
     Opens a scan window and uses cv2 to detect
@@ -151,4 +152,3 @@ def scan_public_key(**kwargs) -> str:
         verbose_log(f"Public key: {public_key}")
 
     return public_key
-

@@ -8,6 +8,7 @@ import hashlib
 #################
 from logutils import *
 
+
 def open_and_hash_file(**kwargs) -> str:
     """ "
     Read file from --file argument on `sign` command and return its hash

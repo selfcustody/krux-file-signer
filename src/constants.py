@@ -88,7 +88,7 @@ example for setup of 'pre' public key strings above:
 @see https://github.com/selfcustody/krux/blob/a63dc4ae917afc7ecd7773e6a4b13c23ea2da4d3/krux#L139
 @see https://github.com/pebwindkraft/trx_cl_suite/blob/master/tcls_key2pem.sh#L134
 """
-KSIGNER_COMPRESSED_PUBKEY_PREPEND   = "3036301006072A8648CE3D020106052B8104000A032200"
+KSIGNER_COMPRESSED_PUBKEY_PREPEND = "3036301006072A8648CE3D020106052B8104000A032200"
 
 """
 Description ksigner.py summary 

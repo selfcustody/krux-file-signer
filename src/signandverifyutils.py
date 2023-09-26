@@ -8,11 +8,12 @@ import subprocess
 #################
 from logutils import *
 
+
 def verifyOpensslCommand(**kwargs) -> str:
     """
-    Create the properly openssl command 
+    Create the properly openssl command
     to verify, for given:
-    
+
     - A `signature` to verify the `file` agains `pubkey`
 
     Kwargs:
@@ -24,9 +25,9 @@ def verifyOpensslCommand(**kwargs) -> str:
             The `signature` to verify the `file`
             against its `signature`
     """
-    file2verify = kwargs.get('file')
-    pubkey = kwargs.get('pubkey')
-    sig = kwargs.get('signature')
+    file2verify = kwargs.get("file")
+    pubkey = kwargs.get("pubkey")
+    sig = kwargs.get("signature")
 
     return " ".join(
         [
@@ -36,6 +37,7 @@ def verifyOpensslCommand(**kwargs) -> str:
             f"-sigfile {sig}",
         ]
     )
+
 
 def verify(**kwargs):
     """
@@ -61,9 +63,7 @@ def verify(**kwargs):
 
     try:
         __command__ = verifyOpensslCommand(
-            file=file2verify,
-            pubkey=pubkey_file,
-            signature=sig_file     
+            file=file2verify, pubkey=pubkey_file, signature=sig_file
         )
         if verbose:
             verbose_log(__command__)

@@ -1,5 +1,6 @@
 import time
 
+
 def now() -> str:
     """Return some formated time"""
     return time.strftime("%X %x %Z")

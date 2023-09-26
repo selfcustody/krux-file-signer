@@ -8,6 +8,7 @@ import cv2
 #################
 from logutils import verbose_log
 
+
 def normalization_transform(**kwargs):
     """ "
     Apply Gray scale on frames
