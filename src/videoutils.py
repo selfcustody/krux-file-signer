@@ -93,3 +93,62 @@ def scan(**kwargs) -> str:
     cv2.destroyAllWindows()
 
     return qr_data
+
+
+def scan_and_save_signature(**kwargs):
+    """
+    Scan with camera the generated signatue
+
+    Kwargs:
+        :is_normalized
+            Apply normalization on video
+        :is_gray_scale
+            Apply some gray scale on video
+        :param verbose
+    """
+    is_normalized = kwargs.get("is_normalized")
+    is_gray_scale = kwargs.get("is_gray_scale")
+    verbose = kwargs.get("verbose")
+
+    _ = input(f"[{now()}] Press enter to scan signature")
+    signature = scan(
+        is_normalized=is_normalized, is_gray_scale=is_gray_scale, verbose=verbose
+    )
+
+    # Encode data
+    binary_signature = base64.b64decode(signature.encode())
+    if verbose:
+        verbose_log(f"Signature: {binary_signature}")
+
+    # Saves a signature
+    signature_file = f"{args.file_to_sign}.sig"
+    verbose_log(f"Saving a signature file: {signature_file}")
+    with open(signature_file, "wb") as sig_file:
+        sig_file.write(binary_signature)
+
+
+def scan_public_key(**kwargs) -> str:
+    """
+    Scan with camera the generated public key
+
+    Kwargs:
+        :is_normalized
+            Apply or not normalization on image
+        :is_gray_scale
+            Apply or not gray scale on image
+        :param verbose
+    """
+    is_normalized = kwargs.get("is_normalized")
+    is_gray_scale = kwargs.get("is_gray_scale")
+    verbose = kwargs.get("verbose")
+
+    _ = input(f"[{now()}] Press enter to scan public key")
+    public_key = scan(
+        is_normalized=is_normalized, is_gray_scale=is_gray_scale, verbose=verbose
+    )
+
+    if verbose:
+        verbose_log(f"Public key: {public_key}")
+
+    return public_key
+
