@@ -1,3 +1,16 @@
+"""
+videoutils.py
+
+some video utilities to scan and post processing
+images. 
+
+TODO: unify processingutils.py to this file?
+"""
+####################
+# Standard libraries
+####################
+import base64
+
 #######################
 # Thrid party libraries
 #######################
@@ -6,8 +19,9 @@ import cv2
 #################
 # Local libraries
 #################
-from logutils import *
-from processingutils import *
+from logutils import verbose_log, now
+from processingutils import normalization_transform
+from processingutils import gray_transform
 
 
 def scan(**kwargs) -> str:
@@ -110,6 +124,7 @@ def scan_and_save_signature(**kwargs):
     is_normalized = kwargs.get("is_normalized")
     is_gray_scale = kwargs.get("is_gray_scale")
     verbose = kwargs.get("verbose")
+    filename = kwargs.get('filename')
 
     _ = input(f"[{now()}] Press enter to scan signature")
     signature = scan(
@@ -122,7 +137,7 @@ def scan_and_save_signature(**kwargs):
         verbose_log(f"Signature: {binary_signature}")
 
     # Saves a signature
-    signature_file = f"{args.file_to_sign}.sig"
+    signature_file = f"{filename}.sig"
     verbose_log(f"Saving a signature file: {signature_file}")
     with open(signature_file, "wb") as sig_file:
         sig_file.write(binary_signature)
