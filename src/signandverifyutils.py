@@ -1,3 +1,11 @@
+"""
+signandverify.py
+
+functions that use openssl as a wrapper
+to verify signatures
+
+TODO: replace for pyca/cryptography or pyOpenSSL 
+"""
 ####################
 # Standart libraries
 ####################
@@ -6,10 +14,10 @@ import subprocess
 #################
 # Local libraries
 #################
-from logutils import *
+from logutils import verbose_log
 
 
-def verifyOpensslCommand(**kwargs) -> str:
+def verify_openssl_command(**kwargs) -> str:
     """
     Create the properly openssl command
     to verify, for given:
@@ -62,7 +70,7 @@ def verify(**kwargs):
     verbose = kwargs.get("verbose")
 
     try:
-        __command__ = verifyOpensslCommand(
+        __command__ = verify_openssl_command(
             file=file2verify, pubkey=pubkey_file, signature=sig_file
         )
         if verbose:

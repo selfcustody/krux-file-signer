@@ -1,3 +1,10 @@
+"""
+processingutils.py
+
+video post-processing utils, 
+if necessary
+"""
+
 #######################
 # Third party libraries
 #######################

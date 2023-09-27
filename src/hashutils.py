@@ -1,3 +1,9 @@
+"""
+hashutils.py
+
+Utility for create and save
+files in sha256sum format
+"""
 ####################
 # Standard libraries
 ####################
@@ -6,7 +12,7 @@ import hashlib
 #################
 # Local libraries
 #################
-from logutils import *
+from logutils import verbose_log
 
 
 def open_and_hash_file(**kwargs) -> str:
@@ -38,7 +44,7 @@ def open_and_hash_file(**kwargs) -> str:
             return __readable_hash__
     except FileNotFoundError as exc:
         raise FileNotFoundError(
-            f"Unable to read target file: {args.file_to_sign}"
+            f"Unable to read target file: {__filename__}"
         ) from exc
 
 
