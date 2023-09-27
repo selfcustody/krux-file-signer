@@ -1,15 +1,54 @@
+"""
+callback.py
+
+Functions to be used during `sign` (on_sign function)
+and `verify` (on_verify) operations.
+"""
+
 import argparse
-from logutils import *
-from hashutils import *
+from constants import KSIGNER_VERSION
+from hashutils import open_and_hash_file, save_hashed_file
+from logutils import verbose_log
+from pemutils import create_public_key_certificate
 from qrutils import make_qr_code
-from videoutils import *
-from pemutils import *
+from signandverifyutils import verify
+from videoutils import scan_and_save_signature, scan_public_key
+
+
+def on_version(parser: argparse.ArgumentParser):
+    """
+    Show version
+    """
+    args = parser.parse_args()
+    if args.version:
+        print(KSIGNER_VERSION)
 
 
 def on_sign(parser: argparse.ArgumentParser):
     """
-    onSign is executed when `sign` command is called
+    onSign is executed when `sign` command is called:
+    
+    (1) Read a file;
+    (2) Save in a .sha256.txt file;
+    (3) Requires the user loads a xpriv key on his/her
+        device:
+        (a) load a 12/24 words key;
+        (b) with or without BIP39 password;
+    (4) sign a message:
+        (a) once loaded the xpriv key, user goes
+            to Sign > Message feature on his/her device
+        (b) show a qrcode on device;
+        (c) this function will generate a qrcode on computer;
+        (d) once shown, the user will be prompted to scan it with device;
+        (d) once scanned, the device will show some qrcodes:
+            (i) the signature as a qrcode;
+            (ii) the public key;
+        (e) once above qrcodes are scanned, the computer
+            will generate a publickey certificate, in a compressed
+            or uncompressed format, in name of an owner.
     """
+    args = parser.parse_args()
+
     # If the signergn command was given
     if args.command == "sign" and args.file_to_sign is not None:
         # read file
@@ -35,7 +74,7 @@ def on_sign(parser: argparse.ArgumentParser):
             verbose=args.verbose,
         )
 
-        # Scans the public KeyboardInterrupt
+        # Scans the public KeyboardInterruptardInterrupt
         pubkey = scan_public_key(
             is_normalized=args.is_normalized,
             is_gray_scale=args.is_gray_scale,

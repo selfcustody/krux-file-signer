@@ -42,11 +42,21 @@ import argparse
 # Local libraries
 #################
 import callbacks
+from constants import KSIGNER_CLI_DESCRIPTION
 
 ################
 # Command parser
 ################
 parser = argparse.ArgumentParser(prog="ksigner", description=KSIGNER_CLI_DESCRIPTION)
+
+# Version
+parser.add_argument(
+    "-v",
+    "--version",
+    action="store_true"
+    help="shows version"
+    default=False
+)
 
 # Verbose messages
 parser.add_argument(
@@ -108,5 +118,6 @@ verifier.add_argument(
 verifier.add_argument("-p", "--pub-file", dest="pub_file", help="path to pubkey file")
 
 if __name__ == "__main__":
+    callbacks.on_version(parser)
     callbacks.on_sign(parser)
     callbacks.on_verify(parser)

@@ -1,19 +1,15 @@
-# example for setup of 'pre' public key strings above:
-#   openssl ecparam -name secp256k1 -genkey -out ec-priv.pem
-#   openssl ec -in ec-priv.pem -pubout -out ec-pub.pem
-#   openssl ec -in ec-priv.pem -pubout -conv_form compressed -out ec-pub_c.pem
-#   cat ec-pub.pem
-#   cat ec-pub_c.pem
-#   echo "MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEAd+5gxspjAfO7HA8qq0/    \
-#         7NbHrtTA3z9QNeI5TZ8v0l1pMJ1+mkg3d6zZVUXzMQZ/Y41iID+JAx/ \
-#         sQrY+wqVU/g==" | base64 -D - > ec-pub_uc.hex
-#   echo "MDYwEAYHKoZIzj0CAQYFK4EEAAoDIgACAd+5gxspjAfO7HA8qq0/7Nb \
-#         HrtTA3z9QNeI5TZ8v0l0=" | base64 -D - > ec-pub_c.hex
-#   hexdump -C ec-pub_uc.hex
-#   hexdump -C ec-pub_c.hex
-#
-# @see https://github.com/selfcustody/krux/blob/a63dc4ae917afc7ecd7773e6a4b13c23ea2da4d3/krux#L139
-# @see https://github.com/pebwindkraft/trx_cl_suite/blob/master/tcls_key2pem.sh#L134
+"""
+constants.py
+
+Some constants for the program 
+"""
+import hashlib
+
+"""
+Version   
+"""
+KSIGNER_VERSION = "0.0.1-alpha-0"
+
 """
 PUBKEY pre-String:
 ASN.1 STRUCTURE FOR PUBKEY (uncompressed and compressed):
