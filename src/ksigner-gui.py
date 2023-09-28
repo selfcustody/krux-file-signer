@@ -44,8 +44,9 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.button import Button
 
 
-class MainPage(GridLayout):
-    pass
+class MainPage(GridLayout): pass
+class SignPage(GridLayout): pass
+class VerifyPage(GridLayout): pass
 
 class KSignerApp(App):
 
@@ -55,7 +56,10 @@ class KSignerApp(App):
 
         if (KSignerApp.PAGE == 'Main'):
             return MainPage()
-        
+        elif (KSignerApp.PAGE == 'Sign'):
+            return SignPage()
+        elif (KSignerPAGE == 'Verify'):
+            return VerifyPage()
 
                    
 if __name__ == '__main__':

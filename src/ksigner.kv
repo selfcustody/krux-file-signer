@@ -3,13 +3,17 @@
 <MainPage>:    
 
 	cols: 1
-	rows: 3
+	rows: 2
 			
     Button:
-		text: 'Scan sha256 hash'
+		text: 'Sign'
 		font_size: '20sp'
-		background_color: 0, 0, 0, 0
+		background_color: 0, 0, 0, 0,
 		color: 1, 1, 1, 1
+		on_press:
+			self.background_color = (.5, .5, .5, .5)
+    	on_release:
+			self.background_color = (0, 0, 0, 0)
 		canvas.before:
         	Color:
             	rgba: 1, 1, 1, 1
@@ -18,21 +22,14 @@
             	rectangle: self.x, self.y, self.width, self.height
 		
     Button:
-		text: 'Scan public key'
+		text: 'Verify'
 		font_size: '20sp'
 		background_color: 0, 0, 0, 0
 		color: 1, 1, 1, 1
-		canvas.before:
-        	Color:
-            	rgba: 1, 1, 1, 1
-        	Line:
-            	width: 0.5
-            	rectangle: self.x, self.y, self.width, self.height
-	Button:
-		text: 'Verify signature'
-		font_size: '20sp'
-		background_color: 0, 0, 0, 0
-		color: 1, 1, 1, 1
+		on_press:
+			self.background_color = (.5, .5, .5, .5)
+    	on_release:
+			self.background_color = (0, 0, 0, 0)
 		canvas.before:
         	Color:
             	rgba: 1, 1, 1, 1
