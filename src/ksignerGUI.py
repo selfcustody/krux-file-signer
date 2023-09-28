@@ -1,18 +1,49 @@
+"""
+ksignerGUI.py
+
+A simple Graphical User Interface version
+of ksigner-cli.py based o tkinter.
+
+TODO: rebuild to kivy?    
+"""
+
+####################
+# Standard libraries
+####################
 import os
-from tkinter import Tk, Frame, Text, Label, PhotoImage, BitmapImage
+import base64
+from tkinter import Tk
+from tkinter import Frame
+from tkinter import Text
+from tkinter import Label
+from tkinter import PhotoImage
+#from tkinter import BitmapImage
 from tkinter import ttk
 from tkinter import filedialog
+
+#######################
+# Third party libraries
+#######################
 import cv2
 from PIL import ImageTk, Image
-import base64
-from ksigner import open_and_hash_file, make_qr_code_image
+
+#################
+# Local libraries
+#################
+from hashutils import open_and_hash_file
+from qrutils import make_qr_code_image
 
 # Scanned object types
 SIGNATURE = 0
 PUB_KEY = 1
 
+class KSignerTk(Tk):
+    """
+    class KSignerTk
 
-class ksigner(Tk):
+    an implementation of ksigner-cli in Tk GUI
+    """
+
     def __init__(self, *args, **kwargs):
         Tk.__init__(self, *args, **kwargs)
         self.wm_title("Ksigner")
@@ -78,6 +109,12 @@ class ksigner(Tk):
         self.cam_label.pack(side="left", fill="both", expand=True)
 
     def open_file_to_hash(self):
+        """
+        open_file_to_hash
+
+        Open a file and create a hash for it
+        """
+        
         # file type
         filetypes = (("All files", "*.*"), ("bin files", "*.bin"))
         # show the open file dialog
@@ -93,6 +130,11 @@ class ksigner(Tk):
         self.scan_sig_button["state"] = "normal"
 
     def capture_qr_code(self):
+        """
+        capture_qr_code
+
+        capture QRCode from camera
+        """
         _, frame = self.cap.read()
         cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
         img = Image.fromarray(cv2image)
@@ -111,17 +153,33 @@ class ksigner(Tk):
         self.after(1, self.capture_qr_code)
 
     def detach_cam(self):
+        """
+        detach_cam
+
+        detachs camera to avoid new capture 
+        """
         self.cam_panel.grid_remove()
         self.label_qr.config(image=self.krux_logo_image)
         self.label_qr.image = self.krux_logo_image
 
     def capture_signature(self):
+        """
+        capture_signature
+
+        capture the qrcode from the krux device
+        """
         self.cam_panel.grid()
         self.qr_object = SIGNATURE
         self.cap = cv2.VideoCapture(0)
         self.capture_qr_code()
 
     def save_signature(self, signature):
+        """
+        save_signature
+
+        gets signature generated from qrcode
+        and create a text file on computer
+        """
         # Encode data
         binary_signature = base64.b64decode(signature.encode())
         # Saves a signature
@@ -132,9 +190,13 @@ class ksigner(Tk):
         self.detach_cam()
 
     def save_pub_key(self, pubkey):
-        # TODO
+        """
+        save_pubkey
+
+        TODO
+        """
         pass
 
 
-app = ksigner()
+app = KSignerTk()
 app.mainloop()

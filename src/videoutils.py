@@ -124,7 +124,7 @@ def scan_and_save_signature(**kwargs):
     is_normalized = kwargs.get("is_normalized")
     is_gray_scale = kwargs.get("is_gray_scale")
     verbose = kwargs.get("verbose")
-    filename = kwargs.get('filename')
+    filename = kwargs.get("filename")
 
     _ = input(f"[{now()}] Press enter to scan signature")
     signature = scan(

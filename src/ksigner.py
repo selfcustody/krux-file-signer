@@ -51,11 +51,7 @@ parser = argparse.ArgumentParser(prog="ksigner", description=KSIGNER_CLI_DESCRIP
 
 # Version
 parser.add_argument(
-    "-v",
-    "--version",
-    action="store_true"
-    help="shows version"
-    default=False
+    "-v", "--version", action="store_true", help="shows version", default=False
 )
 
 # Verbose messages

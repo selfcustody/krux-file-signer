@@ -27,7 +27,7 @@ def on_version(parser: argparse.ArgumentParser):
 def on_sign(parser: argparse.ArgumentParser):
     """
     onSign is executed when `sign` command is called:
-    
+
     (1) Read a file;
     (2) Save in a .sha256.txt file;
     (3) Requires the user loads a xpriv key on his/her

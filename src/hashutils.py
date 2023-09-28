@@ -43,9 +43,7 @@ def open_and_hash_file(**kwargs) -> str:
 
             return __readable_hash__
     except FileNotFoundError as exc:
-        raise FileNotFoundError(
-            f"Unable to read target file: {__filename__}"
-        ) from exc
+        raise FileNotFoundError(f"Unable to read target file: {__filename__}") from exc
 
 
 def save_hashed_file(**kwargs):
