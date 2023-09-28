@@ -1,0 +1,42 @@
+#:kivy 2.2.1
+
+<MainPage>:    
+
+	cols: 1
+	rows: 3
+			
+    Button:
+		text: 'Scan sha256 hash'
+		font_size: '20sp'
+		background_color: 0, 0, 0, 0
+		color: 1, 1, 1, 1
+		canvas.before:
+        	Color:
+            	rgba: 1, 1, 1, 1
+        	Line:
+            	width: 0.5
+            	rectangle: self.x, self.y, self.width, self.height
+		
+    Button:
+		text: 'Scan public key'
+		font_size: '20sp'
+		background_color: 0, 0, 0, 0
+		color: 1, 1, 1, 1
+		canvas.before:
+        	Color:
+            	rgba: 1, 1, 1, 1
+        	Line:
+            	width: 0.5
+            	rectangle: self.x, self.y, self.width, self.height
+	Button:
+		text: 'Verify signature'
+		font_size: '20sp'
+		background_color: 0, 0, 0, 0
+		color: 1, 1, 1, 1
+		canvas.before:
+        	Color:
+            	rgba: 1, 1, 1, 1
+        	Line:
+            	width: 0.5
+            	rectangle: self.x, self.y, self.width, self.height
+	

@@ -40,37 +40,22 @@ import argparse
 # Third party libraries
 #######################
 from kivy.app import App
-from kivy.uix.widget import Widget
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.button import Button
 
 
-class KSignerWidget(Widget):
+class MainPage(GridLayout):
     pass
 
 class KSignerApp(App):
-    
+
+    PAGE = 'Main'
+     
     def build(self):
 
-        self.current_page = 'Main'
+        if (KSignerApp.PAGE == 'Main'):
+            return MainPage()
         
-        if (self.current_page == 'Main'):        
-            btn = Button(
-                text ="Scan sha256 hash",
-                font_size ="20sp",
-                background_color =(0, 0, 0, 0),
-                color =(1, 1, 1, 1),
-                size_hint =(.2, .2),
-                pos =(300, 250)
-            )
- 
-            # bind() use to bind the button to function callback
-            btn.bind(on_press = self.scan_sha256_hash_callback)
-            return btn
-
-    def scan_sha256_hash_callback(self, event):
-        self.current_page = 'Scanning'
-        print("changed")
 
                    
 if __name__ == '__main__':
