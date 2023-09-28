@@ -52,3 +52,10 @@ KSIGNER_CLI_DESCRIPTION = "".join(
         "signatures can be verified using openssl.",
     ]
 )
+KSIGNER_GUI_DESCRIPTION = "".join(
+    [
+        "This is a GUI tool to create air-gapped signatures of files using Krux. ",
+        "The script can also convert hex publics exported from Krux to PEM public keys so ",
+        "signatures can be verified using openssl.",
+    ]
+)

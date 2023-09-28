@@ -15,6 +15,7 @@ opencv-python = "^4.8.0.76"
 qrcode = "^7.4.2"
 pillow = "^10.0.1"
 pyzbar = "^0.1.9"
+kivy = "^2.2.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.9.1"
