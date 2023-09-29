@@ -47,7 +47,7 @@ from constants import KSIGNER_CLI_DESCRIPTION
 ################
 # Command parser
 ################
-parser = argparse.ArgumentParser(prog="ksigner", description=KSIGNER_CLI_DESCRIPTION)
+parser = argparse.ArgumentParser(prog="ksigner-cli", description=KSIGNER_CLI_DESCRIPTION)
 
 # Version
 parser.add_argument(

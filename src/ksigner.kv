@@ -1,39 +1,200 @@
 #:kivy 2.2.1
 
-<MainPage>:    
+<MainScreen>:    
 
-	cols: 1
-	rows: 2
+	GridLayout:
+		cols: 1
+		rows: 2
 			
-    Button:
-		text: 'Sign'
-		font_size: '20sp'
-		background_color: 0, 0, 0, 0,
-		color: 1, 1, 1, 1
-		on_press:
-			self.background_color = (.5, .5, .5, .5)
-    	on_release:
-			self.background_color = (0, 0, 0, 0)
-		canvas.before:
-        	Color:
-            	rgba: 1, 1, 1, 1
-        	Line:
-            	width: 0.5
-            	rectangle: self.x, self.y, self.width, self.height
+    	Button:
+			text: 'Sign'
+			font_size: '20sp'
+			background_color: 0, 0, 0, 0,
+			color: 1, 1, 1, 1
+			on_press:
+				self.background_color = (.5, .5, .5, .5)
+    		on_release:
+				self.background_color = (0, 0, 0, 0)
+				root.manager.current = 'sign'
+			canvas.before:
+        		Color:
+            		rgba: 1, 1, 1, 1
+        		Line:
+            		width: 0.5
+            		rectangle: self.x, self.y, self.width, self.height
 		
-    Button:
-		text: 'Verify'
-		font_size: '20sp'
-		background_color: 0, 0, 0, 0
-		color: 1, 1, 1, 1
-		on_press:
-			self.background_color = (.5, .5, .5, .5)
-    	on_release:
-			self.background_color = (0, 0, 0, 0)
-		canvas.before:
-        	Color:
-            	rgba: 1, 1, 1, 1
-        	Line:
-            	width: 0.5
-            	rectangle: self.x, self.y, self.width, self.height
-	
+    	Button:
+			text: 'Verify'
+			font_size: '20sp'
+			background_color: 0, 0, 0, 0
+			color: 1, 1, 1, 1
+			on_press:
+				self.background_color = (.5, .5, .5, .5)
+    		on_release:
+				self.background_color = (0, 0, 0, 0)
+				root.manager.current = 'verify'
+			canvas.before:
+        		Color:
+            		rgba: 1, 1, 1, 1
+        		Line:
+            		width: 0.5
+            		rectangle: self.x, self.y, self.width, self.height
+
+<SignScreen>:
+
+	GridLayout:
+		cols: 1
+		rows: 4
+
+		Button:
+			text: 'Load file & export hash QRCode'
+			font_size: '20sp'
+			background_color: 0, 0, 0, 0,
+			color: 1, 1, 1, 1
+			on_press:
+				self.background_color = (.5, .5, .5, .5)
+    		on_release:
+				self.background_color = (0, 0, 0, 0)
+			canvas.before:
+        		Color:
+            		rgba: 1, 1, 1, 1
+        		Line:
+            		width: 0.5
+            		rectangle: self.x, self.y, self.width, self.height
+
+		Button:
+			text: 'Import & save signature'
+			font_size: '20sp'
+			background_color: 0, 0, 0, 0,
+			color: 1, 1, 1, 1
+			on_press:
+				self.background_color = (.5, .5, .5, .5)
+    		on_release:
+				self.background_color = (0, 0, 0, 0)
+			canvas.before:
+        		Color:
+            		rgba: 1, 1, 1, 1
+        		Line:
+            		width: 0.5
+            		rectangle: self.x, self.y, self.width, self.height
+
+		Button:
+			text: 'Import & save public-key'
+			font_size: '20sp'
+			background_color: 0, 0, 0, 0,
+			color: 1, 1, 1, 1
+			on_press:
+				self.background_color = (.5, .5, .5, .5)
+    		on_release:
+				self.background_color = (0, 0, 0, 0)
+			canvas.before:
+        		Color:
+            		rgba: 1, 1, 1, 1
+        		Line:
+            		width: 0.5
+            		rectangle: self.x, self.y, self.width, self.height
+
+		
+		Button:
+			text: 'Back'
+			font_size: '20sp'
+			background_color: 0, 0, 0, 0,
+			color: 1, 1, 1, 1
+			on_press:
+				self.background_color = (.5, .5, .5, .5)
+    		on_release:
+				self.background_color = (0, 0, 0, 0)
+				root.manager.current = 'main'
+			canvas.before:
+        		Color:
+            		rgba: 1, 1, 1, 1
+        		Line:
+            		width: 0.5
+            		rectangle: self.x, self.y, self.width, self.height
+
+<VerifyScreen>:
+
+	GridLayout:
+		cols: 1
+		rows: 5
+
+		Button:
+			text: 'Load file'
+			font_size: '20sp'
+			background_color: 0, 0, 0, 0,
+			color: 1, 1, 1, 1
+			on_press:
+				self.background_color = (.5, .5, .5, .5)
+    		on_release:
+				self.background_color = (0, 0, 0, 0)
+			canvas.before:
+        		Color:
+            		rgba: 1, 1, 1, 1
+        		Line:
+            		width: 0.5
+            		rectangle: self.x, self.y, self.width, self.height
+
+		Button:
+			text: 'Load Signature'
+			font_size: '20sp'
+			background_color: 0, 0, 0, 0,
+			color: 1, 1, 1, 1
+			on_press:
+				self.background_color = (.5, .5, .5, .5)
+    		on_release:
+				self.background_color = (0, 0, 0, 0)
+			canvas.before:
+        		Color:
+            		rgba: 1, 1, 1, 1
+        		Line:
+            		width: 0.5
+            		rectangle: self.x, self.y, self.width, self.height
+
+		Button:
+			text: 'Load public-key'
+			font_size: '20sp'
+			background_color: 0, 0, 0, 0,
+			color: 1, 1, 1, 1
+			on_press:
+				self.background_color = (.5, .5, .5, .5)
+    		on_release:
+				self.background_color = (0, 0, 0, 0)
+			canvas.before:
+        		Color:
+            		rgba: 1, 1, 1, 1
+        		Line:
+            		width: 0.5
+            		rectangle: self.x, self.y, self.width, self.height
+
+		Button:
+			text: 'Verify signature'
+			font_size: '20sp'
+			background_color: 0, 0, 0, 0,
+			color: 1, 1, 1, 1
+			on_press:
+				self.background_color = (.5, .5, .5, .5)
+    		on_release:
+				self.background_color = (0, 0, 0, 0)
+			canvas.before:
+        		Color:
+            		rgba: 1, 1, 1, 1
+        		Line:
+            		width: 0.5
+            		rectangle: self.x, self.y, self.width, self.height
+		
+		Button:
+			text: 'Back'
+			font_size: '20sp'
+			background_color: 0, 0, 0, 0,
+			color: 1, 1, 1, 1
+			on_press:
+				self.background_color = (.5, .5, .5, .5)
+    		on_release:
+				self.background_color = (0, 0, 0, 0)
+				root.manager.current = 'main'
+			canvas.before:
+        		Color:
+            		rgba: 1, 1, 1, 1
+        		Line:
+            		width: 0.5
+            		rectangle: self.x, self.y, self.width, self.height

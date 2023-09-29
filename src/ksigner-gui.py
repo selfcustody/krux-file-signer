@@ -23,18 +23,8 @@
 """
 ksigner-gui.py
 
-A simple Graphical User Interface version
-of ksigner-cli.py based o tkinter.
-
-TODO: rebuild to kivy?    
+A simple Graphical User Interface built with kivy
 """
-
-####################
-# Standard libraries
-####################
-import os
-import base64
-import argparse
 
 #######################
 # Third party libraries
@@ -42,25 +32,30 @@ import argparse
 from kivy.app import App
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.button import Button
+from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.properties import (
+    StringProperty
+)
 
 
-class MainPage(GridLayout): pass
-class SignPage(GridLayout): pass
-class VerifyPage(GridLayout): pass
+class MainScreen(Screen): pass
+class SignScreen(Screen): pass
+class VerifyPage(Screen): pass
 
 class KSignerApp(App):
 
-    PAGE = 'Main'
-     
+    page = StringProperty('Main')
+    
+        
     def build(self):
 
-        if (KSignerApp.PAGE == 'Main'):
-            return MainPage()
-        elif (KSignerApp.PAGE == 'Sign'):
-            return SignPage()
-        elif (KSignerPAGE == 'Verify'):
-            return VerifyPage()
+        # Create the screen manager
+        sm = ScreenManager()
+        sm.add_widget(MainScreen(name='main'))
+        sm.add_widget(SignScreen(name='sign'))
+        sm.add_widget(SignScreen(name='verify'))
 
+        return sm
                    
 if __name__ == '__main__':
     app = KSignerApp()

@@ -2,8 +2,12 @@
 
 Is a python script to help make airgapped signatures with Krux devices.
 It also can verify the signatures.
-There's also a GUI version in development
 
+The project is divided in two _softwares_:
+
+* `ksigner-cli`: is already able to sign and verify files.
+* `ksigner-gui`: is under development with [`kivy` framework](https://kivy.org/) and shouldnt be used yet
+ 
 ## Development
 
 ### Fetching the code
@@ -12,13 +16,27 @@ There's also a GUI version in development
 git clone https://github.com/selfcustody/krux-file-signer.git
 ```
 
+### Learn the flow of usage
+
+This flow was made by [odudex](https://github.com/odudex) and is a helper
+of usage and development.
+
+<div>
+  <image
+    title="worflow"
+    alt="Figure 1: Worflow of usage and development"
+    src="assets/flow.jpg"
+  >
+  <p>Figure 1: Workflow of usage and development</p>
+</div>
+
 ### Install dev tools
 
-The `ksigner` code is a Python script
-that should be installed with Poetry. To generate
-a new `poetry.lock` file use: `poetry lock --no-update`.
+The `ksigner` suite is built as Python scripts with its dependencies
+managed by [poetry](https://python-poetry.org/)
 
-With `pip`, you can do:
+
+#### Install poetry and dependencies
 
 ```bash
 pip install poetry
@@ -27,6 +45,14 @@ poetry install
 
 This will also install all development tools so that you can run pylint,
 format code with black, and build an agnostic OS executable. 
+
+#### Update lock file if already has one
+
+Use this everytime you want to add a dependency.
+
+```bash
+poetry lock --no-update`
+```
 
 ### Format code
 
@@ -40,53 +66,66 @@ poetry run black ./src
 poetry run pylint ./src
 ```
 
-### Build executable
+### Developing executables
+
+To run the suite as python scripts, you will need to use poetry correctly:
+
+#### ksigner-cli
 
 ```bash
-poetry run pyinstaller ./src/ksigner.py
+poetry run python src/ksigner-cli.py
 ```
 
-The generated executable will be placed on 
-`dist/ksigner/ksigner`
-
-
-### Run the GUI version
+#### ksigner-cli
 
 ```bash
-poetry run python src/ksignerGUI.py
+poetry run python src/ksigner-gui.py
 ```
 
-### Build the GUI version executable
+### Build executables
+
+`ksigner` intends to be Operating System agnostic.
+To achieve this goal, the project requires the correct use of pyinstaller:
+
+#### `ksigner-cli` build
 
 ```bash
-poetry run pyinstaller ./src/ksignerGUI.py
+poetry run pyinstaller src/ksigner-cli.py
 ```
 
-The generated executable will be placed on 
-`dist/ksignerGUI/ksignerGUI`
+Will generate a executable placed on `dist/ksigner-cli/ksigner-cli`
 
+#### `ksigner-gui` build
+
+```bash
+poetry run pyinstaller src/ksigner-gui.py
+```
+
+Will generate a executable placed on `dist/ksigner-gui/ksigner-gui`
 
 ## Usage
 
-### Commands
-
-#### Help
+### `ksigner-cli`
 
 Running `./dist/ksigner/ksigner --help` will show:
 
 ```bash
-usage: ksigner [-h] {sign,verify} ...
+usage: ksigner-cli [-h] [-v] [-V] [-n] [-g] {sign,verify} ...
 
-This python script is a tool to create air-gapped signatures of files using Krux. The script can also convert hex
-publics exported from Krux to PEM public keys so signatures can be verified using openssl.
+This python script is a tool to create air-gapped signatures of files using Krux. The script can also convert hex publics exported from Krux to PEM public keys so signatures can be verified using openssl.
 
 positional arguments:
-  {sign,verify}  sub-command help
-    sign         sign a file
-    verify       verify signature
+  {sign,verify}     sub-command help
+    sign            sign a file
+    verify          verify signature
 
 options:
-  -h, --help     show this help message and exit
+  -h, --help        show this help message and exit
+  -v, --version     shows version
+  -V, --verbose     verbose output (default: False)
+  -n, --normalize   normalizes the image of camera (default: False)
+  -g, --gray-scale  apply gray-scale filter on camera's image (default: False)
+
 ```
 
 #### sign
@@ -94,7 +133,7 @@ options:
 Running `./dist/ksigner/ksigner sign --help`, will show:
 
 ```bash
-usage: ksigner sign [-h] [-f FILE_TO_SIGN] [-o FILE_OWNER] [-u] [-l]
+usage: ksigner-cli sign [-h] [-f FILE_TO_SIGN] [-o FILE_OWNER] [-u]
 
 options:
   -h, --help            show this help message and exit
@@ -103,8 +142,6 @@ options:
   -o FILE_OWNER, --owner FILE_OWNER
                         the owner's name of public key certificate, i.e, the .pem file (default: 'pubkey')
   -u, --uncompressed    flag to create a uncompreesed public key (default: False)
-  -l, --verbose-log     verbose output (default: False)
-
 ```
 
 #### verify
@@ -112,7 +149,7 @@ options:
 Running `/dist/krux-file-signer/krux-file-signer verify --help`, will show:
 
 ```bash
-usage: ksigner verify [-h] [-f VERIFY_FILE] [-s SIG_FILE] [-p PUB_FILE]
+usage: ksigner-cli verify [-h] [-f VERIFY_FILE] [-s SIG_FILE] [-p PUB_FILE]
 
 options:
   -h, --help            show this help message and exit
@@ -122,5 +159,20 @@ options:
                         path to signature file
   -p PUB_FILE, --pub-file PUB_FILE
                         path to pubkey file
+
 ```
 
+### `ksigner-gui`
+
+*WARN*: this code is under development.
+
+Its current status is shown in the animation below:
+
+<div>
+  <image
+    title="ksigner-gui"
+    alt="Figure 2: Current status of ksigner-gui"
+    src="assets/ksigner-gui.gif"
+  >
+  <p>Figure 2: Current status of ksigner-gui</p>
+</div>
