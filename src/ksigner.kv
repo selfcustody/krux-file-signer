@@ -16,7 +16,7 @@
 			font_name: 'terminus.ttf'
 			background_color: 0, 0, 0, 0
 			color: 1, 1, 1, 1
-			on_press: root.on_click_sign_button()
+			on_press: root.on_press_sign_button()
     		on_release: root.on_release_sign_button()
 			canvas.before:
         		Color:
@@ -32,7 +32,7 @@
         	font_name: 'terminus.ttf'
 			background_color: 0, 0, 0, 0
 			color: 1, 1, 1, 1
-			on_press: root.on_click_verify_button()
+			on_press: root.on_press_verify_button()
 			on_release: root.on_release_verify_button()
 			canvas.before:
         		Color:
@@ -100,14 +100,14 @@
 
 		
 		Button:
+			id: sign_screen_back
 			text: 'Back'
 			font_size: root.height // 25
         	font_name: 'terminus.ttf'
-			background_color: 0, 0, 0, 0,
+			background_color: 0, 0, 0, 0
 			color: 1, 1, 1, 1
-			on_press:
-				self.background_color = (.5, .5, .5, .5)
-    		on_release: root.on_back_main()
+			on_press: root.on_press_back_main()
+    		on_release: root.on_release_back_main()
 			canvas.before:
         		Color:
             		rgba: 1, 1, 1, 1
