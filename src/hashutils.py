@@ -33,13 +33,13 @@ def open_and_hash_file(**kwargs) -> str:
             _bytes = f_to_be_sig.read()  # read file as bytes
 
             if verbose:
-                verbose_log(f"Read bytes: {_bytes}")
+                verbose_log('INFO', f"Read bytes: {_bytes}")
 
             __readable_hash__ = hashlib.sha256(_bytes).hexdigest()
 
             # Prints the hash of the file
             if verbose:
-                verbose_log(f"Hash of {__filename__}: {__readable_hash__}")
+                verbose_log('INFO', f"Hash of {__filename__}: {__readable_hash__}")
 
             return __readable_hash__
     except FileNotFoundError as exc:

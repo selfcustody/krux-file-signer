@@ -2,21 +2,21 @@
 
 <MainScreen>:    
 
+	id: main_screen
+	
 	GridLayout:
+		
 		cols: 1
 		rows: 2
 			
     	Button:
+			id: main_screen_sign_button
 			text: 'Sign'
 			font_size: '20sp'
-			background_color: 0, 0, 0, 0,
+			background_color: 0, 0, 0, 0
 			color: 1, 1, 1, 1
-			on_press:
-				self.background_color = (.5, .5, .5, .5)
-    		on_release:
-				self.background_color = (0, 0, 0, 0)
-				root.manager.transition.direction = 'left'
-				root.manager.current = 'sign'
+			on_press: root.on_click_sign_button()
+    		on_release: root.on_release_sign_button()
 			canvas.before:
         		Color:
             		rgba: 1, 1, 1, 1
@@ -25,16 +25,13 @@
             		rectangle: self.x, self.y, self.width, self.height
 		
     	Button:
+			id: main_screen_verify_button
 			text: 'Verify'
 			font_size: '20sp'
 			background_color: 0, 0, 0, 0
 			color: 1, 1, 1, 1
-			on_press:
-				self.background_color = (.5, .5, .5, .5)
-    		on_release:
-				self.background_color = (0, 0, 0, 0)
-				root.manager.transition.direction = 'left'
-				root.manager.current = 'verify'
+			on_press: root.on_click_verify_button()
+			on_release: root.on_release_verify_button()
 			canvas.before:
         		Color:
             		rgba: 1, 1, 1, 1
@@ -49,14 +46,13 @@
 		rows: 4
 
 		Button:
+			id: sign_screen_load_file_and_export_hash_qrcode
 			text: 'Load file & export hash QRCode'
 			font_size: '20sp'
 			background_color: 0, 0, 0, 0,
 			color: 1, 1, 1, 1
-			on_press:
-				self.background_color = (.5, .5, .5, .5)
-    		on_release:
-				self.background_color = (0, 0, 0, 0)
+			on_press: root.on_press_sign_screen_load_file_and_export_hash_qrcode()    		
+			on_release: root.on_release_sign_screen_load_file_and_export_hash_qrcode()
 			canvas.before:
         		Color:
             		rgba: 1, 1, 1, 1
@@ -104,10 +100,7 @@
 			color: 1, 1, 1, 1
 			on_press:
 				self.background_color = (.5, .5, .5, .5)
-    		on_release:
-				self.background_color = (0, 0, 0, 0)
-				root.manager.transition.direction = 'right'
-				root.manager.current = 'main'
+    		on_release: root.on_back_main()
 			canvas.before:
         		Color:
             		rgba: 1, 1, 1, 1
@@ -202,3 +195,23 @@
         		Line:
             		width: 0.5
             		rectangle: self.x, self.y, self.width, self.height
+
+<FileLoader>:
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+        FileChooserListView:
+            id: filechooser
+			on_selection: root.select(*args)
+
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "Cancel"
+                on_release: root.cancel()
+
+            Button:
+                text: "Load"
+                on_release: root.load(filechooser.path, filechooser.selection)
