@@ -15,6 +15,7 @@
 				self.background_color = (.5, .5, .5, .5)
     		on_release:
 				self.background_color = (0, 0, 0, 0)
+				root.manager.transition.direction = 'left'
 				root.manager.current = 'sign'
 			canvas.before:
         		Color:
@@ -32,6 +33,7 @@
 				self.background_color = (.5, .5, .5, .5)
     		on_release:
 				self.background_color = (0, 0, 0, 0)
+				root.manager.transition.direction = 'left'
 				root.manager.current = 'verify'
 			canvas.before:
         		Color:
@@ -104,6 +106,7 @@
 				self.background_color = (.5, .5, .5, .5)
     		on_release:
 				self.background_color = (0, 0, 0, 0)
+				root.manager.transition.direction = 'right'
 				root.manager.current = 'main'
 			canvas.before:
         		Color:
@@ -191,6 +194,7 @@
 				self.background_color = (.5, .5, .5, .5)
     		on_release:
 				self.background_color = (0, 0, 0, 0)
+				root.manager.transition.direction = 'right'
 				root.manager.current = 'main'
 			canvas.before:
         		Color:
