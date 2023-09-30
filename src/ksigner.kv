@@ -12,7 +12,8 @@
     	Button:
 			id: main_screen_sign_button
 			text: 'Sign'
-			font_size: '20sp'
+			font_size: root.height // 25
+			font_name: 'terminus.ttf'
 			background_color: 0, 0, 0, 0
 			color: 1, 1, 1, 1
 			on_press: root.on_click_sign_button()
@@ -27,7 +28,8 @@
     	Button:
 			id: main_screen_verify_button
 			text: 'Verify'
-			font_size: '20sp'
+			font_size: root.height // 25
+        	font_name: 'terminus.ttf'
 			background_color: 0, 0, 0, 0
 			color: 1, 1, 1, 1
 			on_press: root.on_click_verify_button()
@@ -48,7 +50,8 @@
 		Button:
 			id: sign_screen_load_file_and_export_hash_qrcode
 			text: 'Load file & export hash QRCode'
-			font_size: '20sp'
+			font_size: root.height // 25
+        	font_name: 'terminus.ttf'
 			background_color: 0, 0, 0, 0,
 			color: 1, 1, 1, 1
 			on_press: root.on_press_sign_screen_load_file_and_export_hash_qrcode()    		
@@ -62,6 +65,8 @@
 
 		Button:
 			text: 'Import & save signature'
+			font_size: root.height // 25
+        	font_name: 'terminus.ttf'
 			font_size: '20sp'
 			background_color: 0, 0, 0, 0,
 			color: 1, 1, 1, 1
@@ -78,7 +83,8 @@
 
 		Button:
 			text: 'Import & save public-key'
-			font_size: '20sp'
+			font_size: root.height // 25
+        	font_name: 'terminus.ttf'
 			background_color: 0, 0, 0, 0,
 			color: 1, 1, 1, 1
 			on_press:
@@ -95,7 +101,8 @@
 		
 		Button:
 			text: 'Back'
-			font_size: '20sp'
+			font_size: root.height // 25
+        	font_name: 'terminus.ttf'
 			background_color: 0, 0, 0, 0,
 			color: 1, 1, 1, 1
 			on_press:
@@ -115,8 +122,9 @@
 		rows: 5
 
 		Button:
-			text: 'Load file'
-			font_size: '20sp'
+			text: 'Load file'			
+			font_size: root.height // 25
+        	font_name: 'terminus.ttf'
 			background_color: 0, 0, 0, 0,
 			color: 1, 1, 1, 1
 			on_press:
@@ -132,7 +140,8 @@
 
 		Button:
 			text: 'Load Signature'
-			font_size: '20sp'
+			font_size: root.height // 25
+        	font_name: 'terminus.ttf'
 			background_color: 0, 0, 0, 0,
 			color: 1, 1, 1, 1
 			on_press:
@@ -147,8 +156,9 @@
             		rectangle: self.x, self.y, self.width, self.height
 
 		Button:
-			text: 'Load public-key'
-			font_size: '20sp'
+			text: 'Load public-key'			
+			font_size: root.height // 25
+        	font_name: 'terminus.ttf'
 			background_color: 0, 0, 0, 0,
 			color: 1, 1, 1, 1
 			on_press:
@@ -163,8 +173,9 @@
             		rectangle: self.x, self.y, self.width, self.height
 
 		Button:
-			text: 'Verify signature'
-			font_size: '20sp'
+			text: 'Verify signature'			
+			font_size: root.height // 25
+        	font_name: 'terminus.ttf'
 			background_color: 0, 0, 0, 0,
 			color: 1, 1, 1, 1
 			on_press:
@@ -180,7 +191,8 @@
 		
 		Button:
 			text: 'Back'
-			font_size: '20sp'
+			font_size: root.height // 25
+        	font_name: 'terminus.ttf'
 			background_color: 0, 0, 0, 0,
 			color: 1, 1, 1, 1
 			on_press:
@@ -209,9 +221,13 @@
             size_hint_y: None
             height: 30
             Button:
+				font_size: root.height // 25
+        		font_name: 'terminus.ttf'
                 text: "Cancel"
                 on_release: root.cancel()
 
             Button:
+				font_size: root.height // 25
+				font_name: 'terminus.ttf'
                 text: "Load"
                 on_release: root.load(filechooser.path, filechooser.selection)
