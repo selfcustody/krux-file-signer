@@ -25,23 +25,17 @@ ksigner-gui.py
 
 A simple Graphical User Interface built with kivy
 """
-####################
-# Standard libraries
-####################
-import os
-
 #######################
 # Third party libraries
 #######################
 from kivy.app import App
-from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.properties import ObjectProperty, StringProperty
+from kivy.uix.screenmanager import ScreenManager
 
 #################
 # Local libraries
 #################
 from logutils import verbose_log
-from mainscreen import MainScreen 
+from mainscreen import MainScreen
 from signscreen import SignScreen
 from verifyscreen import VerifyScreen
 
@@ -49,7 +43,7 @@ class KSignerApp(App):
     """
     KSignerApp is the Root widget
     """
-    
+
     def build(self):
         """
         build
@@ -62,10 +56,16 @@ class KSignerApp(App):
         - verify;
         - TODO: others
         """
-        # Create the screen manager
+        verbose_log('INFO', 'Creating ScreenManager')
         screen_manager = ScreenManager()
+
+        verbose_log('INFO', 'Adding <MainScreen>')
         screen_manager.add_widget(MainScreen(name="main"))
+
+        verbose_log('INFO', 'Adding <SignScreen>')
         screen_manager.add_widget(SignScreen(name="sign"))
+
+        verbose_log('INFO', 'Adding <VerifyScreen>')
         screen_manager.add_widget(VerifyScreen(name="verify"))
         return screen_manager
 

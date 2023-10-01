@@ -26,7 +26,7 @@ class VerifyScreen(Screen):
     - Load publickey
     - Verify signature
     """
-    
+
     def on_press_verify_screen_load_file_button(self):
         """
         on_press_verify_screen_load_file_button
