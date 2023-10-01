@@ -5,8 +5,11 @@ simple log utilities
 """
 import time
 
-
-class bcolors:
+# pylint: disable=too-few-public-methods
+class Bcolors:
+    """
+    Simple class to manage colors in terminal
+    """
     HEADER = "\033[95m"
     OKBLUE = "\033[94m"
     INFO = "\033[92m"
@@ -16,6 +19,20 @@ class bcolors:
     BOLD = "\033[1m"
     UNDERLINE = "\033[4m"
 
+    @staticmethod
+    # pylint: disable=inconsistent-return-statements
+    def build_v_type(v_type: str) -> str:
+        """
+        Get a type and convert into formated color 
+        """
+        if v_type == "INFO":
+            return f"{Bcolors.BOLD}{Bcolors.INFO}{v_type}{Bcolors.ENDC}"
+
+        if v_type == "WARN":
+            return f"{Bcolors.BOLD}{Bcolors.WARN}{v_type}{Bcolors.ENDC}"
+
+        if v_type == "FAIL":
+            return f"{Bcolors.BOLD}{Bcolors.FAIL}{v_type}{Bcolors.ENDC}"
 
 def now() -> str:
     """Return some formated time"""
@@ -38,13 +55,5 @@ def verbose_log(v_type: str, v_data: str):
         :param v_data
             the message to be verbose
     """
-    if v_type == "INFO":
-        c = f"{bcolors.BOLD}{bcolors.INFO}"
-
-    if v_type == "WARN":
-        c = f"{bcolors.BOLD}{bcolors.WARN}"
-
-    if v_type == "FAIL":
-        c = f"{bcolors.BOLD}{bcolors.FAIL}"
-
-    print(f"[{c}{v_type}{bcolors.ENDC}   ] [KSigner     ] [{now()}] {v_data}")
+    vtype = Bcolors.build_v_type(v_type)
+    print(f"[{vtype}   ] [KSigner     ] [{now()}] {v_data}")

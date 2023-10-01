@@ -58,10 +58,10 @@ def on_sign(parser: argparse.ArgumentParser):
         save_hashed_file(data=data, path=args.file_to_sign, verbose=args.verbose)
 
         # Shows some message
-        verbose_log("To sign this file with Krux: ")
-        verbose_log(" (a) load a 24 words key;")
-        verbose_log(" (b) use the Sign->Message feature;")
-        verbose_log(" (c) and scan this QR code below.")
+        verbose_log("INFO", "To sign this file with Krux: ")
+        verbose_log("INFO", " (a) load a 24 words key;")
+        verbose_log("INFO", " (b) use the Sign->Message feature;")
+        verbose_log("INFO", " (c) and scan this QR code below.")
 
         # Prints the QR code
         __qrcode__ = make_qr_code(data=data, verbose=args.verbose)

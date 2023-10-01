@@ -66,7 +66,7 @@ def save_hashed_file(**kwargs):
     __hash_file__ = f"{__path__}.sha256sum.txt"
 
     if verbose:
-        verbose_log(f"Saving a hash file: {__hash_file__}")
+        verbose_log("INFO", f"Saving a hash file: {__hash_file__}")
 
     with open(__hash_file__, mode="w", encoding="utf-8") as hash_file:
         hash_file.write(f"{__data__} {__hash_file__}")

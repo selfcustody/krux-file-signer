@@ -37,7 +37,7 @@ def normalization_transform(**kwargs):
 
     # Verbose some data
     if verbose:
-        verbose_log(f"normalized (frame={frame})")
+        verbose_log("INFO", f"normalized (frame={frame})")
 
 
 def gray_transform(**kwargs):
@@ -59,4 +59,4 @@ def gray_transform(**kwargs):
 
     # verbose_loge some data
     if verbose:
-        verbose_log(f"gray scale (frame={frame})")
+        verbose_log("INFO", f"gray scale (frame={frame})")

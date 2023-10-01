@@ -62,7 +62,7 @@ def verify(**kwargs):
             Apply verbose or no
 
     """
-    verbose_log("Verifying signature:")
+    verbose_log("INFO", "Verifying signature:")
 
     file2verify = kwargs.get("filename")
     pubkey_file = kwargs.get("pubkey")
@@ -74,7 +74,7 @@ def verify(**kwargs):
             file=file2verify, pubkey=pubkey_file, signature=sig_file
         )
         if verbose:
-            verbose_log(__command__)
+            verbose_log("INFO", __command__)
         subprocess.run(__command__, check=True, shell=True)
     except subprocess.CalledProcessError as __exc__:
         raise subprocess.CalledProcessError(

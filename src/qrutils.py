@@ -35,12 +35,12 @@ def make_qr_code(**kwargs) -> str:
     qr_code = QRCode()
 
     if verbose:
-        verbose_log(f"Adding (data={qr_data})")
+        verbose_log("INFO", f"Adding (data={qr_data})")
 
     qr_code.add_data(qr_data)
 
     if verbose:
-        verbose_log("Converting data to ascii")
+        verbose_log("INFO", "Converting data to ascii")
 
     qr_string = StringIO()
     qr_code.print_ascii(out=qr_string, invert=True)
@@ -64,12 +64,12 @@ def make_qr_code_image(**kwargs) -> str:
     qr_code = QRCode()
 
     if verbose:
-        verbose_log(f"Adding (data={qr_data})")
+        verbose_log("INFO", f"Adding (data={qr_data})")
 
     qr_code.add_data(qr_data)
 
     if verbose:
-        verbose_log("Creating image")
+        verbose_log("INFO", "Creating image")
 
     qr_image = qr_code.make_image()
     return qr_image

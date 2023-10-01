@@ -43,10 +43,10 @@ def scan(**kwargs) -> str:
     is_normalized = kwargs.get("is_normalized")
     is_gray_scale = kwargs.get("is_gray_scale")
 
-    verbose_log("Opening camera")
+    verbose_log("INFO", "Opening camera")
     vid = cv2.VideoCapture(0)
 
-    verbose_log("Starting detection")
+    verbose_log("INFO", "Starting detection")
     detector = cv2.QRCodeDetector()
 
     qr_data = None
@@ -69,20 +69,20 @@ def scan(**kwargs) -> str:
 
         # Verbose some data
         if verbose:
-            verbose_log(f"reading (qr_data={qr_data})")
-            verbose_log(f"reading (_bbox={_bbox}")
-            verbose_log(f"reading (_straight_qrcode={_straight_qrcode})")
+            verbose_log("INFO", f"reading (qr_data={qr_data})")
+            verbose_log("INFO", f"reading (_bbox={_bbox}")
+            verbose_log("INFO", f"reading (_straight_qrcode={_straight_qrcode})")
 
         # Verify null data
         if verbose:
-            verbose_log(f"len(qr_data) = {len(qr_data)}")
+            verbose_log("INFO", f"len(qr_data) = {len(qr_data)}")
 
         if len(qr_data) > 0:
             break
 
         # Display the resulting frame
         if verbose:
-            verbose_log(f"Showing (frame={frame})")
+            verbose_log("INFO", f"Showing (frame={frame})")
 
         # Show image
         cv2.imshow("frame", frame)
@@ -92,18 +92,18 @@ def scan(**kwargs) -> str:
         # desired button of your choice
         if cv2.waitKey(1) & 0xFF == ord("q"):
             if verbose:
-                verbose_log("quiting QRCode detection...")
+                verbose_log("INFO", "quiting QRCode detection...")
             break
 
     # After the loop release the cap object
     if verbose:
-        verbose_log("Releasing video...")
+        verbose_log("INFO", "Releasing video...")
 
     vid.release()
 
     # Destroy all the windows
     if verbose:
-        verbose_log("Destroying all ksigner windows...")
+        verbose_log("INFO", "Destroying all ksigner windows...")
 
     cv2.destroyAllWindows()
 
@@ -134,11 +134,11 @@ def scan_and_save_signature(**kwargs):
     # Encode data
     binary_signature = base64.b64decode(signature.encode())
     if verbose:
-        verbose_log(f"Signature: {binary_signature}")
+        verbose_log("INFO", f"Signature: {binary_signature}")
 
     # Saves a signature
     signature_file = f"{filename}.sig"
-    verbose_log(f"Saving a signature file: {signature_file}")
+    verbose_log("INFO", f"Saving a signature file: {signature_file}")
     with open(signature_file, "wb") as sig_file:
         sig_file.write(binary_signature)
 
@@ -164,6 +164,6 @@ def scan_public_key(**kwargs) -> str:
     )
 
     if verbose:
-        verbose_log(f"Public key: {public_key}")
+        verbose_log("INFO", f"Public key: {public_key}")
 
     return public_key
