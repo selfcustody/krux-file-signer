@@ -3,6 +3,8 @@ signscreen.py
 
 An inherited implementations of kivy.uix.screenmanager Screen    
 """
+import os
+import tempfile
 
 #####################
 # Thirparty libraries
@@ -15,12 +17,15 @@ from kivy.uix.popup import Popup
 #      -pylint-no-name-in-module
 # pylint: disable=no-name-in-module
 from kivy.properties import StringProperty
+from kivy.uix.image import Image
+import qrcode
 
 #################
 # Local libraries
 #################
 from logutils import verbose_log
 from hashutils import open_and_hash_file
+from qrutils import encode_to_string
 from filechooser import LoadDialog
 
 class SignScreen(Screen):
@@ -122,7 +127,37 @@ class SignScreen(Screen):
         a given file   
         """
         self.file_input = args[1][0]
+        
         verbose_log("INFO", f"<SignScreen@Popup> loading {self.file_input}")
         self.file_hash = open_and_hash_file(path=self.file_input, verbose=True)
+        
         verbose_log("INFO", f"<SignScreen@Popup> hash: {self.file_hash}")
         self._popup.dismiss()
+
+        verbose_log("INFO", "<SignScreen> converting to QRCode")
+        qr_binary_data = encode_to_string(self.file_hash)
+        verbose_log("INFO", "<SignScreen> Raw data: "+ "".join(qr_binary_data))
+        
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4
+        )
+        qr.add_data(qr_binary_data)
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="black", back_color="white")
+        
+        img_path = os.path.join(tempfile.gettempdir(), f"{self.file_input}.png")
+        verbose_log("INFO", f"<SignScreen> Saving on: {img_path}")
+        img.save(img_path)
+        
+        self._popup = Popup(
+            title=self.file_input,
+            content=Image(source=img_path),
+            size_hint=(None, None),
+            size=(400, 400)
+        )
+
+        self._popup.open()
+        
