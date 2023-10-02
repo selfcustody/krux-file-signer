@@ -21,7 +21,7 @@ from kivy.properties import StringProperty
 #################
 from logutils import verbose_log
 from hashutils import open_and_hash_file
-from filechooser import FileChooser
+from filechooser import LoadDialog
 
 class SignScreen(Screen):
     """
@@ -37,13 +37,15 @@ class SignScreen(Screen):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._content = FileChooser(
+        self._content = LoadDialog(
+            load=LoadDialog.load,
             cancel=lambda: self._popup.dismiss,
-            path=FileChooser.path,
             on_submit=self.on_submit_file,
         )
         self._popup = Popup(
-            title="Load a file", content=self._content, size_hint=(0.9, 0.9)
+            title="Load a file",
+            content=self._content,
+            size_hint=(0.9, 0.9)
         )
         self.file_input = StringProperty("")
         self.file_content = StringProperty("")

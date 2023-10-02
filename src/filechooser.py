@@ -11,16 +11,16 @@ import os
 ########################
 # Thirdy party libraries
 ########################
-from kivy.uix.filechooser import FileChooserIconView
+from kivy.uix.filechooser import FileChooserListView
 
 # @see stackoverflow.complex/questions/65547279/
 #      /no-name-object-property-in-module-kivy-properties
 #      -pylint-no-name-in-module
 # pylint: disable=no-name-in-module
-from kivy.properties import ObjectProperty
+from kivy.properties import ObjectProperty, BooleanProperty
 
 
-class FileChooser(FileChooserIconView):
+class LoadDialog(FileChooserListView):
     """
     FileChooser
 
@@ -28,7 +28,7 @@ class FileChooser(FileChooserIconView):
     classes. In SignScreen, it will choose the file to load a content,
     write it in a .sha256.txt file and show qrcode content.
     """
-
-    loaded = ObjectProperty(None)
+    load = ObjectProperty(None)
     cancel = ObjectProperty(None)
+    dirseclect = BooleanProperty(True)
     path = os.path.expanduser("~")
