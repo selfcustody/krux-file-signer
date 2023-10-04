@@ -233,12 +233,11 @@
 
 <QRCodeScreen>:
 
-	GridLayout:
-
-		cols: 1
-		rows: 1
-		
-		Label:
-			id: name
-			text: root.file_input
-			color: 1, 1, 1, 1
+	Label:
+		id: qrcode_label
+		font_size: root.height // 30
+		font_name: 'terminus.ttf'
+		halign: 'center'
+		color: 1, 1, 1
+		background_color: 0, 0, 0
+		markup: True

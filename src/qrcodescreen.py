@@ -54,10 +54,12 @@ class QRCodeScreen(Screen):
     It's an custom clone from
     https://github.com/odudex/krux/blob/android/android/mocks/lcd_mock.py
     """      
-    file_input = StringProperty('')
-    #file_hash = StringProperty(None)
-    #file_raw_hash = StringProperty(None)
+    qrcode_label = StringProperty('')
 
+    def __init__(self, **kwargs):
+        super(QRCodeScreen, self).__init__(**kwargs)
+        print(self.qrcode_label)
+    
 class QRCodeWidget(Widget):
     
     pressed = ListProperty([0, 0])

@@ -155,16 +155,14 @@ class SignScreen(Screen):
         
         self.file_hash = open_and_hash_file(path=self.file_input, verbose=True)
         
-        verbose_log("INFO", "Closing popup...")
+        verbose_log("INFO", "<SignScreen@Popup> Closing popup...")
         self._popup.dismiss()
 
-        verbose_log("INFO", "Cache filename and hash to <QRCodeScreen>")
-        print(self.manager.get_screen('qrcode-screen').ids)
+        verbose_log("INFO", "<SignScreen> Cache filename and hash to <QRCodeScreen>")
         
-        #self.manager.get_screen('qrcode-screen').ids.raw.data = encode_to_string(self.file_hash)
-        self.manager.get_screen('qrcode-screen').ids.name.file_input = self.file_input
-        #self.manager.get_screen('qrcode-screen').ids.data.file_hash = self.file_hash
-            
+        qrcodescreen = self.manager.get_screen('qrcode-screen')
+        qrcodescreen.ids.qrcode_label.text = f"[b]{self.file_input}[/b]\n\n[b]{self.file_hash}[/b]"
+
         verbose_log("INFO", "Redirecting to <QRCodeScreen>")
         self.manager.transition.direction = "left"
         self.manager.current = "qrcode-screen"        

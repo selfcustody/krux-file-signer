@@ -32,9 +32,6 @@ def open_and_hash_file(**kwargs) -> str:
         with open(__filename__, "rb") as f_to_be_sig:
             _bytes = f_to_be_sig.read()  # read file as bytes
 
-            if verbose:
-                verbose_log("INFO", f"Read bytes: {_bytes}")
-
             __readable_hash__ = hashlib.sha256(_bytes).hexdigest()
 
             # Prints the hash of the file
