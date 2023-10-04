@@ -38,6 +38,7 @@ from logutils import verbose_log
 from mainscreen import MainScreen
 from signscreen import SignScreen
 from verifyscreen import VerifyScreen
+from qrcodescreen import QRCodeScreen
 
 class KSignerApp(App):
     """
@@ -67,6 +68,9 @@ class KSignerApp(App):
 
         verbose_log('INFO', 'Adding <VerifyScreen>')
         screen_manager.add_widget(VerifyScreen(name="verify"))
+        
+        verbose_log('INFO', 'Adding <QRCodeScreen>')
+        screen_manager.add_widget(QRCodeScreen(name="qrcode-screen"))
         return screen_manager
 
 

@@ -230,3 +230,15 @@
 				font_name: 'terminus.ttf'
                 text: "Load"
                 on_release: root.load(filechooser.path, filechooser.selection)
+
+<QRCodeScreen>:
+
+	GridLayout:
+
+		cols: 1
+		rows: 1
+		
+		Label:
+			id: name
+			text: root.file_input
+			color: 1, 1, 1, 1

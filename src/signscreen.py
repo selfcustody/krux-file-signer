@@ -1,8 +1,32 @@
+# The MIT License (MIT)
+
+# Copyright (c) 2021-2023 Krux contributors
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
 """
 signscreen.py
 
 An inherited implementations of kivy.uix.screenmanager Screen    
 """
+####################
+# Standard libraries
+####################
 import os
 import tempfile
 
@@ -124,40 +148,23 @@ class SignScreen(Screen):
         on_submit_file
 
         Call `open_and_hash_file` to open, read and hash (sha256sum)
-        a given file   
+        a given file and redirect to QRCodeScreen
         """
         self.file_input = args[1][0]
-        
         verbose_log("INFO", f"<SignScreen@Popup> loading {self.file_input}")
+        
         self.file_hash = open_and_hash_file(path=self.file_input, verbose=True)
         
-        verbose_log("INFO", f"<SignScreen@Popup> hash: {self.file_hash}")
+        verbose_log("INFO", "Closing popup...")
         self._popup.dismiss()
 
-        verbose_log("INFO", "<SignScreen> converting to QRCode")
-        qr_binary_data = encode_to_string(self.file_hash)
-        verbose_log("INFO", "<SignScreen> Raw data: "+ "".join(qr_binary_data))
+        verbose_log("INFO", "Cache filename and hash to <QRCodeScreen>")
+        print(self.manager.get_screen('qrcode-screen').ids)
         
-        qr = qrcode.QRCode(
-            version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_L,
-            box_size=10,
-            border=4
-        )
-        qr.add_data(qr_binary_data)
-        qr.make(fit=True)
-        img = qr.make_image(fill_color="black", back_color="white")
-        
-        img_path = os.path.join(tempfile.gettempdir(), f"{self.file_input}.png")
-        verbose_log("INFO", f"<SignScreen> Saving on: {img_path}")
-        img.save(img_path)
-        
-        self._popup = Popup(
-            title=self.file_input,
-            content=Image(source=img_path),
-            size_hint=(None, None),
-            size=(400, 400)
-        )
-
-        self._popup.open()
-        
+        #self.manager.get_screen('qrcode-screen').ids.raw.data = encode_to_string(self.file_hash)
+        self.manager.get_screen('qrcode-screen').ids.name.file_input = self.file_input
+        #self.manager.get_screen('qrcode-screen').ids.data.file_hash = self.file_hash
+            
+        verbose_log("INFO", "Redirecting to <QRCodeScreen>")
+        self.manager.transition.direction = "left"
+        self.manager.current = "qrcode-screen"        

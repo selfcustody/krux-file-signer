@@ -20,6 +20,10 @@ import pyqrcode
 from logutils import verbose_log
 
 def encode_to_string(data):
+    """
+    Cloned from https://github.com/odudex/krux/blob/android/android/mocks/qrcode.py
+    """
+    
     #pre-decode if binary (Compact Seed QR)
     try:
         code_str = pyqrcode.create(data, error="L", mode="binary").text()
