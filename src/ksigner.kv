@@ -1,4 +1,5 @@
 #:kivy 2.2.1
+#:import QRCodeWidget kivy_garden.qrcode
 
 <MainScreen>:    
 
@@ -233,6 +234,10 @@
 
 <QRCodeScreen>:
 
+	QRCodeWidget:
+		id: qrcode_data
+		data: root.code
+		
 	Label:
 		id: qrcode_label
 		font_size: root.height // 30

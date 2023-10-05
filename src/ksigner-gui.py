@@ -70,7 +70,7 @@ class KSignerApp(App):
         screen_manager.add_widget(VerifyScreen(name="verify"))
         
         verbose_log('INFO', 'Adding <QRCodeScreen>')
-        screen_manager.add_widget(QRCodeScreen(name="qrcode-screen"))
+        screen_manager.add_widget(QRCodeScreen(name="qrcode"))
         return screen_manager
 
 
