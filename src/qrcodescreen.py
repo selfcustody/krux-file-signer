@@ -34,10 +34,11 @@ import time
 #######################
 # Third party libraries
 #######################
-from kivy.uix.widget import Widget
+from qrcode import QRCode
+from qrcode.constants import ERROR_CORRECT_L
+from kivy.uix.label import Label
 from kivy.uix.screenmanager import Screen
 from kivy.properties import StringProperty
-from kivy_garden.qrcode import QRCodeWidget
 
 #################
 # Local libraries
@@ -46,15 +47,59 @@ from logutils import verbose_log
 
 COLOR_BLACK = (0, 0, 0, 1)
 COLOR_WHITE = (1, 1, 1, 1)
+QRCODE_VERSION = 1
+BOX_SIZE = 10
+BORDER_SIZE = 4
 
 class QRCodeScreen(Screen):
-
-    code = StringProperty('')
-    
     """
     Class responsible to display qrcodes.
     It's an custom clone from
     https://github.com/odudex/krux/blob/android/android/mocks/lcd_mock.py
     """      
-    def __init__(self, **kwargs):
-        super(QRCodeScreen, self).__init__(**kwargs)
+    code = StringProperty('')
+    text = StringProperty('')
+        
+
+    def on_pre_enter(self):
+        """
+        Event fired when the screen is about to be used: the entering animation is started.
+        """
+        self.generate_label()
+        self.generate_qrcode()
+        
+    def on_enter(self):
+        """
+        Event fired when the screen is displayed: the entering animation is complete.
+        """
+        pass
+    
+    def generate_label(self):
+        verbose_log("INFO", "Creating <QRCodeScreen@Label>")
+        label = Label(
+            text=self.text,
+            font_size=self.height // 5,
+            font_name='terminus.ttf',
+            halign='center',
+            color=COLOR_WHITE,
+            markup=True
+        )        
+        self.add_widget(label)
+
+    def generate_qrcode(self):
+        verbose_log("INFO", "Creating QRCode")
+        qrcode = QRCode(
+            version=QRCODE_VERSION,
+            error_correction=ERROR_CORRECT_L,
+            box_size=BOX_SIZE,
+            border=BORDER_SIZE
+        )
+        verbose_log("INFO", qrcode)
+
+        verbose_log("INFO", "Adding data")
+        qrcode.add_data(self.code)
+        
+        verbose_log("INFO", "Creating <QRCodeScreen@Image>")
+        qrcode.make(fit=True)
+        self.img = qrcode.make_image(fill_color="black", back_color="white")
+
