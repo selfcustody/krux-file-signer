@@ -42,6 +42,7 @@ from qrcode import QRCode
 # Kivy libraries
 ################
 from kivy.clock import Clock
+from kivy.core.window import Window
 from kivy.uix.image import Image
 from kivy.graphics.texture import Texture
 from qrcode.constants import ERROR_CORRECT_L
@@ -51,7 +52,8 @@ from kivy.uix.screenmanager import Screen
 from kivy.properties import (
     StringProperty,
     NumericProperty,
-    ListProperty
+    ListProperty,
+    ObjectProperty
 )
 
 #################
@@ -59,12 +61,13 @@ from kivy.properties import (
 #################
 from logutils import verbose_log
 
-COLOR_WHITE = (1, 1, 1, 1)
-
 class QRCodeScreen(Screen):
     """
     Class responsible to display qrcodes.
+    
     It's an custom clone from
+    https://pypi.org/project/kivy-garden.qrcode/
+    and
     https://github.com/odudex/krux/blob/android/android/mocks/lcd_mock.py
     """ 
      
@@ -104,7 +107,14 @@ class QRCodeScreen(Screen):
 
     background_color = ListProperty((0, 0, 0, 1))
     """
-    :data:`color_black` is a tuple describing the background
+    :data:`fill_color` is a tuple describing the color of filled dots
+    defined at :class:`~qrcode.QRCode`
+    """
+    
+    fill_color = ListProperty((1, 1, 1, 1))
+    """
+    :data:`background_color` is a tuple describing the color of background
+    defined at :class:`~qrcode.QRCode`
     """
 
     loading_image = StringProperty('data/images/image-loading.gif')
@@ -114,25 +124,17 @@ class QRCodeScreen(Screen):
     defaulting to `'data/images/image-loading.gif'`.
     """
 
+    image_pos_hint = ObjectProperty({'center_x': .5, 'center_y': .6})
+
+    label_pos_hint = ObjectProperty({'center_x': .5, 'center_y': .2})
+
 
     def __init__(self, **kwargs):
         super(QRCodeScreen, self).__init__(**kwargs)
         self._label = None
         self._qrcode = None
         self._qrtexture = None
-        self._image = None
 
-    def on_data(self, instance, value):
-        if not (self.canvas or value):
-            return
-
-        if not self._img:
-            # if texture hasn't yet been created delay the texture updating
-            Clock.schedule_once(lambda dt: self._on_data(instance, value))
-            return
-        self._img.anim_delay = .25
-        self._img.source = self.loading_image
-        
     def on_pre_enter(self):
         """
         Event fired when the screen is about to be used: the entering animation is started.
@@ -152,11 +154,12 @@ class QRCodeScreen(Screen):
         Sets and add Image Widget to QRCodeScreen
         """
         verbose_log("INFO", "Creating <QRCodeScreen@Image")
+        w = self.manager
         self._img = Image(
-            pos_hint={'center_x': .5, 'center_y': .5},
+            pos_hint=self.image_pos_hint,
             allow_stretch=True,
             size_hint=(None, None),
-            size=(self.width * .9, self.height * .9)
+            size=(Window.height * .60, Window.height * .6)
         )
         self.add_widget(self._img)
         
@@ -167,11 +170,12 @@ class QRCodeScreen(Screen):
         verbose_log("INFO", "Creating <QRCodeScreen@Label>")
         self._label = Label(
             text=self.text,
-            font_size=self.height // 5,
+            font_size=Window.height // 35,
             font_name='terminus.ttf',
             halign='center',
-            color=COLOR_WHITE,
-            markup=True
+            color=self.fill_color,
+            markup=True,
+            pos_hint=self.label_pos_hint
         )        
         self.add_widget(self._label)
 
@@ -203,26 +207,31 @@ class QRCodeScreen(Screen):
         verbose_log("INFO", "Setting <QRCodeScreen@Texture>")
         self._qrtexture = texture = Texture.create(size=(k, k), colorfmt='rgb')
         # don't interpolate texture
-        texture.min_filter = 'nearest'
-        texture.mag_filter = 'nearest'
-
+        self._qrtexture.min_filter = 'nearest'
+        self._qrtexture.mag_filter = 'nearest'
+        print(self._qrtexture)
+        
     def _update_texture(self):
         verbose_log("INFO", "Updating <QRCodeScreen@Texture>")
         matrix = self._qrcode.get_matrix()
         k = len(matrix)
+        verbose_log("INFO", f"<QRCodeScreen@Texture::matrix::len>={k}")
 
         # create the texture in main UI thread otherwise
         # this will lead to memory corruption
         verbose_log("INFO", "Creating <QRCodeScreen@Texture> in mainUI Thread")
         Clock.schedule_once(partial(self._create_texture, k), -1)
 
-        cr, cg, cb, ca = self.background_color[:]
-        cr, cg, cb = int(cr*255), int(cg*255), int(cb*255)
+        cr, cg, cb, ca = self.fill_color[:]
+        color = (int(cr*255), int(cg*255), int(cb*255))
+        
         # used bytearray for python 3.5 eliminates need for btext
         buff = bytearray()
         for r in range(k):
+            verbose_log("INFO", f"<QRCodeScreen@Texture::matrix[{r}]")
+            print(matrix[r])
             for c in range(k):
-                buff.extend([0, 0, 0] if matrix[r][c] else [cr, cg, cb])
+                buff.extend([0, 0, 0] if matrix[r][c] else color)
 
         # then blit the buffer
         # join not necessary when using a byte array
