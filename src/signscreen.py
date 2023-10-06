@@ -24,12 +24,6 @@ signscreen.py
 
 An inherited implementations of kivy.uix.screenmanager Screen    
 """
-####################
-# Standard libraries
-####################
-import os
-import tempfile
-
 #####################
 # Thirparty libraries
 #####################
@@ -41,16 +35,14 @@ from kivy.uix.popup import Popup
 #      -pylint-no-name-in-module
 # pylint: disable=no-name-in-module
 from kivy.properties import StringProperty
-from kivy.uix.image import Image
-import qrcode
 
 #################
 # Local libraries
 #################
 from logutils import verbose_log
 from hashutils import open_and_hash_file
-from qrutils import encode_to_string
 from filechooser import LoadDialog
+
 
 class SignScreen(Screen):
     """
@@ -72,9 +64,7 @@ class SignScreen(Screen):
             on_submit=self.on_submit_file,
         )
         self._popup = Popup(
-            title="Load a file",
-            content=self._content,
-            size_hint=(0.9, 0.9)
+            title="Load a file", content=self._content, size_hint=(0.9, 0.9)
         )
         self.file_input = StringProperty("")
         self.file_content = StringProperty("")
@@ -152,17 +142,17 @@ class SignScreen(Screen):
         """
         self.file_input = args[1][0]
         verbose_log("INFO", f"<SignScreen@Popup> loading {self.file_input}")
-        
+
         self.file_hash = open_and_hash_file(path=self.file_input, verbose=True)
-        
+
         verbose_log("INFO", "<SignScreen@Popup> Closing popup...")
         self._popup.dismiss()
 
         verbose_log("INFO", "<SignScreen> Cache filename and hash to <QRCodeScreen>")
-        qrcodescreen = self.manager.get_screen('qrcode')
+        qrcodescreen = self.manager.get_screen("qrcode")
         qrcodescreen.text = f"[b]{self.file_input}[/b]\n\n[b]{self.file_hash}[/b]"
         qrcodescreen.code = self.file_hash
-        
+
         verbose_log("INFO", "Redirecting to <QRCodeScreen>")
         self.manager.transition.direction = "left"
-        self.manager.current = "qrcode"        
+        self.manager.current = "qrcode"

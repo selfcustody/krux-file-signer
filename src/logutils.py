@@ -5,11 +5,13 @@ simple log utilities
 """
 import time
 
+
 # pylint: disable=too-few-public-methods
 class Bcolors:
     """
     Simple class to manage colors in terminal
     """
+
     HEADER = "\033[95m"
     OKBLUE = "\033[94m"
     INFO = "\033[92m"
@@ -23,7 +25,7 @@ class Bcolors:
     # pylint: disable=inconsistent-return-statements
     def build_v_type(v_type: str) -> str:
         """
-        Get a type and convert into formated color 
+        Get a type and convert into formated color
         """
         if v_type == "INFO":
             return f"{Bcolors.BOLD}{Bcolors.INFO}{v_type}{Bcolors.ENDC}"
@@ -33,6 +35,7 @@ class Bcolors:
 
         if v_type == "FAIL":
             return f"{Bcolors.BOLD}{Bcolors.FAIL}{v_type}{Bcolors.ENDC}"
+
 
 def now() -> str:
     """Return some formated time"""

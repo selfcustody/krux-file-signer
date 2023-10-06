@@ -29,7 +29,6 @@ for display QRCodes
 ##################
 # Standard library
 ##################
-import time
 from threading import Thread
 
 #######################
@@ -37,23 +36,22 @@ from threading import Thread
 #######################
 from functools import partial
 from qrcode import QRCode
-
+from qrcode.constants import ERROR_CORRECT_L
 ################
 # Kivy libraries
 ################
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.uix.image import Image
+# pylint: disable=no-name-in-module
 from kivy.graphics.texture import Texture
-from qrcode.constants import ERROR_CORRECT_L
 from kivy.uix.label import Label
-
 from kivy.uix.screenmanager import Screen
 from kivy.properties import (
     StringProperty,
     NumericProperty,
     ListProperty,
-    ObjectProperty
+    ObjectProperty,
 )
 
 #################
@@ -61,31 +59,32 @@ from kivy.properties import (
 #################
 from logutils import verbose_log
 
+
 class QRCodeScreen(Screen):
     """
     Class responsible to display qrcodes.
-    
+
     It's an custom clone from
     https://pypi.org/project/kivy-garden.qrcode/
     and
     https://github.com/odudex/krux/blob/android/android/mocks/lcd_mock.py
-    """ 
-     
-    code = StringProperty('')
+    """
+
+    code = StringProperty("")
     """
     The string code to be parsed on QRCode.        
     """
-    
-    text = StringProperty('')
+
+    text = StringProperty("")
     """
     The label to be show describing the QRCode
     """
-    
+
     version = NumericProperty(1)
     """
     The QRCode version. GO from 1 to 40.
     """
-    
+
     ecc = NumericProperty(ERROR_CORRECT_L)
     """
     The error correction code level for the qrcode.
@@ -110,59 +109,54 @@ class QRCodeScreen(Screen):
     :data:`fill_color` is a tuple describing the color of filled dots
     defined at :class:`~qrcode.QRCode`
     """
-    
+
     fill_color = ListProperty((1, 1, 1, 1))
     """
     :data:`background_color` is a tuple describing the color of background
     defined at :class:`~qrcode.QRCode`
     """
 
-    loading_image = StringProperty('data/images/image-loading.gif')
+    loading_image = StringProperty("data/images/image-loading.gif")
     """Intermediate image to be displayed while the widget ios being loaded.
 
     :data:`loading_image` is a :class:`~kivy.properties.StringProperty`,
     defaulting to `'data/images/image-loading.gif'`.
     """
 
-    image_pos_hint = ObjectProperty({'center_x': .5, 'center_y': .6})
+    image_pos_hint = ObjectProperty({"center_x": 0.5, "center_y": 0.6})
 
-    label_pos_hint = ObjectProperty({'center_x': .5, 'center_y': .2})
-
+    label_pos_hint = ObjectProperty({"center_x": 0.5, "center_y": 0.2})
 
     def __init__(self, **kwargs):
-        super(QRCodeScreen, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self._label = None
         self._qrcode = None
         self._qrtexture = None
+        self._img = None
 
-    def on_pre_enter(self):
+    def on_pre_enter(self, *args):
         """
         Event fired when the screen is about to be used: the entering animation is started.
         """
         self.set_image()
-        self.set_label()   
+        self.set_label()
         Thread(target=partial(self.generate_qrcode)).start()
-        
-    def on_enter(self):
-        """
-        Event fired when the screen is displayed: the entering animation is complete.
-        """
-        pass
 
     def set_image(self):
         """
         Sets and add Image Widget to QRCodeScreen
         """
-        verbose_log("INFO", "Creating <QRCodeScreen@Image")
-        w = self.manager
+        verbose_log("INFO", "Creating <QRCodeScreen@Image>")
         self._img = Image(
             pos_hint=self.image_pos_hint,
             allow_stretch=True,
             size_hint=(None, None),
-            size=(Window.height * .60, Window.height * .6)
+            size=(Window.height * 0.60, Window.height * 0.6),
         )
+
+        verbose_log("INFO", "Adding <QRCodeScreen@Image>")
         self.add_widget(self._img)
-        
+
     def set_label(self):
         """
         Sets and add Label Widget to QRCodeScreen
@@ -171,46 +165,42 @@ class QRCodeScreen(Screen):
         self._label = Label(
             text=self.text,
             font_size=Window.height // 35,
-            font_name='terminus.ttf',
-            halign='center',
+            font_name="terminus.ttf",
+            halign="center",
             color=self.fill_color,
             markup=True,
-            pos_hint=self.label_pos_hint
-        )        
+            pos_hint=self.label_pos_hint,
+        )
+
+        verbose_log("INFO", "Adding <QRCodeScreen@Label>")
         self.add_widget(self._label)
 
     def generate_qrcode(self):
         """
         Setup QRCode
         """
-        try:
-            verbose_log("INFO", "Creating QRCode")
-            self._qrcode = QRCode(
-                version=self.version,
-                error_correction=self.ecc,
-                box_size=self.box_size,
-                border=self.border_size
-            )
+        verbose_log("INFO", "Creating QRCode")
+        self._qrcode = QRCode(
+            version=self.version,
+            error_correction=self.ecc,
+            box_size=self.box_size,
+            border=self.border_size,
+        )
 
-            verbose_log("INFO", "Adding data")
-            self._qrcode.add_data(self.code)
-        
-            verbose_log("INFO", "Creating <QRCodeScreen@Image>")
-            self._qrcode.make(fit=True)
-        except Exception as e:
-            verbose_log("ERROR", e)
-            self._qrcode = None
-        finally:
-            self._update_texture()
+        verbose_log("INFO", "Adding data")
+        self._qrcode.add_data(self.code)
 
-    def _create_texture(self, k, dt):
+        verbose_log("INFO", "Creating <QRCodeScreen@Image>")
+        self._qrcode.make(fit=True)
+        self._update_texture()
+
+    def _create_texture(self, k):
         verbose_log("INFO", "Setting <QRCodeScreen@Texture>")
-        self._qrtexture = texture = Texture.create(size=(k, k), colorfmt='rgb')
+        self._qrtexture = Texture.create(size=(k, k), colorfmt="rgb")
         # don't interpolate texture
-        self._qrtexture.min_filter = 'nearest'
-        self._qrtexture.mag_filter = 'nearest'
-        print(self._qrtexture)
-        
+        self._qrtexture.min_filter = "nearest"
+        self._qrtexture.mag_filter = "nearest"
+
     def _update_texture(self):
         verbose_log("INFO", "Updating <QRCodeScreen@Texture>")
         matrix = self._qrcode.get_matrix()
@@ -222,42 +212,39 @@ class QRCodeScreen(Screen):
         verbose_log("INFO", "Creating <QRCodeScreen@Texture> in mainUI Thread")
         Clock.schedule_once(partial(self._create_texture, k), -1)
 
-        cr, cg, cb, ca = self.fill_color[:]
-        color = (int(cr*255), int(cg*255), int(cb*255))
-        
+        _color = self.fill_color[:]
+        color = (
+            int(_color[0] * 255),
+            int(_color[1] * 255),
+            int(_color[2] * 255)
+        )
+
         # used bytearray for python 3.5 eliminates need for btext
         buff = bytearray()
-        for r in range(k):
-            verbose_log("INFO", f"<QRCodeScreen@Texture::matrix[{r}]")
-            print(matrix[r])
-            for c in range(k):
-                buff.extend([0, 0, 0] if matrix[r][c] else color)
+        for row in range(k):
+            verbose_log("INFO", f"<QRCodeScreen@Texture::matrix[{row}]")
+            print(matrix[row])
+            for col in range(k):
+                buff.extend([0, 0, 0] if matrix[row][col] else color)
 
         # then blit the buffer
         # join not necessary when using a byte array
         # buff =''.join(map(chr, buff))
         # update texture in UI thread.
         verbose_log("INFO", "Blitting buffer in <QRCodeScreen@Texture>")
-        Clock.schedule_once(lambda dt: self._upd_texture(buff))
+        Clock.schedule_once(lambda: self._upd_texture(buff))
 
     def _upd_texture(self, buff):
         texture = self._qrtexture
-    
+
         if not texture:
             verbose_log("WARN", "Texture hasn't been created")
-            Clock.schedule_once(lambda dt: self._upd_texture(buff))
+            Clock.schedule_once(lambda d_t: self._upd_texture(buff))
             return
 
         verbose_log("INFO", "Setup image texture")
-        texture.blit_buffer(
-            buff,
-            colorfmt='rgb',
-            bufferfmt='ubyte'
-        )
+        texture.blit_buffer(buff, colorfmt="rgb", bufferfmt="ubyte")
         texture.flip_vertical()
         self._img.anim_delay = -1
         self._img.texture = texture
         self._img.canvas.ask_update()
-
-    
-

@@ -37,6 +37,7 @@ import subprocess
 #################
 from logutils import verbose_log
 
+
 def verify_openssl_command(**kwargs) -> str:
     """
     Create the properly openssl command

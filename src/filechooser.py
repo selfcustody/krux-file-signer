@@ -28,6 +28,7 @@ class LoadDialog(FileChooserListView):
     classes. In SignScreen, it will choose the file to load a content,
     write it in a .sha256.txt file and show qrcode content.
     """
+
     load = ObjectProperty(None)
     cancel = ObjectProperty(None)
     dirseclect = BooleanProperty(True)

@@ -4,7 +4,7 @@ version = "0.0.1"
 description = "A python script to sign files and verify signatures in a airgapped manner"
 authors = [
   "odudex <eduardo.schoenknecht@gmail.com>",
-  "qlrddev <qlrddev@gmail.com>"
+  "qlrd <qlrddev@gmail.com>"
 ]
 license = "MIT"
 readme = "README.md"
@@ -16,8 +16,6 @@ qrcode = "^7.4.2"
 pillow = "^10.0.1"
 pyzbar = "^0.1.9"
 kivy = "^2.2.1"
-pyqrcode = "^1.2.1"
-kivy-garden-qrcode = "^2021.314"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.9.1"
