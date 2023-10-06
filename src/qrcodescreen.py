@@ -194,7 +194,7 @@ class QRCodeScreen(Screen):
         self._qrcode.make(fit=True)
         self._update_texture()
 
-    def _create_texture(self, k):
+    def _create_texture(self, k, dt):
         verbose_log("INFO", "Setting <QRCodeScreen@Texture>")
         self._qrtexture = Texture.create(size=(k, k), colorfmt="rgb")
         # don't interpolate texture
@@ -232,14 +232,14 @@ class QRCodeScreen(Screen):
         # buff =''.join(map(chr, buff))
         # update texture in UI thread.
         verbose_log("INFO", "Blitting buffer in <QRCodeScreen@Texture>")
-        Clock.schedule_once(lambda: self._upd_texture(buff))
+        Clock.schedule_once(lambda dt: self._upd_texture(buff))
 
     def _upd_texture(self, buff):
         texture = self._qrtexture
 
         if not texture:
             verbose_log("WARN", "Texture hasn't been created")
-            Clock.schedule_once(lambda d_t: self._upd_texture(buff))
+            Clock.schedule_once(lambda dt: self._upd_texture(buff))
             return
 
         verbose_log("INFO", "Setup image texture")

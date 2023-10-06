@@ -29,10 +29,6 @@ An inherited implementations of kivy.uix.screenmanager Screen
 #####################
 from kivy.uix.screenmanager import Screen
 from kivy.uix.popup import Popup
-
-# @see stackoverflow.complex/questions/65547279/
-#      /no-name-object-property-in-module-kivy-properties
-#      -pylint-no-name-in-module
 # pylint: disable=no-name-in-module
 from kivy.properties import StringProperty
 
