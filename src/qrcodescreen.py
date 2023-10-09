@@ -37,6 +37,7 @@ from threading import Thread
 from functools import partial
 from qrcode import QRCode
 from qrcode.constants import ERROR_CORRECT_L
+
 ################
 # Kivy libraries
 ################
@@ -117,19 +118,35 @@ class QRCodeScreen(Screen):
     """
 
     loading_image = StringProperty("data/images/image-loading.gif")
-    """Intermediate image to be displayed while the widget ios being loaded.
+    """
+    Intermediate image to be displayed while the widget ios being loaded.
 
     :data:`loading_image` is a :class:`~kivy.properties.StringProperty`,
     defaulting to `'data/images/image-loading.gif'`.
     """
 
-    image_pos_hint = ObjectProperty({"center_x": 0.5, "center_y": 0.6})
-
-    label_pos_hint = ObjectProperty({"center_x": 0.5, "center_y": 0.2})
-
+    image_pos_hint = ObjectProperty({"center_x": 0.5, "center_y": 0.5})
+    """
+    :data:`ìmage_pos_hint` is a :class:`~kivy.properties.ObjectProperty`, 
+    to set the default position on Screen
+    """
+    
+    label_pos_hint = ObjectProperty({"center_x": 0.5, "center_y": 0.125})
+    """
+    :data:`label_pos_hint` is a :class:`~kivy.properties.ObjectProperty`, 
+    to set the default position on Screen
+    """
+    
+    warn_pos_hint = ObjectProperty({"center_x": 0.5, "center_y": 0.9})
+    """
+    :data:`warn_pos_hint` is a :class:`~kivy.properties.ObjectProperty`, 
+    to set the default position on Screen
+    """
+    
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._label = None
+        self._label_warn = None
+        self._label_desc = None
         self._qrcode = None
         self._qrtexture = None
         self._img = None
@@ -138,8 +155,9 @@ class QRCodeScreen(Screen):
         """
         Event fired when the screen is about to be used: the entering animation is started.
         """
+        self.set_label_warn()
+        self.set_label_desc()
         self.set_image()
-        self.set_label()
         Thread(target=partial(self.generate_qrcode)).start()
 
     def set_image(self):
@@ -157,12 +175,39 @@ class QRCodeScreen(Screen):
         verbose_log("INFO", "Adding <QRCodeScreen@Image>")
         self.add_widget(self._img)
 
-    def set_label(self):
+    def set_label_warn(self):
         """
-        Sets and add Label Widget to QRCodeScreen
+        Sets and add Label Widget that warn user about
+        the what to do on QRCodeScreen
         """
-        verbose_log("INFO", "Creating <QRCodeScreen@Label>")
-        self._label = Label(
+        verbose_log("INFO", "Creating <QRCodeScreen@Label::warning>")
+        self._label_warn = Label(
+            text="\n".join([
+                "[b]To sign this file with Krux:[/b]",
+                "",
+                " (a) load a 12/24 words key, with or without BIP39 password;",
+                " (b) use the Sign->Message feature;",
+                " (c) and scan this QR code below;",
+                " (d) click on screen or type 'esc' to proceed."
+            ]),
+            font_size=Window.height // 35,
+            font_name="terminus.ttf",
+            halign="center",
+            color=self.fill_color,
+            markup=True,
+            pos_hint=self.warn_pos_hint,
+        )
+        
+        verbose_log("INFO", "Adding <QRCodeScreen@Label::description>")
+        self.add_widget(self._label_warn)
+
+    def set_label_desc(self):
+        """
+        Sets and add Label Widget that describe the qrcode's
+        data to QRCodeScreen
+        """
+        verbose_log("INFO", "Creating <QRCodeScreen@Label::description>")
+        self._label_desc = Label(
             text=self.text,
             font_size=Window.height // 35,
             font_name="terminus.ttf",
@@ -172,8 +217,8 @@ class QRCodeScreen(Screen):
             pos_hint=self.label_pos_hint,
         )
 
-        verbose_log("INFO", "Adding <QRCodeScreen@Label>")
-        self.add_widget(self._label)
+        verbose_log("INFO", "Adding <QRCodeScreen@Label::description>")
+        self.add_widget(self._label_desc)
 
     def generate_qrcode(self):
         """
