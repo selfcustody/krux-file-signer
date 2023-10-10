@@ -160,6 +160,14 @@ class QRCodeScreen(Screen):
         self.set_image()
         Thread(target=partial(self.generate_qrcode)).start()
 
+    def on_touch_down(self, touch):
+        """
+        Event fired when user clicked and release the left mouse button
+        (or the touchable screen)
+        """
+        verbose_log("INFO", touch)
+        self._back_to_signscreen()
+
     def set_image(self):
         """
         Sets and add Image Widget to QRCodeScreen
@@ -174,6 +182,13 @@ class QRCodeScreen(Screen):
 
         verbose_log("INFO", "Adding <QRCodeScreen@Image>")
         self.add_widget(self._img)
+
+    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
+        verbose_log("INFO", keycode)
+        key = keycode[1]
+        if key == 'escape':  # the esc key
+            self._back_to_signscreen()
+        return True
 
     def set_label_warn(self):
         """
@@ -293,3 +308,11 @@ class QRCodeScreen(Screen):
         self._img.anim_delay = -1
         self._img.texture = texture
         self._img.canvas.ask_update()
+
+    def _back_to_signscreen(self):
+        """
+        Back to SignScreen
+        """
+        verbose_log("INFO", "Redirecting to <SignScreen>")
+        self.manager.transition.direction = "right"
+        self.manager.current = "sign"
