@@ -150,6 +150,13 @@ class QRCodeScreen(Screen):
         self._qrcode = None
         self._qrtexture = None
         self._img = None
+        self._keyboard = Window.request_keyboard(self._keyboard_closed, self, 'text')
+        if self._keyboard.widget:
+            logger("WARNING", "QRCodeScreen: This widget is a VKeyboard object")
+            # which you can use
+            # to change the keyboard layout.
+            passss
+        self._keyboard.bind(on_key_down=self._on_keyboard_down)
 
     def on_pre_enter(self, *args):
         """
@@ -188,12 +195,12 @@ class QRCodeScreen(Screen):
         """
         self._label_warn = Label(
             text="\n".join([
-                "[b]To sign this file with Krux:[/b]",
+                "To sign this file with Krux:",
                 "",
                 " (a) load a 12/24 words key, with or without BIP39 password;",
-                " (b) use the Sign->Message feature;",
-                " (c) and scan this QR code below;",
-                " (d) click on screen or type 'esc' to proceed."
+                " (b) use the Sign -> Message feature;",
+                " (c) scan this QR code below;",
+                " (d) click on screen or type one of 'esc|backspace|enter|left' keys to proceed."
             ]),
             font_size=Window.height // 35,
             font_name="terminus.ttf",
@@ -298,3 +305,27 @@ class QRCodeScreen(Screen):
         logger("DEBUG", "QRCodeScreen: Redirecting to <SignScreen>")
         self.manager.transition.direction = "right"
         self.manager.current = "sign"
+
+    def _keyboard_closed(self):
+        logger("WARNING", "QRCodeScreen: keyboard have been closed")
+        self._keyboard.unbind(on_key_down=self._on_keyboard_down)
+        self._keyboard = None
+        
+    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
+        # Keycode is composed of an integer + a string
+        # If we hit escape, release the keyboard
+        if keycode[1] == 'escape':
+            self._back_to_signscreen()
+
+        elif keycode[1] == 'enter':
+            self._back_to_signscreen()
+
+        elif keycode[1] == 'left':
+            self._back_to_signscreen()
+
+        elif keycode[1] == 'backspace':
+            self._back_to_signscreen()
+        else:
+            logger("WARNING", f"QRCodeScreen: key '{keycode[1]}' not implemented")
+
+        return True
