@@ -34,7 +34,7 @@ from kivy.uix.screenmanager import Screen
 #################
 # Local libraries
 #################
-from logutils import verbose_log
+from utils.log import logger
 
 
 class VerifyScreen(Screen):
@@ -57,7 +57,7 @@ class VerifyScreen(Screen):
         - change background color of button to (.5,.5,.5,.5),
           giving a visual effect of 'pressed'
         """
-        verbose_log("INFO", "<MainScreen:@Button::verify> clicked")
+        logger("INFO", "<MainScreen:@Button::verify> clicked")
         self.ids.verify_screen_load_file_button.background_color = (0.5, 0.5, 0.5, 0.5)
 
     def on_release_verify_screen_load_file_button(self):
@@ -68,5 +68,5 @@ class VerifyScreen(Screen):
           giving a visual effect of 'unpressed'
         - make a screen transition to SignScreen
         """
-        verbose_log("INFO", "<MainScreen@Button::sign> released")
+        logger("INFO", "<MainScreen@Button::sign> released")
         self.ids.verify_screen_load_file_button.background_color = (0, 0, 0, 0)

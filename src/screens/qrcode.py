@@ -58,7 +58,7 @@ from kivy.properties import (
 #################
 # Local libraries
 #################
-from logutils import verbose_log
+from utils.log import logger
 
 
 class QRCodeScreen(Screen):
@@ -165,14 +165,12 @@ class QRCodeScreen(Screen):
         Event fired when user clicked and release the left mouse button
         (or the touchable screen)
         """
-        verbose_log("INFO", touch)
         self._back_to_signscreen()
 
     def set_image(self):
         """
         Sets and add Image Widget to QRCodeScreen
         """
-        verbose_log("INFO", "Creating <QRCodeScreen@Image>")
         self._img = Image(
             pos_hint=self.image_pos_hint,
             allow_stretch=True,
@@ -180,22 +178,14 @@ class QRCodeScreen(Screen):
             size=(Window.height * 0.60, Window.height * 0.6),
         )
 
-        verbose_log("INFO", "Adding <QRCodeScreen@Image>")
         self.add_widget(self._img)
-
-    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
-        verbose_log("INFO", keycode)
-        key = keycode[1]
-        if key == 'escape':  # the esc key
-            self._back_to_signscreen()
-        return True
-
+        logger("INFO", "QRCodeScreen: <Image> added")
+        
     def set_label_warn(self):
         """
         Sets and add Label Widget that warn user about
         the what to do on QRCodeScreen
         """
-        verbose_log("INFO", "Creating <QRCodeScreen@Label::warning>")
         self._label_warn = Label(
             text="\n".join([
                 "[b]To sign this file with Krux:[/b]",
@@ -212,16 +202,14 @@ class QRCodeScreen(Screen):
             markup=True,
             pos_hint=self.warn_pos_hint,
         )
-        
-        verbose_log("INFO", "Adding <QRCodeScreen@Label::description>")
         self.add_widget(self._label_warn)
-
+        logger("INFO", "QRCodeScreen: <Label::warning> added")
+        
     def set_label_desc(self):
         """
         Sets and add Label Widget that describe the qrcode's
         data to QRCodeScreen
         """
-        verbose_log("INFO", "Creating <QRCodeScreen@Label::description>")
         self._label_desc = Label(
             text=self.text,
             font_size=Window.height // 35,
@@ -231,45 +219,41 @@ class QRCodeScreen(Screen):
             markup=True,
             pos_hint=self.label_pos_hint,
         )
-
-        verbose_log("INFO", "Adding <QRCodeScreen@Label::description>")
         self.add_widget(self._label_desc)
+        logger("INFO", "QRCodeScreen: <Label::description> added")
 
     def generate_qrcode(self):
         """
         Setup QRCode
         """
-        verbose_log("INFO", "Creating QRCode")
+        logger("INFO", "QRCodeScreen: Creating")
         self._qrcode = QRCode(
             version=self.version,
             error_correction=self.ecc,
             box_size=self.box_size,
             border=self.border_size,
         )
-
-        verbose_log("INFO", "Adding data")
         self._qrcode.add_data(self.code)
-
-        verbose_log("INFO", "Creating <QRCodeScreen@Image>")
+        logger("DEBUG", "QRCodeScreen: data added")
+        
         self._qrcode.make(fit=True)
         self._update_texture()
-
+        
     def _create_texture(self, k, dt):
-        verbose_log("INFO", "Setting <QRCodeScreen@Texture>")
+        logger("DEBUG", "QRCodeScreen: <Texture> creating")
         self._qrtexture = Texture.create(size=(k, k), colorfmt="rgb")
         # don't interpolate texture
         self._qrtexture.min_filter = "nearest"
         self._qrtexture.mag_filter = "nearest"
 
     def _update_texture(self):
-        verbose_log("INFO", "Updating <QRCodeScreen@Texture>")
         matrix = self._qrcode.get_matrix()
         k = len(matrix)
-        verbose_log("INFO", f"<QRCodeScreen@Texture::matrix::len>={k}")
+        logger("DEBUG", f"QRCodeScreen: <Texture::matrix::len>={k}")
 
         # create the texture in main UI thread otherwise
         # this will lead to memory corruption
-        verbose_log("INFO", "Creating <QRCodeScreen@Texture> in mainUI Thread")
+        logger("DEBUG", "QRCodeScreen: <Texture> in mainUI Thread")
         Clock.schedule_once(partial(self._create_texture, k), -1)
 
         _color = self.fill_color[:]
@@ -282,8 +266,6 @@ class QRCodeScreen(Screen):
         # used bytearray for python 3.5 eliminates need for btext
         buff = bytearray()
         for row in range(k):
-            verbose_log("INFO", f"<QRCodeScreen@Texture::matrix[{row}]")
-            print(matrix[row])
             for col in range(k):
                 buff.extend([0, 0, 0] if matrix[row][col] else color)
 
@@ -291,28 +273,28 @@ class QRCodeScreen(Screen):
         # join not necessary when using a byte array
         # buff =''.join(map(chr, buff))
         # update texture in UI thread.
-        verbose_log("INFO", "Blitting buffer in <QRCodeScreen@Texture>")
+        logger("DEBUG", "QRCodeScreen: Blitting buffer in <QRCodeScreen@Texture>")
         Clock.schedule_once(lambda dt: self._upd_texture(buff))
 
     def _upd_texture(self, buff):
         texture = self._qrtexture
 
         if not texture:
-            verbose_log("WARN", "Texture hasn't been created")
+            logger("WARNING", "QRCodeScreen: Texture hasn't been created")
             Clock.schedule_once(lambda dt: self._upd_texture(buff))
             return
 
-        verbose_log("INFO", "Setup image texture")
         texture.blit_buffer(buff, colorfmt="rgb", bufferfmt="ubyte")
         texture.flip_vertical()
         self._img.anim_delay = -1
         self._img.texture = texture
         self._img.canvas.ask_update()
+        logger("DEBUG", "QRCodeScreen: <Texture> updated")
 
     def _back_to_signscreen(self):
         """
         Back to SignScreen
         """
-        verbose_log("INFO", "Redirecting to <SignScreen>")
+        logger("DEBUG", "QRCodeScreen: Redirecting to <SignScreen>")
         self.manager.transition.direction = "right"
         self.manager.current = "sign"

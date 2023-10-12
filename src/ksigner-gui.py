@@ -34,11 +34,11 @@ from kivy.uix.screenmanager import ScreenManager
 #################
 # Local libraries
 #################
-from logutils import verbose_log
-from mainscreen import MainScreen
-from signscreen import SignScreen
-from verifyscreen import VerifyScreen
-from qrcodescreen import QRCodeScreen
+from utils.log import logger
+from screens.main import MainScreen
+from screens.sign import SignScreen
+from screens.verify import VerifyScreen
+from screens.qrcode import QRCodeScreen
 
 
 class KSignerApp(App):
@@ -58,22 +58,21 @@ class KSignerApp(App):
         - verify;
         - TODO: others
         """
-        verbose_log("INFO", "Creating ScreenManager")
+        logger("DEBUG", "KSignerApp: Creating ScreenManager")
         screen_manager = ScreenManager()
 
-        verbose_log("INFO", "Adding <MainScreen>")
+        logger("DEBUG", "KsignerApp: Adding <MainScreen>")
         screen_manager.add_widget(MainScreen(name="main"))
 
-        verbose_log("INFO", "Adding <SignScreen>")
+        logger("DEBUG", "KsignerApp: Adding <SignScreen>")
         screen_manager.add_widget(SignScreen(name="sign"))
 
-        verbose_log("INFO", "Adding <VerifyScreen>")
+        logger("DEBUG", "KsignerApp: Adding <VerifyScreen>")
         screen_manager.add_widget(VerifyScreen(name="verify"))
 
-        verbose_log("INFO", "Adding <QRCodeScreen>")
+        logger("DEBUG", "KsignerApp: Adding <QRCodeScreen>")
         screen_manager.add_widget(QRCodeScreen(name="qrcode"))
         return screen_manager
-
 
 if __name__ == "__main__":
     app = KSignerApp()

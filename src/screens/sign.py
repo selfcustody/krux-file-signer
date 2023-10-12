@@ -35,8 +35,8 @@ from kivy.properties import StringProperty
 #################
 # Local libraries
 #################
-from logutils import verbose_log
-from hashutils import open_and_hash_file
+from utils.log import logger
+from utils.hash import open_and_hash_file
 from filechooser import LoadDialog
 
 
@@ -73,9 +73,9 @@ class SignScreen(Screen):
         - change background color of button to (.5,.5,.5,.5),
           giving a visual effect of 'pressed'
         """
-        verbose_log(
-            "INFO",
-            "<SignScreen@Button::sign_screen_load_file_and_export_hash_qrcode> clicked",
+        logger(
+            "DEBUG",
+            "SignScreen: <Button::sign_screen_load_file_and_export_hash_qrcode> clicked",
         )
         self.ids.sign_screen_load_file_and_export_hash_qrcode.background_color = (
             0.5,
@@ -92,9 +92,9 @@ class SignScreen(Screen):
           giving a visual effect of 'unpressed'
         - open the FileChooser popup
         """
-        verbose_log(
-            "INFO",
-            "<SignScreen@Button::sign_screen_load_file_and_export_hash_qrcode> released",
+        logger(
+            "DEBUG",
+            "SignScreen: <Button::sign_screen_load_file_and_export_hash_qrcode> released",
         )
         self.ids.sign_screen_load_file_and_export_hash_qrcode.background_color = (
             0,
@@ -103,7 +103,7 @@ class SignScreen(Screen):
             0,
         )
 
-        verbose_log("INFO", "<SignScreen@Popup> opening")
+        logger("DEBUG", "SignScreen: <Popup> opening")
         self._popup.open()
 
     def on_press_back_main(self):
@@ -113,7 +113,7 @@ class SignScreen(Screen):
         - change background color of button to (.5,.5,.5,.5),
           giving a visual effect of 'pressed'
         """
-        verbose_log("INFO", "Clicking <SignScreen@Button::Back>")
+        logger("DEBUG", "SignScreen: <Button::back> pressed")
         self.ids.sign_screen_back.background_color = (0.5, 0.5, 0.5, 0.5)
 
     def on_release_back_main(self):
@@ -124,7 +124,7 @@ class SignScreen(Screen):
           giving a visual effect of 'pressed'
         - go back to MainScreen
         """
-        verbose_log("INFO", "Clicking <SignScreen@Button::Back>")
+        logger("DEBUG", "SignScreen: <Button::back> released")
         self.ids.sign_screen_back.background_color = (0, 0, 0, 0)
         self.manager.transition.direction = "right"
         self.manager.current = "main"
@@ -137,18 +137,18 @@ class SignScreen(Screen):
         a given file and redirect to QRCodeScreen
         """
         self.file_input = args[1][0]
-        verbose_log("INFO", f"<SignScreen@Popup> loading {self.file_input}")
+        logger("DEBUG", f"SignScreen: <Popup> loading {self.file_input}")
 
         self.file_hash = open_and_hash_file(path=self.file_input, verbose=True)
 
-        verbose_log("INFO", "<SignScreen@Popup> Closing popup...")
+        logger("DEBUG", "SignScreen: <Popup> closed")
         self._popup.dismiss()
 
-        verbose_log("INFO", "<SignScreen> Cache filename and hash to <QRCodeScreen>")
+        logger("DEBUG", "SignScreen: Caching filename and hash to <QRCodeScreen>")
         qrcodescreen = self.manager.get_screen("qrcode")
         qrcodescreen.text = f"[b]{self.file_input}[/b]\n\n[b]{self.file_hash}[/b]"
         qrcodescreen.code = self.file_hash
 
-        verbose_log("INFO", "Redirecting to <QRCodeScreen>")
+        logger("DEBUG", "SignScreen: Redirecting to <QRCodeScreen>")
         self.manager.transition.direction = "left"
         self.manager.current = "qrcode"
