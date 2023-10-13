@@ -32,6 +32,7 @@ for scan QRCodes
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.uix.label import Label
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.screenmanager import Screen
 from kivy.properties import (
     StringProperty,
@@ -75,13 +76,13 @@ class ScanScreen(Screen):
     to set the default position on Screen
     """
 
-    zbar_pos_hint = ObjectProperty({"center_x": 0.5, "center_y": 0.5})
+    zbar_pos_hint = ObjectProperty({"center_x": 0.5, "center_y": 0.25})
     """
     :data:`label_pos_hint` is a :class:`~kivy.properties.ObjectProperty`, 
     to set the default position on Screen
     """
     
-    warn_pos_hint = ObjectProperty({"center_x": 0.5, "center_y": 0.9})
+    warn_pos_hint = ObjectProperty({"center_x": 0.5, "center_y": 1})
     """
     :data:`warn_pos_hint` is a :class:`~kivy.properties.ObjectProperty`, 
     to set the default position on Screen
@@ -91,22 +92,35 @@ class ScanScreen(Screen):
         super().__init__(**kwargs)
         self._label_warn = None
         self._label_desc = None
+        self._box_layout = None
         self._zbarcam = None
+        self._scanned_data = None
         self._keyboard = Window.request_keyboard(self._keyboard_closed, self, 'text')
         if self._keyboard.widget:
             logger("WARNING", "QRCodeScreen: This widget is a VKeyboard object")
             # which you can use
             # to change the keyboard layout.
-            passss
+            pass
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
 
     def on_pre_enter(self, *args):
         """
         Event fired when the screen is about to be used: the entering animation is started.
         """
+        self.set_box_layout()
         self.set_label_warn()
         self.set_zbarcam()
-
+        self.set_label_desc()
+        
+    def set_box_layout(self):
+        """
+        Sets and add BoxLayout Widget that wrap
+        all needed widgets
+        """
+        self._box_layout = BoxLayout(orientation="vertical")
+        self.add_widget(self._box_layout)
+        logger("DEBUG", "ScanScreen: <BoxLayout> added")
+    
     def set_label_warn(self):
         """
         Sets and add Label Widget that warn user about
@@ -122,19 +136,20 @@ class ScanScreen(Screen):
             font_name="terminus.ttf",
             halign="center",
             color=self.fill_color,
-            markup=True,
-            pos_hint=self.warn_pos_hint,
+            markup=True
         )
-        logger("INFO", "ScanScreen: <Label::description> added")
-    
+        logger("INFO", "ScanScreen: <Label::warning> added to <BoxLayout>")
+        self._box_layout.add_widget(self._label_warn)
+        
     def set_zbarcam(self):
         """
         Sets and add ZBarCam Widget that describe the qrcode's
         data to ScanScreen
         """
+        self._box_layout
         self._zbarcam = ZBarCam()
-        self.add_widget(self._zbarcam)
-        logger("INFO", "ScanScreen: <ZBarCam> added")
+        self._box_layout.add_widget(self._zbarcam)
+        logger("INFO", "ScanScreen: <ZBarCam> added to <BoxLayout>")
         Clock.schedule_interval(self._decode_qrcode, 1)
         
     def set_label_desc(self):
@@ -143,7 +158,7 @@ class ScanScreen(Screen):
         data to ScanScreen
         """
         self._label_desc = Label(
-            text=self._zbarcam.symbols[0].data,
+            text="None",
             font_size=Window.height // 35,
             font_name="terminus.ttf",
             halign="center",
@@ -151,8 +166,8 @@ class ScanScreen(Screen):
             markup=True,
             pos_hint=self.label_pos_hint,
         )
-        self.add_widget(self._label_desc)
-        logger("INFO", "ScanScreen: <Label::description> added")
+        self._box_layout.add_widget(self._label_desc)
+        logger("INFO", "ScanScreen: <Label::description> added to <BoxLayout>")
 
     def _back_to_signscreen(self):
         """
@@ -186,6 +201,12 @@ class ScanScreen(Screen):
 
         return True
 
+    @staticmethod
+    def _chunk_str(msg, size):
+        return "\n".join([
+            msg[i:i+size] for i in range(0, len(msg), size)
+        ])
+        
     def _decode_qrcode(self, *args):
         """
         When camera capture the QRCode,
@@ -196,8 +217,9 @@ class ScanScreen(Screen):
         """
         logger("DEBUG", "ScanScreen: waiting for qrcode")
         if len(self._zbarcam.symbols) > 0:
-            logger("DEBUG", f"ScanScreen: captured data={self._zbarcam.symbols[0].data}")
-            self.set_label_desc()
+            scanned_data = self._zbarcam.symbols[0].data.decode("UTF-8")
+            logger("DEBUG", f"ScanScreen: captured '{scanned_data}'")
+            self._label_desc.text = ScanScreen._chunk_str(scanned_data, 16)
             Clock.unschedule(self._decode_qrcode, 1)
             self._zbarcam.stop() # stop zbarcam
             self._zbarcam.ids['xcamera']._camera._device.release()
