@@ -105,7 +105,36 @@ class SignScreen(Screen):
 
         logger("DEBUG", "SignScreen: <Popup> opening")
         self._popup.open()
+        
+    def on_press_sign_screen_import_and_save_signature(self):
+        """
+        on_press_import_and_save_signature
 
+        - change background color of button to (.5,.5,.5,.5),
+          giving a visual effect of 'pressed'
+        """
+        logger("DEBUG", "SignScreen: <Button::sign_screen_import_and_save_signature> pressed")
+        self.ids.sign_screen_import_and_save_signature.background_color = (0.5, 0.5, 0.5, 0.5)
+    
+    def on_release_sign_screen_import_and_save_signature(self):
+        """
+        on_release_sign_screen_import_and_save_signature
+
+        - change background color of button to (0, 0, 0, 0),
+          giving a visual effect of 'pressed'
+        - go to ScanScreen
+        """
+        logger("DEBUG", "SignScreen: <Button::sign_screen_import_and_save_signature> released")
+        self.ids.sign_screen_load_file_and_export_hash_qrcode.background_color = (
+            0,
+            0,
+            0,
+            0,
+        )
+        self.manager.transition.direction = "right"
+        self.manager.current = "scan"
+
+        
     def on_press_back_main(self):
         """
         on_press_back_main
@@ -152,3 +181,5 @@ class SignScreen(Screen):
         logger("DEBUG", "SignScreen: Redirecting to <QRCodeScreen>")
         self.manager.transition.direction = "left"
         self.manager.current = "qrcode"
+
+    

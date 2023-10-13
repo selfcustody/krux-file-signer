@@ -195,7 +195,7 @@ class QRCodeScreen(Screen):
         """
         self._label_warn = Label(
             text="\n".join([
-                "To sign this file with Krux:",
+                "[b]To sign this file with Krux:[/b]",
                 "",
                 " (a) load a 12/24 words key, with or without BIP39 password;",
                 " (b) use the Sign -> Message feature;",

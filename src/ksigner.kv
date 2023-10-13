@@ -64,16 +64,15 @@
             		rectangle: self.x, self.y, self.width, self.height
 
 		Button:
+			id: sign_screen_import_and_save_signature
 			text: 'Import & save signature'
 			font_size: root.height // 25
         	font_name: 'terminus.ttf'
 			font_size: '20sp'
 			background_color: 0, 0, 0, 0,
 			color: 1, 1, 1, 1
-			on_press:
-				self.background_color = (.5, .5, .5, .5)
-    		on_release:
-				self.background_color = (0, 0, 0, 0)
+			on_press: root.on_press_sign_screen_import_and_save_signature()
+    		on_release:root.on_release_sign_screen_import_and_save_signature()
 			canvas.before:
         		Color:
             		rgba: 1, 1, 1, 1

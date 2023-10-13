@@ -39,7 +39,7 @@ from screens.main import MainScreen
 from screens.sign import SignScreen
 from screens.verify import VerifyScreen
 from screens.qrcode import QRCodeScreen
-
+from screens.scan import ScanScreen
 
 class KSignerApp(App):
     """
@@ -72,6 +72,9 @@ class KSignerApp(App):
 
         logger("DEBUG", "KsignerApp: Adding <QRCodeScreen>")
         screen_manager.add_widget(QRCodeScreen(name="qrcode"))
+        
+        logger("DEBUG", "KsignerApp: Adding <ScanScreen>")
+        screen_manager.add_widget(ScanScreen(name="scan"))
         return screen_manager
 
 if __name__ == "__main__":

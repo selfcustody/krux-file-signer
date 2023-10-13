@@ -11,11 +11,10 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.8,<=3.11.5"
-opencv-python = "^4.8.0.76"
 qrcode = "^7.4.2"
 pillow = "^10.0.1"
-pyzbar = "^0.1.9"
 kivy = "^2.2.1"
+zbarcam = "^2020.524"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.9.1"
