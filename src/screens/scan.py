@@ -54,16 +54,6 @@ class ScanScreen(Screen):
     Class responsible to scan qrcodes.
     """
     
-    code = StringProperty("")
-    """
-    The string code to be scanned        
-    """
-
-    text = StringProperty("")
-    """
-    The label to be show describing the QRCode
-    """
-
     fill_color = ListProperty((1, 1, 1, 1))
     """
     :data:`background_color` is a tuple describing the color of background
@@ -76,7 +66,7 @@ class ScanScreen(Screen):
     to set the default position on Screen
     """
 
-    zbar_pos_hint = ObjectProperty({"center_x": 0.5, "center_y": 0.25})
+    zbar_pos_hint = ObjectProperty({"center_x": 0.5, "center_y": 0.5})
     """
     :data:`label_pos_hint` is a :class:`~kivy.properties.ObjectProperty`, 
     to set the default position on Screen
@@ -88,13 +78,37 @@ class ScanScreen(Screen):
     to set the default position on Screen
     """
 
+    scan_steps = ObjectProperty({
+        "scan-import-save-signature-warnings": (
+            "\n".join(["Step (1):", "", "Scan the signed message"]),
+            "\n".join(["Step (2):", "", "Scan the hexadecimal public key"])
+        ),
+        "scan-import-save-signature-labels": (
+            "Scanned signature: ",
+            "Scanned public key: "  
+        ),
+        "scan-import-save-signature-datas": (
+            None,
+            None
+        )
+    })
+    """
+    Scan steps messages to help user 
+    """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._label_warn = None
+        
+        #Widgets
+        self._label_warn = None 
         self._label_desc = None
         self._box_layout = None
         self._zbarcam = None
-        self._scanned_data = None
+
+        # Setup message steps dynamically on :data:`self._label_warn.text`
+        self._step = 0
+
+        # Keyboard bindings for close ScanScreen
         self._keyboard = Window.request_keyboard(self._keyboard_closed, self, 'text')
         if self._keyboard.widget:
             logger("WARNING", "QRCodeScreen: This widget is a VKeyboard object")
@@ -127,11 +141,7 @@ class ScanScreen(Screen):
         the what to do on ScanScreen
         """
         self._label_warn = Label(
-            text="\n".join([
-                "[b]To create .sig file:[/b]",
-                "",
-                " (a) Scan the qrcode signature created on 'Import QRCode'"
-            ]),
+            text=self.scan_steps[f"{self.manager.current}-warnings"][self._step],
             font_size=Window.height // 35,
             font_name="terminus.ttf",
             halign="center",
@@ -146,7 +156,6 @@ class ScanScreen(Screen):
         Sets and add ZBarCam Widget that describe the qrcode's
         data to ScanScreen
         """
-        self._box_layout
         self._zbarcam = ZBarCam()
         self._box_layout.add_widget(self._zbarcam)
         logger("INFO", "ScanScreen: <ZBarCam> added to <BoxLayout>")
@@ -157,9 +166,22 @@ class ScanScreen(Screen):
         Sets and add Label Widget that describe the qrcode's
         data to ScanScreen
         """
+        messages = []
+        for i in range(2):
+            messages.append((
+                self.scan_steps[f"{self.manager.current}-labels"][i],
+                ScanScreen._chunk_str(self.scan_steps[f"{self.manager.current}-datas"][i], 32)
+            ))
+
+        print(messages)
+
         self._label_desc = Label(
-            text="None",
-            font_size=Window.height // 35,
+            text="\n".join([
+                messages[0][0] + messages[0][1],
+                "",
+                messages[1][0] + messages[1][1]
+            ]),
+            font_size=Window.height // 50,
             font_name="terminus.ttf",
             halign="center",
             color=self.fill_color,
@@ -203,9 +225,16 @@ class ScanScreen(Screen):
 
     @staticmethod
     def _chunk_str(msg, size):
-        return "\n".join([
-            msg[i:i+size] for i in range(0, len(msg), size)
-        ])
+        """
+        Split a big string in multiple lines;
+        Use with sha256 or signature strings.
+        """
+        if (not msg):
+            return "None"
+        else:
+            return "\n".join([
+                msg[i:i+size] for i in range(0, len(msg), size)
+            ])
         
     def _decode_qrcode(self, *args):
         """
@@ -219,7 +248,15 @@ class ScanScreen(Screen):
         if len(self._zbarcam.symbols) > 0:
             scanned_data = self._zbarcam.symbols[0].data.decode("UTF-8")
             logger("DEBUG", f"ScanScreen: captured '{scanned_data}'")
-            self._label_desc.text = ScanScreen._chunk_str(scanned_data, 16)
-            Clock.unschedule(self._decode_qrcode, 1)
-            self._zbarcam.stop() # stop zbarcam
-            self._zbarcam.ids['xcamera']._camera._device.release()
+
+            # Now dinamically set the properly data
+            self.scan_steps[f"{self.manager.current}-datas"][self._step] = scanned_data
+
+            # Change
+            self._step += 1
+
+            if (self._step > 1):
+                Clock.unschedule(self._decode_qrcode, 1)
+                self._zbarcam.stop() # stop zbarcam
+                self._zbarcam.ids['xcamera']._camera._device.release()
+                self._back_to_signscreen()

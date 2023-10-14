@@ -73,8 +73,8 @@ class KSignerApp(App):
         logger("DEBUG", "KsignerApp: Adding <QRCodeScreen>")
         screen_manager.add_widget(QRCodeScreen(name="qrcode"))
         
-        logger("DEBUG", "KsignerApp: Adding <ScanScreen>")
-        screen_manager.add_widget(ScanScreen(name="scan"))
+        logger("DEBUG", "KsignerApp: Adding <ScanScreen::scan-import-save-signature>")
+        screen_manager.add_widget(ScanScreen(name="scan-import-save-signature"))
         return screen_manager
 
 if __name__ == "__main__":

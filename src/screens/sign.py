@@ -131,8 +131,9 @@ class SignScreen(Screen):
             0,
             0,
         )
+        self
         self.manager.transition.direction = "right"
-        self.manager.current = "scan"
+        self.manager.current = "scan-import-save-signature"
 
         
     def on_press_back_main(self):
