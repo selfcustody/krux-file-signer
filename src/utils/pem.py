@@ -18,8 +18,6 @@ import base64
 #################
 from constants import KSIGNER_COMPRESSED_PUBKEY_PREPEND
 from constants import KSIGNER_UNCOMPRESSED_PUBKEY_PREPEND
-from logutils import verbose_log
-
 
 def create_public_key_certificate(**kwargs):
     """
@@ -42,28 +40,20 @@ def create_public_key_certificate(**kwargs):
     hex_pubkey = kwargs.get("pubkey")
     uncompressed = kwargs.get("uncompressed")
     owner = kwargs.get("owner")
-    verbose = kwargs.get("verbose")
 
     # Choose if will be compressed or uncompressed
     if uncompressed:
-        if verbose:
-            verbose_log("INFO", "Creating uncompressed public key certificate")
         __public_key_data__ = f"{KSIGNER_UNCOMPRESSED_PUBKEY_PREPEND}{hex_pubkey}"
 
     else:
-        if verbose:
-            verbose_log("INFO", "Creating compressed public key certificate")
         __public_key_data__ = f"{KSIGNER_COMPRESSED_PUBKEY_PREPEND}{hex_pubkey}"
 
     # Convert pubkey data to bytes
     __public_key_data_bytes__ = bytes.fromhex(__public_key_data__)
-    if verbose:
-        verbose_log("INFO", f"pubkey bytes: {__public_key_data_bytes__}")
 
+    print(__public_key_data_bytes__)
     # Decode to utf8
     __public_key_data_utf8__ = __public_key_data_bytes__.decode("utf-8")
-    if verbose:
-        verbose_log("INFO", f"pubkey utf8: {__public_key_data_utf8__}")
 
     # Encode to formated base64
     __pem_pub_key__ = "\n".join(
@@ -74,12 +64,7 @@ def create_public_key_certificate(**kwargs):
         ]
     )
 
-    if verbose:
-        verbose_log("INFO", __pem_pub_key__)
-
     __pem_key_file__ = f"{owner}.pem"
-    if verbose:
-        verbose_log("INFO", f"Saving public key file: {__pem_key_file__}")
 
     with open(file=__pem_key_file__, mode="w", encoding="utf-8") as pem_file:
         pem_file.write(__pem_pub_key__)

@@ -28,7 +28,9 @@ def open_and_hash_file(**kwargs) -> str:
             return hashlib.sha256(_bytes).hexdigest()
 
     except FileNotFoundError as exc:
-        raise FileNotFoundError(f"Unable to read target file: {__filename__}") from exc
+        raise FileNotFoundError(
+            f"Unable to read target file: {__filename__}"
+        ) from exc
 
 
 def save_hashed_file(**kwargs):
@@ -49,5 +51,10 @@ def save_hashed_file(**kwargs):
 
     __hash_file__ = f"{__path__}.sha256sum.txt"
 
-    with open(__hash_file__, mode="w", encoding="utf-8") as hash_file:
-        hash_file.write(f"{__data__} {__hash_file__}")
+    try:
+        with open(__hash_file__, mode="w", encoding="utf-8") as hash_file:
+            hash_file.write(f"{__data__} {__hash_file__}")
+    except FileNotFoundError as exc:
+        raise FileNotFoundError(
+            f"Unable to read target file: {__hash_file__}"
+        ) from exc

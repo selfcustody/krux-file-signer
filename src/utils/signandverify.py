@@ -32,11 +32,6 @@ TODO: replace for pyca/cryptography or pyOpenSSL
 ####################
 import subprocess
 
-#################
-# Local libraries
-#################
-from logutils import verbose_log
-
 
 def verify_openssl_command(**kwargs) -> str:
     """

@@ -19,10 +19,43 @@ import cv2
 #################
 # Local libraries
 #################
-from logutils import verbose_log, now
-from processingutils import normalization_transform
-from processingutils import gray_transform
+from utils.log import now
 
+def normalization_transform(**kwargs):
+    """ "
+    Apply Gray scale on frames
+
+    Kwargs
+        :param frame
+            The frame which will be applyed the transformation
+        :param verbose
+            Apply verbose messages
+    """
+    frame = kwargs.get("frame")
+
+    # Cameras have different configurations
+    # and behaviours, so try apply some normalization
+    # @see https://stackoverflow.com/questions/61016954/
+    # controlling-contrast-and-brightness-of-video-stream-in-opencv-and-python
+    cv2.normalize(frame, frame, 0, 255, cv2.NORM_MINMAX)
+
+    # Verbose some data
+
+def gray_transform(**kwargs):
+    """ "
+    Apply Gray scale on frames
+
+    Kwargs
+        :param ret
+        :param frame
+            The frame which will be applyed the transformation
+        :param verbose
+            Apply verbose messages
+    """
+    frame = kwargs.get("frame")
+
+    # Convert frame to grayscale
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
 def scan(**kwargs) -> str:
     """
@@ -43,10 +76,7 @@ def scan(**kwargs) -> str:
     is_normalized = kwargs.get("is_normalized")
     is_gray_scale = kwargs.get("is_gray_scale")
 
-    verbose_log("INFO", "Opening camera")
     vid = cv2.VideoCapture(0)
-
-    verbose_log("INFO", "Starting detection")
     detector = cv2.QRCodeDetector()
 
     qr_data = None
@@ -67,44 +97,20 @@ def scan(**kwargs) -> str:
         # Detect qrcode
         qr_data, _bbox, _straight_qrcode = detector.detectAndDecode(frame)
 
-        # Verbose some data
-        if verbose:
-            verbose_log("INFO", f"reading (qr_data={qr_data})")
-            verbose_log("INFO", f"reading (_bbox={_bbox}")
-            verbose_log("INFO", f"reading (_straight_qrcode={_straight_qrcode})")
-
         # Verify null data
-        if verbose:
-            verbose_log("INFO", f"len(qr_data) = {len(qr_data)}")
-
         if len(qr_data) > 0:
             break
 
         # Display the resulting frame
-        if verbose:
-            verbose_log("INFO", f"Showing (frame={frame})")
-
-        # Show image
         cv2.imshow("frame", frame)
 
         # the 'q' button is set as the
         # quitting button you may use any
         # desired button of your choice
         if cv2.waitKey(1) & 0xFF == ord("q"):
-            if verbose:
-                verbose_log("INFO", "quiting QRCode detection...")
             break
 
-    # After the loop release the cap object
-    if verbose:
-        verbose_log("INFO", "Releasing video...")
-
     vid.release()
-
-    # Destroy all the windows
-    if verbose:
-        verbose_log("INFO", "Destroying all ksigner windows...")
-
     cv2.destroyAllWindows()
 
     return qr_data
@@ -123,22 +129,19 @@ def scan_and_save_signature(**kwargs):
     """
     is_normalized = kwargs.get("is_normalized")
     is_gray_scale = kwargs.get("is_gray_scale")
-    verbose = kwargs.get("verbose")
     filename = kwargs.get("filename")
 
     _ = input(f"[{now()}] Press enter to scan signature")
     signature = scan(
-        is_normalized=is_normalized, is_gray_scale=is_gray_scale, verbose=verbose
+        is_normalized=is_normalized,
+        is_gray_scale=is_gray_scale,
     )
 
     # Encode data
     binary_signature = base64.b64decode(signature.encode())
-    if verbose:
-        verbose_log("INFO", f"Signature: {binary_signature}")
 
     # Saves a signature
     signature_file = f"{filename}.sig"
-    verbose_log("INFO", f"Saving a signature file: {signature_file}")
     with open(signature_file, "wb") as sig_file:
         sig_file.write(binary_signature)
 
@@ -158,12 +161,11 @@ def scan_public_key(**kwargs) -> str:
     is_gray_scale = kwargs.get("is_gray_scale")
     verbose = kwargs.get("verbose")
 
+
     _ = input(f"[{now()}] Press enter to scan public key")
     public_key = scan(
-        is_normalized=is_normalized, is_gray_scale=is_gray_scale, verbose=verbose
+        is_normalized=is_normalized,
+        is_gray_scale=is_gray_scale,
     )
-
-    if verbose:
-        verbose_log("INFO", f"Public key: {public_key}")
 
     return public_key

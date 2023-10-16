@@ -173,8 +173,6 @@ class ScanScreen(Screen):
                 ScanScreen._chunk_str(self.scan_steps[f"{self.manager.current}-datas"][i], 32)
             ))
 
-        print(messages)
-
         self._label_desc = Label(
             text="\n".join([
                 messages[0][0] + messages[0][1],
@@ -253,10 +251,10 @@ class ScanScreen(Screen):
             self.scan_steps[f"{self.manager.current}-datas"][self._step] = scanned_data
 
             # Change
-            self._step += 1
+            #self._step += 1
 
-            if (self._step > 1):
-                Clock.unschedule(self._decode_qrcode, 1)
-                self._zbarcam.stop() # stop zbarcam
-                self._zbarcam.ids['xcamera']._camera._device.release()
-                self._back_to_signscreen()
+            #if (self._step > 1):
+            Clock.unschedule(self._decode_qrcode, 1)
+            self._zbarcam.stop() # stop zbarcam
+            self._zbarcam.ids['xcamera']._camera._device.release()
+            #self._back_to_signscreen()

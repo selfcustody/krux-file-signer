@@ -118,7 +118,6 @@ def now() -> str:
     return time.strftime("%X %x %Z")
 
 
-
 def logger(level, message):
     """
     Prints verbose data preceded by logger level
