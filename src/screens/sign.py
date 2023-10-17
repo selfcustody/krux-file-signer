@@ -135,6 +135,40 @@ class SignScreen(Screen):
         self.manager.transition.direction = "right"
         self.manager.current = "scan-import-save-signature"
 
+    def on_press_sign_screen_import_and_save_public_key(self):
+        """
+        on_press_import_and_save_public_key
+
+        - change background color of button to (.5,.5,.5,.5),
+          giving a visual effect of 'pressed'
+        """
+        logger("DEBUG", "SignScreen: <Button::sign_screen_import_and_save_public_key> pressed")
+        self.ids.sign_screen_import_and_save_public_key.background_color = (
+            0.5,
+            0.5,
+            0.5,
+            0.5
+        )
+    
+    def on_release_sign_screen_import_and_save_public_key(self):
+        """
+        on_release_sign_screen_import_and_save_public_key
+
+        - change background color of button to (0, 0, 0, 0),
+          giving a visual effect of 'pressed'
+        - go to ScanScreen
+        """
+        logger("DEBUG", "SignScreen: <Button::sign_screen_import_and_save_public_key> released")
+        self.ids.sign_screen_import_and_save_public_key.background_color = (
+            0,
+            0,
+            0,
+            0,
+        )
+        self
+        self.manager.transition.direction = "right"
+        self.manager.current = "scan-import-save-signature"
+
         
     def on_press_back_main(self):
         """

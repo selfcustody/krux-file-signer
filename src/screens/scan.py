@@ -78,24 +78,6 @@ class ScanScreen(Screen):
     to set the default position on Screen
     """
 
-    scan_steps = ObjectProperty({
-        "scan-import-save-signature-warnings": (
-            "\n".join(["Step (1):", "", "Scan the signed message"]),
-            "\n".join(["Step (2):", "", "Scan the hexadecimal public key"])
-        ),
-        "scan-import-save-signature-labels": (
-            "Scanned signature: ",
-            "Scanned public key: "  
-        ),
-        "scan-import-save-signature-datas": (
-            None,
-            None
-        )
-    })
-    """
-    Scan steps messages to help user 
-    """
-
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         
@@ -104,9 +86,6 @@ class ScanScreen(Screen):
         self._label_desc = None
         self._box_layout = None
         self._zbarcam = None
-
-        # Setup message steps dynamically on :data:`self._label_warn.text`
-        self._step = 0
 
         # Keyboard bindings for close ScanScreen
         self._keyboard = Window.request_keyboard(self._keyboard_closed, self, 'text')
@@ -140,8 +119,21 @@ class ScanScreen(Screen):
         Sets and add Label Widget that warn user about
         the what to do on ScanScreen
         """
+        if self.manager.current == "scan-import-save-signature":
+            text = "\n".join([
+                "(a) Scan the signed message;",
+                "(b) click on scren or press one of 'esc|enter|backspace|left button' to proceed"
+            ])
+        elif self.manager.current == "scan-import-save-public-key":
+            text = "\n".join([
+                "(a) Scan the hexadecimal public key;",
+                "(b) click on scren or press one of 'esc|enter|backspace|left button' to proceed"
+            ])
+        else:
+            raise Exception(f"Invalid screen: {self.manager.current}")
+            
         self._label_warn = Label(
-            text=self.scan_steps[f"{self.manager.current}-warnings"][self._step],
+            text=text,
             font_size=Window.height // 35,
             font_name="terminus.ttf",
             halign="center",
@@ -166,19 +158,16 @@ class ScanScreen(Screen):
         Sets and add Label Widget that describe the qrcode's
         data to ScanScreen
         """
-        messages = []
-        for i in range(2):
-            messages.append((
-                self.scan_steps[f"{self.manager.current}-labels"][i],
-                ScanScreen._chunk_str(self.scan_steps[f"{self.manager.current}-datas"][i], 32)
-            ))
 
+        if self.manager.current == "scan-import-save-signature":
+            text = "Signed message: ",
+        elif self.manager.current == "scan-import-save-public-key":
+            text = "Public key: "
+        else:
+            raise Exception(f"Invalid screen: {self.manager.current}")
+        
         self._label_desc = Label(
-            text="\n".join([
-                messages[0][0] + messages[0][1],
-                "",
-                messages[1][0] + messages[1][1]
-            ]),
+            text=text,
             font_size=Window.height // 50,
             font_name="terminus.ttf",
             halign="center",
@@ -245,16 +234,9 @@ class ScanScreen(Screen):
         logger("DEBUG", "ScanScreen: waiting for qrcode")
         if len(self._zbarcam.symbols) > 0:
             scanned_data = self._zbarcam.symbols[0].data.decode("UTF-8")
+            self._label_desc += ScanScreen._chunk_str(scanned_data, 12)
+            
             logger("DEBUG", f"ScanScreen: captured '{scanned_data}'")
-
-            # Now dinamically set the properly data
-            self.scan_steps[f"{self.manager.current}-datas"][self._step] = scanned_data
-
-            # Change
-            #self._step += 1
-
-            #if (self._step > 1):
             Clock.unschedule(self._decode_qrcode, 1)
             self._zbarcam.stop() # stop zbarcam
-            self._zbarcam.ids['xcamera']._camera._device.release()
-            #self._back_to_signscreen()
+            self._zbarcam.ids['xcamera']._camera._device.release()        

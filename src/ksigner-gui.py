@@ -75,6 +75,10 @@ class KSignerApp(App):
         
         logger("DEBUG", "KsignerApp: Adding <ScanScreen::scan-import-save-signature>")
         screen_manager.add_widget(ScanScreen(name="scan-import-save-signature"))
+
+        logger("DEBUG", "KsignerApp: Adding <ScanScreen::scan-import-save-public-key>")
+        screen_manager.add_widget(ScanScreen(name="scan-import-save-public-key"))
+        
         return screen_manager
 
 if __name__ == "__main__":

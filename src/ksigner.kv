@@ -81,15 +81,14 @@
             		rectangle: self.x, self.y, self.width, self.height
 
 		Button:
+			id: sign_screen_import_and_save_public_key
 			text: 'Import & save public-key'
 			font_size: root.height // 25
         	font_name: 'terminus.ttf'
 			background_color: 0, 0, 0, 0,
 			color: 1, 1, 1, 1
-			on_press:
-				self.background_color = (.5, .5, .5, .5)
-    		on_release:
-				self.background_color = (0, 0, 0, 0)
+			on_press: root.on_press_sign_screen_import_and_save_public_key()
+    		on_release: root.on_release_sign_screen_import_and_save_public_key()
 			canvas.before:
         		Color:
             		rgba: 1, 1, 1, 1
