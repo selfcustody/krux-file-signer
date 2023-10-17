@@ -78,19 +78,15 @@ def verify(**kwargs):
             Apply verbose or no
 
     """
-    verbose_log("INFO", "Verifying signature:")
 
     file2verify = kwargs.get("filename")
     pubkey_file = kwargs.get("pubkey")
     sig_file = kwargs.get("sigfile")
-    verbose = kwargs.get("verbose")
 
     try:
         __command__ = verify_openssl_command(
             file=file2verify, pubkey=pubkey_file, signature=sig_file
         )
-        if verbose:
-            verbose_log("INFO", __command__)
         subprocess.run(__command__, check=True, shell=True)
     except subprocess.CalledProcessError as __exc__:
         raise subprocess.CalledProcessError(

@@ -21,6 +21,7 @@ import cv2
 #################
 from utils.log import now
 
+
 def normalization_transform(**kwargs):
     """ "
     Apply Gray scale on frames
@@ -41,6 +42,7 @@ def normalization_transform(**kwargs):
 
     # Verbose some data
 
+
 def gray_transform(**kwargs):
     """ "
     Apply Gray scale on frames
@@ -56,6 +58,7 @@ def gray_transform(**kwargs):
 
     # Convert frame to grayscale
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
 
 def scan(**kwargs) -> str:
     """
@@ -159,8 +162,6 @@ def scan_public_key(**kwargs) -> str:
     """
     is_normalized = kwargs.get("is_normalized")
     is_gray_scale = kwargs.get("is_gray_scale")
-    verbose = kwargs.get("verbose")
-
 
     _ = input(f"[{now()}] Press enter to scan public key")
     public_key = scan(

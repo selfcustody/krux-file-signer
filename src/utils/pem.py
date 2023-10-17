@@ -19,6 +19,7 @@ import base64
 from constants import KSIGNER_COMPRESSED_PUBKEY_PREPEND
 from constants import KSIGNER_UNCOMPRESSED_PUBKEY_PREPEND
 
+
 def create_public_key_certificate(**kwargs):
     """
     Create public key certifficate file (.pem)

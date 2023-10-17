@@ -29,6 +29,7 @@ An inherited implementations of kivy.uix.screenmanager Screen
 #####################
 from kivy.uix.screenmanager import Screen
 from kivy.uix.popup import Popup
+
 # pylint: disable=no-name-in-module
 from kivy.properties import StringProperty
 
@@ -105,7 +106,7 @@ class SignScreen(Screen):
 
         logger("DEBUG", "SignScreen: <Popup> opening")
         self._popup.open()
-        
+
     def on_press_sign_screen_import_and_save_signature(self):
         """
         on_press_import_and_save_signature
@@ -113,9 +114,17 @@ class SignScreen(Screen):
         - change background color of button to (.5,.5,.5,.5),
           giving a visual effect of 'pressed'
         """
-        logger("DEBUG", "SignScreen: <Button::sign_screen_import_and_save_signature> pressed")
-        self.ids.sign_screen_import_and_save_signature.background_color = (0.5, 0.5, 0.5, 0.5)
-    
+        logger(
+            "DEBUG",
+            "SignScreen: <Button::sign_screen_import_and_save_signature> pressed",
+        )
+        self.ids.sign_screen_import_and_save_signature.background_color = (
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+        )
+
     def on_release_sign_screen_import_and_save_signature(self):
         """
         on_release_sign_screen_import_and_save_signature
@@ -124,7 +133,10 @@ class SignScreen(Screen):
           giving a visual effect of 'pressed'
         - go to ScanScreen
         """
-        logger("DEBUG", "SignScreen: <Button::sign_screen_import_and_save_signature> released")
+        logger(
+            "DEBUG",
+            "SignScreen: <Button::sign_screen_import_and_save_signature> released",
+        )
         self.ids.sign_screen_load_file_and_export_hash_qrcode.background_color = (
             0,
             0,
@@ -142,14 +154,17 @@ class SignScreen(Screen):
         - change background color of button to (.5,.5,.5,.5),
           giving a visual effect of 'pressed'
         """
-        logger("DEBUG", "SignScreen: <Button::sign_screen_import_and_save_public_key> pressed")
+        logger(
+            "DEBUG",
+            "SignScreen: <Button::sign_screen_import_and_save_public_key> pressed",
+        )
         self.ids.sign_screen_import_and_save_public_key.background_color = (
             0.5,
             0.5,
             0.5,
-            0.5
+            0.5,
         )
-    
+
     def on_release_sign_screen_import_and_save_public_key(self):
         """
         on_release_sign_screen_import_and_save_public_key
@@ -158,7 +173,10 @@ class SignScreen(Screen):
           giving a visual effect of 'pressed'
         - go to ScanScreen
         """
-        logger("DEBUG", "SignScreen: <Button::sign_screen_import_and_save_public_key> released")
+        logger(
+            "DEBUG",
+            "SignScreen: <Button::sign_screen_import_and_save_public_key> released",
+        )
         self.ids.sign_screen_import_and_save_public_key.background_color = (
             0,
             0,
@@ -169,7 +187,6 @@ class SignScreen(Screen):
         self.manager.transition.direction = "right"
         self.manager.current = "scan-import-save-signature"
 
-        
     def on_press_back_main(self):
         """
         on_press_back_main
@@ -216,5 +233,3 @@ class SignScreen(Screen):
         logger("DEBUG", "SignScreen: Redirecting to <QRCodeScreen>")
         self.manager.transition.direction = "left"
         self.manager.current = "qrcode"
-
-    

@@ -44,6 +44,7 @@ from qrcode.constants import ERROR_CORRECT_L
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.uix.image import Image
+
 # pylint: disable=no-name-in-module
 from kivy.graphics.texture import Texture
 from kivy.uix.label import Label
@@ -130,19 +131,19 @@ class QRCodeScreen(Screen):
     :data:`ìmage_pos_hint` is a :class:`~kivy.properties.ObjectProperty`, 
     to set the default position on Screen
     """
-    
+
     label_pos_hint = ObjectProperty({"center_x": 0.5, "center_y": 0.125})
     """
     :data:`label_pos_hint` is a :class:`~kivy.properties.ObjectProperty`, 
     to set the default position on Screen
     """
-    
+
     warn_pos_hint = ObjectProperty({"center_x": 0.5, "center_y": 0.9})
     """
     :data:`warn_pos_hint` is a :class:`~kivy.properties.ObjectProperty`, 
     to set the default position on Screen
     """
-    
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._label_warn = None
@@ -150,7 +151,7 @@ class QRCodeScreen(Screen):
         self._qrcode = None
         self._qrtexture = None
         self._img = None
-        self._keyboard = Window.request_keyboard(self._keyboard_closed, self, 'text')
+        self._keyboard = Window.request_keyboard(self._keyboard_closed, self, "text")
         if self._keyboard.widget:
             logger("WARNING", "QRCodeScreen: This widget is a VKeyboard object")
             # which you can use
@@ -187,21 +188,23 @@ class QRCodeScreen(Screen):
 
         self.add_widget(self._img)
         logger("INFO", "QRCodeScreen: <Image> added")
-        
+
     def set_label_warn(self):
         """
         Sets and add Label Widget that warn user about
         the what to do on QRCodeScreen
         """
         self._label_warn = Label(
-            text="\n".join([
-                "[b]To sign this file with Krux:[/b]",
-                "",
-                " (a) load a 12/24 words key, with or without BIP39 password;",
-                " (b) use the Sign -> Message feature;",
-                " (c) scan this QR code below;",
-                " (d) click on screen or type one of 'esc|backspace|enter|left' keys to proceed."
-            ]),
+            text="\n".join(
+                [
+                    "[b]To sign this file with Krux:[/b]",
+                    "",
+                    " (a) load a 12/24 words key, with or without BIP39 password;",
+                    " (b) use the Sign -> Message feature;",
+                    " (c) scan this QR code below;",
+                    " (d) click on screen or type one of 'esc|backspace|enter|left' keys to proceed.",
+                ]
+            ),
             font_size=Window.height // 35,
             font_name="terminus.ttf",
             halign="center",
@@ -211,7 +214,7 @@ class QRCodeScreen(Screen):
         )
         self.add_widget(self._label_warn)
         logger("INFO", "QRCodeScreen: <Label::warning> added")
-        
+
     def set_label_desc(self):
         """
         Sets and add Label Widget that describe the qrcode's
@@ -242,10 +245,10 @@ class QRCodeScreen(Screen):
         )
         self._qrcode.add_data(self.code)
         logger("DEBUG", "QRCodeScreen: data added")
-        
+
         self._qrcode.make(fit=True)
         self._update_texture()
-        
+
     def _create_texture(self, k, dt):
         logger("DEBUG", "QRCodeScreen: <Texture> creating")
         self._qrtexture = Texture.create(size=(k, k), colorfmt="rgb")
@@ -264,11 +267,7 @@ class QRCodeScreen(Screen):
         Clock.schedule_once(partial(self._create_texture, k), -1)
 
         _color = self.fill_color[:]
-        color = (
-            int(_color[0] * 255),
-            int(_color[1] * 255),
-            int(_color[2] * 255)
-        )
+        color = (int(_color[0] * 255), int(_color[1] * 255), int(_color[2] * 255))
 
         # used bytearray for python 3.5 eliminates need for btext
         buff = bytearray()
@@ -310,20 +309,20 @@ class QRCodeScreen(Screen):
         logger("WARNING", "QRCodeScreen: keyboard have been closed")
         self._keyboard.unbind(on_key_down=self._on_keyboard_down)
         self._keyboard = None
-        
+
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
         # Keycode is composed of an integer + a string
         # If we hit escape, release the keyboard
-        if keycode[1] == 'escape':
+        if keycode[1] == "escape":
             self._back_to_signscreen()
 
-        elif keycode[1] == 'enter':
+        elif keycode[1] == "enter":
             self._back_to_signscreen()
 
-        elif keycode[1] == 'left':
+        elif keycode[1] == "left":
             self._back_to_signscreen()
 
-        elif keycode[1] == 'backspace':
+        elif keycode[1] == "backspace":
             self._back_to_signscreen()
         else:
             logger("WARNING", f"QRCodeScreen: key '{keycode[1]}' not implemented")

@@ -10,13 +10,11 @@ from logging import (
     WARNING,
     ERROR,
     CRITICAL,
-    Formatter,
-    StreamHandler,
     basicConfig,
     info,
     debug,
     warning,
-    error
+    error,
 )
 import time
 
@@ -28,6 +26,7 @@ class Colors:
 
     see https://gist.github.com/rene-d/9e584a7dd2935d0f461904b9f2950007
     """
+
     BLACK = "\033[0;30m"
     RED = "\033[0;31m"
     GREEN = "\033[0;32m"
@@ -73,7 +72,7 @@ class Colors:
         Get a level and convert into formated color.
 
         Supported levels are those from :mod:`logging` module
-        
+
         - :const:`logging.NOTSET`
         - :const:`logging.DEBUG`
         - :const:`logging.INFO`
@@ -87,34 +86,31 @@ class Colors:
 
         Returns
         -------
-        *str*: The formated color with level name 
+        *str*: The formated color with level name
         """
         if level == NOTSET:
             return f"{Colors.BOLD}{Colors.GREEN}INFO{Colors.END}"
 
-        elif level == DEBUG:
+        if level == DEBUG:
             return f"{Colors.BOLD}{Colors.BLUE}DEBUG{Colors.END}"
-        
-        elif level == INFO:
+
+        if level == INFO:
             return f"{Colors.BOLD}{Colors.GREEN}INFO{Colors.END}"
-        
-        elif level == WARNING:
+
+        if level == WARNING:
             return f"{Colors.BOLD}{Colors.YELLOW}WARNING{Colors.END}"
-        
-        elif level == ERROR:
+
+        if level == ERROR:
             return f"{Colors.BOLD}{Colors.BROWN}ERROR{Colors.END}"
-        
-        elif level == CRITICAL:
+
+        if level == CRITICAL:
             return f"{Colors.BOLD}{Colors.RED}CRITICAL{Colors.END}"
 
-class KSignerFormatter(Formatter):
 
-    def format(self, record):
-        colored = Colors.log(record.levelno)
-        return _fmt.format(record)    
-    
 def now() -> str:
-    """Return some formated time"""
+    """
+    Return some formated time
+    """
     return time.strftime("%X %x %Z")
 
 
@@ -122,7 +118,7 @@ def logger(level, message):
     """
     Prints verbose data preceded by logger level
     and current asctime
-    
+
     Example:
     --------
 
@@ -139,15 +135,15 @@ def logger(level, message):
     """
 
     basicConfig(format="[%(colored)s    ] %(channel)s  %(asctime)s  %(message)s")
-    
-    if (level == "INFO"):
-        info(message, extra={'colored': INFO })
 
-    if (level == "DEBUG"):
-        debug(message, extra={'colored': DEBUG })
-    
-    if (level == "WARNING"):
-        warning(message, extra={'colored': WARNING })
-    
-    if (level == "ERROR"):
-        error(message, extra={'colored': ERROR })
+    if level == "INFO":
+        info(message, extra={"colored": INFO})
+
+    if level == "DEBUG":
+        debug(message, extra={"colored": DEBUG})
+
+    if level == "WARNING":
+        warning(message, extra={"colored": WARNING})
+
+    if level == "ERROR":
+        error(message, extra={"colored": ERROR})
