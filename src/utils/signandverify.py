@@ -63,7 +63,7 @@ def verify_openssl_command(**kwargs) -> str:
     )
 
 
-def verify(**kwargs):
+def verify_file(**kwargs):
     """
     Uses openssl to verify the signature and public key
 

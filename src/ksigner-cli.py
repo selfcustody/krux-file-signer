@@ -37,12 +37,17 @@ Requirements:
 # Standart libraries
 ####################
 import argparse
+import sys
 
 #################
 # Local libraries
 #################
-import callbacks
-from constants import KSIGNER_CLI_DESCRIPTION
+from constants import (
+    KSIGNER_VERSION,
+    KSIGNER_CLI_DESCRIPTION
+)
+from utils.log import build_logger
+from cli.signer import Signer 
 
 ################
 # Command parser
@@ -53,48 +58,35 @@ parser = argparse.ArgumentParser(
 
 # Version
 parser.add_argument(
-    "-v", "--version", action="store_true", help="shows version", default=False
+    "-v",
+    "--version",
+    action="store_true",
+    help="shows version",
+    default=False
 )
 
 # Verbose messages
 parser.add_argument(
-    "-V",
-    "--verbose",
-    dest="verbose",
-    action="store_true",
-    help="verbose output (default: False)",
-    default=False,
-)
-
-# Capture pos-processing camera flags
-parser.add_argument(
-    "-n",
-    "--normalize",
-    dest="is_normalized",
-    action="store_true",
-    help="normalizes the image of camera (default: False)",
-    default=False,
-)
-
-parser.add_argument(
-    "-g",
-    "--gray-scale",
-    dest="is_gray_scale",
-    action="store_true",
-    help="apply gray-scale filter on camera's image (default: False)",
-    default=False,
+    "-l",
+    "--log",
+    dest="loglevel",
+    help="log output (info|warning|debug|error, defaults to 'info')",
+    default='info',
 )
 
 subparsers = parser.add_subparsers(help="sub-command help", dest="command")
 
 # Sign command
 signer = subparsers.add_parser("sign", help="sign a file")
-signer.add_argument("-f", "--file", dest="file_to_sign", help="path to file to sign")
+signer.add_argument(
+    "-f",
+    "--file",
+    help="path to file to sign"
+)
 
 signer.add_argument(
     "-o",
     "--owner",
-    dest="file_owner",
     help="the owner's name of public key certificate, i.e, the .pem file (default: 'pubkey')",
     default="pubkey",
 )
@@ -102,7 +94,6 @@ signer.add_argument(
 signer.add_argument(
     "-u",
     "--uncompressed",
-    dest="uncompressed_pub_key",
     action="store_true",
     help="flag to create a uncompreesed public key (default: False)",
 )
@@ -115,7 +106,25 @@ verifier.add_argument(
 )
 verifier.add_argument("-p", "--pub-file", dest="pub_file", help="path to pubkey file")
 
+
 if __name__ == "__main__":
-    callbacks.on_version(parser)
-    callbacks.on_sign(parser)
-    callbacks.on_verify(parser)
+    # parse arguments
+    args = parser.parse_args()
+    log = build_logger(__name__, args.loglevel)
+    
+    # on --version
+    if args.version:
+        print(KSIGNER_VERSION)
+
+    elif args.command == None:
+        parser.print_help()
+
+    elif args.command == 'sign':
+        log.debug('Starting signer')
+        signer = Signer(
+            file=args.file,
+            owner=args.owner,
+            uncompressed=args.uncompressed,
+            loglevel=args.loglevel
+        )
+        signer.sign()

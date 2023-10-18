@@ -10,6 +10,7 @@ TODO: unify processingutils.py to this file?
 # Standard libraries
 ####################
 import base64
+import logging
 
 #######################
 # Thrid party libraries
@@ -20,45 +21,6 @@ import cv2
 # Local libraries
 #################
 from utils.log import now
-
-
-def normalization_transform(**kwargs):
-    """ "
-    Apply Gray scale on frames
-
-    Kwargs
-        :param frame
-            The frame which will be applyed the transformation
-        :param verbose
-            Apply verbose messages
-    """
-    frame = kwargs.get("frame")
-
-    # Cameras have different configurations
-    # and behaviours, so try apply some normalization
-    # @see https://stackoverflow.com/questions/61016954/
-    # controlling-contrast-and-brightness-of-video-stream-in-opencv-and-python
-    cv2.normalize(frame, frame, 0, 255, cv2.NORM_MINMAX)
-
-    # Verbose some data
-
-
-def gray_transform(**kwargs):
-    """ "
-    Apply Gray scale on frames
-
-    Kwargs
-        :param ret
-        :param frame
-            The frame which will be applyed the transformation
-        :param verbose
-            Apply verbose messages
-    """
-    frame = kwargs.get("frame")
-
-    # Convert frame to grayscale
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
 
 def scan(**kwargs) -> str:
     """
@@ -75,33 +37,27 @@ def scan(**kwargs) -> str:
         :param verbose
             Apply or not verify
     """
-    verbose = kwargs.get("versbose")
-    is_normalized = kwargs.get("is_normalized")
-    is_gray_scale = kwargs.get("is_gray_scale")
-
+    logging.debug('Starting OpenCV capture')
     vid = cv2.VideoCapture(0)
-    detector = cv2.QRCodeDetector()
 
+    logging.debug('Starting OpenSV QRCode detector')
+    detector = cv2.QRCodeDetector()
     qr_data = None
+    
     while True:
         # Capture the video frame by frame
         # use some dummy vars (__+[a-zA-Z0-9]*?$)
         # to avoid the W0612 'Unused variable' pylint message
+        logging.debug('Waiting for data...')
+
         _ret, frame = vid.read()
-
-        # Apply some normalization if wanted
-        if is_normalized:
-            normalization_transform(frame=frame, verbose=verbose)
-
-        # Apply gray scale if wanted
-        if is_gray_scale:
-            gray_transform(frame=frame)
 
         # Detect qrcode
         qr_data, _bbox, _straight_qrcode = detector.detectAndDecode(frame)
 
         # Verify null data
         if len(qr_data) > 0:
+            logging.debug('QRCode detected')
             break
 
         # Display the resulting frame
@@ -111,62 +67,40 @@ def scan(**kwargs) -> str:
         # quitting button you may use any
         # desired button of your choice
         if cv2.waitKey(1) & 0xFF == ord("q"):
+            logging.debug("Key 'q' pressed: exiting")
             break
 
+    logging.debug('Releasing video')
     vid.release()
+
+    logging.debug('Destroying video window')
     cv2.destroyAllWindows()
 
     return qr_data
 
 
-def scan_and_save_signature(**kwargs):
+def scan_signature():
     """
     Scan with camera the generated signatue
-
-    Kwargs:
-        :is_normalized
-            Apply normalization on video
-        :is_gray_scale
-            Apply some gray scale on video
-        :param verbose
     """
-    is_normalized = kwargs.get("is_normalized")
-    is_gray_scale = kwargs.get("is_gray_scale")
-    filename = kwargs.get("filename")
-
-    _ = input(f"[{now()}] Press enter to scan signature")
-    signature = scan(
-        is_normalized=is_normalized,
-        is_gray_scale=is_gray_scale,
-    )
-
+    
+    _ = input(f"Press enter to scan signature")
+    signature = scan()
+    
     # Encode data
-    binary_signature = base64.b64decode(signature.encode())
-
-    # Saves a signature
-    signature_file = f"{filename}.sig"
-    with open(signature_file, "wb") as sig_file:
-        sig_file.write(binary_signature)
+    logging.debug('Encoding signature')
+    data = signature.encode()
+    
+    logging.debug(f'Signature (data={data})')
+    return data
 
 
 def scan_public_key(**kwargs) -> str:
     """
     Scan with camera the generated public key
-
-    Kwargs:
-        :is_normalized
-            Apply or not normalization on image
-        :is_gray_scale
-            Apply or not gray scale on image
-        :param verbose
     """
-    is_normalized = kwargs.get("is_normalized")
-    is_gray_scale = kwargs.get("is_gray_scale")
-
     _ = input(f"[{now()}] Press enter to scan public key")
-    public_key = scan(
-        is_normalized=is_normalized,
-        is_gray_scale=is_gray_scale,
-    )
+    public_key = scan()
 
+    logging.debug(f'Public Key (data={public_key})')
     return public_key

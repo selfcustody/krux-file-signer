@@ -1,23 +1,11 @@
 """ 
-logutils.py
+log.py
 
 simple log utilities
 """
-from logging import (
-    NOTSET,
-    DEBUG,
-    INFO,
-    WARNING,
-    ERROR,
-    CRITICAL,
-    basicConfig,
-    info,
-    debug,
-    warning,
-    error,
-)
+import logging
+import sys
 import time
-
 
 # pylint: disable=too-few-public-methods
 class Colors:
@@ -88,9 +76,6 @@ class Colors:
         -------
         *str*: The formated color with level name
         """
-        if level == NOTSET:
-            return f"{Colors.BOLD}{Colors.GREEN}INFO{Colors.END}"
-
         if level == DEBUG:
             return f"{Colors.BOLD}{Colors.BLUE}DEBUG{Colors.END}"
 
@@ -114,36 +99,27 @@ def now() -> str:
     return time.strftime("%X %x %Z")
 
 
-def logger(level, message):
+def build_logger(name: str, level: str):
     """
-    Prints verbose data preceded by logger level
-    and current asctime
-
-    Example:
-    --------
-
-    ```bash
-    >>> from utils import logger
-    >>> logger.info('Hello world')
-    [INFO    ] 08:08:08 8/8/88 -08 :: Hello World
-    ```
-
-    Parameters
-    ----------
-    :param:`mes
-            the message to be verbose
+    Setup logger
+    :param:
+        level: could be one of `info`, `warning`,
+        `error` or `critical`
     """
 
-    basicConfig(format="[%(colored)s    ] %(channel)s  %(asctime)s  %(message)s")
+    # Setup logger
+    numeric_level = getattr(logging, level.upper(), None)
+    if not isinstance(numeric_level, int):
+        raise ValueError('Invalid log level: %s' % loglevel)
 
-    if level == "INFO":
-        info(message, extra={"colored": INFO})
+    log_format = logging.Formatter('[%(levelname)s] [%(asctime)s] - %(message)s')
+    log = logging.getLogger(name)                                  
+    log.setLevel(numeric_level)                                       
 
-    if level == "DEBUG":
-        debug(message, extra={"colored": DEBUG})
+    # writing to stdout                                                     
+    handler = logging.StreamHandler(sys.stdout)                             
+    handler.setLevel(numeric_level)                                        
+    handler.setFormatter(log_format)                                        
+    log.addHandler(handler)
 
-    if level == "WARNING":
-        warning(message, extra={"colored": WARNING})
-
-    if level == "ERROR":
-        error(message, extra={"colored": ERROR})
+    return log
