@@ -4,12 +4,20 @@ signer.py
 Functions to be used during `sign` (sign function)
 and `verify` (on_verify) operations.
 """
-from utils.log import build_logger 
 import hashlib
+import base64
 
+#################
+# Local libraries
+#################
+from constants import (
+    KSIGNER_COMPRESSED_PUBKEY_PREPEND,
+    KSIGNER_UNCOMPRESSED_PUBKEY_PREPEND
+)
+from utils.log import build_logger 
 from utils.pem import create_public_key_certificate
 from utils.qr import make_qr_code
-from utils.video import scan_signature, scan_public_key
+from cli.scanner import Scanner
 
 
 class Signer:
@@ -42,14 +50,18 @@ class Signer:
         self.file = kwargs.get('file')
         self.owner = kwargs.get('owner')
         self.uncompressed = kwargs.get('uncompressed')
-        self.log = build_logger(__name__, kwargs.get('loglevel'))
 
+        loglevel = kwargs.get('loglevel')
+        self.log = build_logger(__name__, loglevel)
+        self.scanner = Scanner(loglevel=loglevel)
+    
     def sign(self):
         self._show_warning_messages()
         data = self._hash_file()
         self._save_hash_file(data)
         self._print_qrcode(data)
         self._make_sig()
+        self._make_pubkey_certificate()
 
     def _show_warning_messages(self):
         """
@@ -104,7 +116,7 @@ class Signer:
             with open(__hash_file__, mode="w", encoding="utf-8") as hash_file:
                 content = f'{data} {self.file}'
             
-                self.log.debug(f'Saving content (data={content}')
+                self.log.debug(f'{__hash_file__} content (data={content})')
                 hash_file.write(content)
 
                 self.log.debug(f'{__hash_file__} saved')
@@ -126,13 +138,13 @@ class Signer:
         __qrcode__ = make_qr_code(data=data)
         print(f"{__qrcode__}")
 
-    def _make_sig(self):
+    def _make_sig(self): 
         """
         Make signature file from scanning qrcode
         """
         # Scans the signature QR code
         self.log.debug('Creating signature')
-        signature = scan_signature()
+        signature = self.scanner.scan_signature()
         
         # Saves a signature
         signature_file = f"{self.file}.sig"
@@ -140,7 +152,7 @@ class Signer:
 
         try:
             with open(signature_file, "wb") as sig_file:
-                sig_file.write(binary_signature)
+                sig_file.write(signature)
                 self.log.debug(f"Signature saved on {signature_file}")
     
         except Exception as exc:
@@ -156,34 +168,48 @@ class Signer:
         Make public key file from scanning qrcode 
         """
         # Scans the public KeyboardInterruptardInterrupt
-        self.log.debug('Creating public key')
-        pubkey = scan_public_key()
+        self.log.debug('Creating public key certificate')
+        pubkey = self.scanner.scan_public_key()
 
         # Create PEM data
         # Save PEM data to a file
         # with filename as owner's name
-        hex_pubkey = hex_pubkey.upper()
-
         # Choose if will be compressed or uncompressed
-        if uncompressed:
-            __public_key_data__ = f"{KSIGNER_UNCOMPRESSED_PUBKEY_PREPEND}{hex_pubkey}"
+        if self.uncompressed:
+            self.log.debug('Make it uncompressed key')
+            __public_key_data__ = "".join([
+                KSIGNER_UNCOMPRESSED_PUBKEY_PREPEND,
+                pubkey.upper()
+            ])
         else:
-            __public_key_data__ = f"{KSIGNER_COMPRESSED_PUBKEY_PREPEND}{hex_pubkey}"
+            self.log.debug('Make it compressed key')
+            __public_key_data__ = "".join([
+                KSIGNER_COMPRESSED_PUBKEY_PREPEND,
+                pubkey.upper()
+            ])
 
         # Convert pubkey data to bytes
+        self.log.debug('Converting public key to bytes')
         __public_key_data_bytes__ = bytes.fromhex(__public_key_data__)
+        
+        self.log.debug('Encoding bytes to base64 format')
         __public_key_data_b64__ = base64.b64encode(__public_key_data_bytes__)
+        
+        self.log.debug('Decoding bas64 to utf8')
         __public_key_data_b64__ = __public_key_data_b64__.decode("utf8")
+
+        self.log.debug(f'b64 (data={__public_key_data_b64__})')
+
         __public_key_name__ = f'{self.owner}.pem'
 
         try:
-            with open(__public_key__name, 'wb') as pb_file:
+            with open(__public_key_name__, 'wb') as pb_file:
                 self.log.debug(f'Saving {__public_key_name__}')
                 pb_file.write(__public_key_data_b64__)
                 self.log.debug(f'{__public_key_name__} saved')
         
         except Exception as exc:
-            message = f'Unknow error on saving {__hash_file__}'
+            message = f'Unknow error on saving {__public_key_name__}'
             numeric_level = getattr(logging, loglevel.upper(), None)
             if numeric_level == logging.NOTSET:
                 raise Exception(message) from exc

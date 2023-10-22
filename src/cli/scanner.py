@@ -78,13 +78,13 @@ class Scanner:
 
         return qr_data
 
-    def scan_signature():
+    def scan_signature(self) -> str:
         """
         Scan with camera the generated signatue
         """
     
         _ = input(f"Press enter to scan signature")
-        signature = self.scan()
+        signature = self._scan()
     
         # Encode data
         self.log.debug('Encoding signature')
@@ -94,12 +94,12 @@ class Scanner:
         return data
 
 
-    def scan_public_key(**kwargs) -> str:
+    def scan_public_key(self) -> str:
         """
         Scan with camera the generated public key
         """
         _ = input(f"[{now()}] Press enter to scan public key")
-        public_key = self.scan()
+        public_key = self._scan()
 
         self.log.debug(f'Public Key (data={public_key})')
         return public_key
