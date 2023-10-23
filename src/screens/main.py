@@ -22,32 +22,22 @@
 """
 mainscreen.py
 
-Implements an inherited kivy.uix.screenmanager.Screen
+Implements an inherited screens.logscreen.LoggedScreen
 """
-
-#######################
-# Third party libraries
-#######################
-from kivy.uix.screenmanager import Screen
 
 #################
 # Local libraries
 #################
-from utils.log import build_logger
+from screens.logscreen import LoggedScreen
 
 
-class MainScreen(Screen):
+class MainScreen(LoggedScreen):
     """
     MainScreen
 
     Class to manage :mod:`screens` :class:`screens.SignScreen` and
     :class:`screens.VerifyScreen`.
     """
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.loglevel = kwargs.get("loglevel")
-        self.log = build_logger(__name__, self.loglevel)
 
     def on_press_sign_button(self):
         """

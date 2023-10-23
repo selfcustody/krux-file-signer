@@ -31,16 +31,14 @@ to be subclassed on qrcody.py and scan.py
 ################
 from kivy.core.window import Window
 from kivy.uix.label import Label
-from kivy.uix.screenmanager import Screen
 from kivy.properties import ListProperty, ObjectProperty
 
 #################
 # Local libraries
 #################
-from utils.log import build_logger
+from screens.logscreen import LoggedScreen
 
-
-class ActionerScreen(Screen):
+class ActionerScreen(LoggedScreen):
     """
     Class responsible to scan qrcodes.
     """
@@ -64,14 +62,12 @@ class ActionerScreen(Screen):
     """
 
     def __init__(self, **kwargs):
-        self.loglevel = kwargs.pop("loglevel")
         super().__init__(**kwargs)
 
         # Widgets
         self._label_warn = None
         self._label_desc = None
-        self.loglevel = kwargs.get("loglevel")
-        self.log = build_logger(__name__, self.loglevel)
+        
         # Keyboard bindings for close ScanScreen
         self._keyboard = Window.request_keyboard(self._keyboard_closed, self, "text")
         if self._keyboard.widget:

@@ -1,3 +1,4 @@
+
 # The MIT License (MIT)
 
 # Copyright (c) 2021-2023 Krux contributors
@@ -19,63 +20,33 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-
 """
-ksigner-gui.py
+logscreen.py
 
-A simple Graphical User Interface built with kivy
+Implements an inherited kivy.uix.screenmanager.Screen
+with inner logger. Use it as super class
 """
+
 #######################
 # Third party libraries
 #######################
-from kivy.app import App
-from kivy.uix.screenmanager import ScreenManager
+from kivy.uix.screenmanager import Screen
 
 #################
 # Local libraries
 #################
 from utils.log import build_logger
-from screens.main import MainScreen
-from screens.sign import SignScreen
-from screens.verify import VerifyScreen
-from screens.qrcode import QRCodeScreen
-from screens.scan import ScanScreen
 
 
-class KSignerApp(App):
+class LoggedScreen(Screen):
     """
-    KSignerApp is the Root widget
+    MainScreen
+
+    Class to manage :mod:`screens` :class:`screens.SignScreen` and
+    :class:`screens.VerifyScreen`.
     """
 
-    def build(self):
-        """
-        build
-
-        Create the Root widget with an ScreenManager
-        as manager for its sub-widgets:
-
-        - main;
-        - sign;
-        - verify;
-        - TODO: others
-        """
-        loglevel = "debug"
-
-        screen_manager = ScreenManager()
-        screens = (
-            MainScreen(name="main", loglevel=loglevel),
-            SignScreen(name="sign", loglevel=loglevel),
-            VerifyScreen(name="verify", loglevel=loglevel),
-            QRCodeScreen(name="qrcode", loglevel=loglevel),
-            ScanScreen(name="scan-import-save-signature", loglevel=loglevel),
-            ScanScreen(name="scan-import-save-public-key", loglevel=loglevel)
-        )
-
-        for i in range(len(screens)):
-            screen_manager.add_widget(screens[i])
-        
-        return screen_manager
-
-if __name__ == "__main__":
-    app = KSignerApp()
-    app.run()
+    def __init__(self, **kwargs):
+        self.loglevel = kwargs.pop("loglevel")
+        super().__init__(**kwargs)
+        self.log = build_logger(__name__, self.loglevel)

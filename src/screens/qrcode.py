@@ -194,7 +194,7 @@ class QRCodeScreen(ActionerScreen):
         """
         Setup QRCode
         """
-        self.log("QRCodeScreen: Creating")
+        self.log.info("QRCodeScreen: Creating")
         self._qrcode = QRCode(
             version=self.version,
             error_correction=self.ecc,
@@ -202,7 +202,7 @@ class QRCodeScreen(ActionerScreen):
             border=self.border_size,
         )
         self._qrcode.add_data(self.code)
-        self.log("QRCodeScreen: data added")
+        self.log.info("QRCodeScreen: data added")
 
         self._qrcode.make(fit=True)
         self._update_texture()

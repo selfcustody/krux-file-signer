@@ -113,7 +113,7 @@ def build_logger(name: str, level: str):
     if not isinstance(numeric_level, int):
         raise ValueError(f"Invalid log level: {numeric_level}")
 
-    log_format = logging.Formatter("[%(levelname)s] [%(asctime)s] - %(message)s")
+    log_format = logging.Formatter("[%(levelname)s  ] [%(name)s    ] - %(message)s")
     log = logging.getLogger(name)
     log.setLevel(numeric_level)
 

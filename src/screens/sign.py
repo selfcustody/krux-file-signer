@@ -27,7 +27,6 @@ An inherited implementations of kivy.uix.screenmanager Screen
 #####################
 # Thirparty libraries
 #####################
-from kivy.uix.screenmanager import Screen
 from kivy.uix.popup import Popup
 
 # pylint: disable=no-name-in-module
@@ -36,12 +35,12 @@ from kivy.properties import StringProperty
 #################
 # Local libraries
 #################
-from utils.log import build_logger
+from screens.logscreen import LoggedScreen
 from cli.signer import Signer
 from filechooser import LoadDialog
 
 
-class SignScreen(Screen):
+class SignScreen(LoggedScreen):
     """
     SignScreen
 
@@ -66,8 +65,6 @@ class SignScreen(Screen):
         self.file_input = StringProperty("")
         self.file_content = StringProperty("")
         self.file_hash = StringProperty("")
-        self.loglevel = kwargs.get("loglevel")
-        self.log = build_logger(__name__, self.loglevel)
 
     def on_press_sign_screen_load_file_and_export_hash_qrcode(self):
         """

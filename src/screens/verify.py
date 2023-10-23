@@ -25,18 +25,12 @@ verifyscreen.py
 Implements an inherited kivy.uix.screenmanager.Screen
 for verify signature options
 """
-
-######################
-# Thirdparty libraries
-######################
-from kivy.uix.screenmanager import Screen
-
 #################
 # Local libraries
 #################
-from utils.log import build_logger
+from screens.logscreen import LoggedScreen
 
-class VerifyScreen(Screen):
+class VerifyScreen(LoggedScreen):
     """
     VerifyScreen
 
@@ -48,12 +42,7 @@ class VerifyScreen(Screen):
     - Load publickey
     - Verify signature
     """
-
-    def __init__(self, **kwargs):
-        self.loglevel = kwargs.pop("loglevel")
-        super().__init__(**kwargs)
-        self.log = build_logger(__name__, self.loglevel)
-
+    
     def on_press_verify_screen_load_file_button(self):
         """
         on_press_verify_screen_load_file_button
