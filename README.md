@@ -38,13 +38,46 @@ managed by [poetry](https://python-poetry.org/)
 
 #### Install poetry and dependencies
 
+Install [python-poetry](https://python-poetry.org/docs/)
+
+*Linux*:
+
+- pip: `pip install poetry`
+- debian-like: `sudo apt-get -y install python3-poetry`
+- archlinux-like: `sudo pacman -S python-poetry`
+- fedora: `sudo dnf -y install poetry`
+
+*MacOS* (TODO)
+*Windows* (TODO)
+
+##### Install pyzbar dependency
+
+Before proceed you will need to install a dependency for pyzbar; in linux
+it's `libzbar0` (see [this](https://stackoverflow.com/questions/63217735/import-pyzbar-pyzbar-unable-to-find-zbar-shared-library#63223900)):
+
+*Linux*:
+
+- debian-like: `sudo apt-get install -y libzbar0`
+- archlinux-like: `sudo pacman -S zbar`
+- fedora: `sudo dnf -y install zbar-libs`
+
+*MacOS*
+
 ```bash
-pip install poetry
-poetry install
+mkdir ~/lib
+ln -s $(brew --prefix zbar)/lib/libzbar.dylib ~/lib/libzbar.dylib 
 ```
+
+*Windows* (TODO)
+
+#### Install poetry dependencies
 
 This will also install all development tools so that you can run pylint,
 format code with black, and build an agnostic OS executable. 
+
+```bash
+poetry install
+```
 
 #### Update lock file if already has one
 
