@@ -1,14 +1,29 @@
+# The MIT License (MIT)
+
+# Copyright (c) 2021-2023 Krux contributors
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
 """
 scanner.py
 
 some video utilities to scan qrcodes. 
 """
-####################
-# Standard libraries
-####################
-import base64
-import logging
-
 #######################
 # Thrid party libraries
 #######################
@@ -20,13 +35,15 @@ import cv2
 from utils.log import now
 from utils.log import build_logger
 
+
 class Scanner:
     """
     Scanner is the cli utility to scan
     Signature and PublicKey
     """
+
     def __init__(self, **kwargs):
-        loglevel = kwargs.get('loglevel')
+        loglevel = kwargs.get("loglevel")
         self.log = build_logger(__name__, loglevel)
 
     def _scan(self) -> str:
@@ -36,19 +53,19 @@ class Scanner:
         Can be applyed some normalization
         or gray scale
         """
-        self.log.debug('Starting OpenCV capture')
+        self.log.debug("Starting OpenCV capture")
         vid = cv2.VideoCapture(0)
 
-        self.log.debug('Starting OpenSV QRCode detector')
+        self.log.debug("Starting OpenSV QRCode detector")
         detector = cv2.QRCodeDetector()
-    
+
         qr_data = None
-    
+
         while True:
             # Capture the video frame by frame
             # use some dummy vars (__+[a-zA-Z0-9]*?$)
             # to avoid the W0612 'Unused variable' pylint message
-            self.log.debug('Waiting for data...')
+            self.log.debug("Waiting for data...")
 
             _ret, frame = vid.read()
 
@@ -57,7 +74,7 @@ class Scanner:
 
             # Verify null data
             if len(qr_data) > 0:
-                self.log.debug('QRCode detected')
+                self.log.debug("QRCode detected")
                 break
 
             # Display the resulting frame
@@ -70,10 +87,10 @@ class Scanner:
                 self.log.debug("Key 'q' pressed: exiting")
                 break
 
-        self.log.debug('Releasing video')
+        self.log.debug("Releasing video")
         vid.release()
 
-        self.log.debug('Destroying video window')
+        self.log.debug("Destroying video window")
         cv2.destroyAllWindows()
 
         return qr_data
@@ -82,17 +99,16 @@ class Scanner:
         """
         Scan with camera the generated signatue
         """
-    
-        _ = input(f"Press enter to scan signature")
+
+        _ = input("Press enter to scan signature")
         signature = self._scan()
-    
+
         # Encode data
-        self.log.debug('Encoding signature')
+        self.log.debug("Encoding signature")
         data = str.encode(signature)
 
-        self.log.debug(f'Signature (data={data})')
+        self.log.debug("Signature (data=%s)", data)
         return data
-
 
     def scan_public_key(self) -> str:
         """
@@ -101,5 +117,5 @@ class Scanner:
         _ = input(f"[{now()}] Press enter to scan public key")
         public_key = self._scan()
 
-        self.log.debug(f'Public Key (data={public_key})')
+        self.log.debug("Public Key (data={%s})", public_key)
         return public_key

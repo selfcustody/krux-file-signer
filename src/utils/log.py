@@ -7,6 +7,7 @@ import logging
 import sys
 import time
 
+
 # pylint: disable=too-few-public-methods
 class Colors:
     """
@@ -76,19 +77,19 @@ class Colors:
         -------
         *str*: The formated color with level name
         """
-        if level == DEBUG:
+        if level == logging.DEBUG:
             return f"{Colors.BOLD}{Colors.BLUE}DEBUG{Colors.END}"
 
-        if level == INFO:
+        if level == logging.INFO:
             return f"{Colors.BOLD}{Colors.GREEN}INFO{Colors.END}"
 
-        if level == WARNING:
+        if level == logging.WARNING:
             return f"{Colors.BOLD}{Colors.YELLOW}WARNING{Colors.END}"
 
-        if level == ERROR:
+        if level == logging.ERROR:
             return f"{Colors.BOLD}{Colors.BROWN}ERROR{Colors.END}"
 
-        if level == CRITICAL:
+        if level == logging.CRITICAL:
             return f"{Colors.BOLD}{Colors.RED}CRITICAL{Colors.END}"
 
 
@@ -110,16 +111,16 @@ def build_logger(name: str, level: str):
     # Setup logger
     numeric_level = getattr(logging, level.upper(), None)
     if not isinstance(numeric_level, int):
-        raise ValueError('Invalid log level: %s' % loglevel)
+        raise ValueError(f"Invalid log level: {numeric_level}")
 
-    log_format = logging.Formatter('[%(levelname)s] [%(asctime)s] - %(message)s')
-    log = logging.getLogger(name)                                  
-    log.setLevel(numeric_level)                                       
+    log_format = logging.Formatter("[%(levelname)s] [%(asctime)s] - %(message)s")
+    log = logging.getLogger(name)
+    log.setLevel(numeric_level)
 
-    # writing to stdout                                                     
-    handler = logging.StreamHandler(sys.stdout)                             
-    handler.setLevel(numeric_level)                                        
-    handler.setFormatter(log_format)                                        
+    # writing to stdout
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setLevel(numeric_level)
+    handler.setFormatter(log_format)
     log.addHandler(handler)
 
     return log

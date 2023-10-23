@@ -47,8 +47,6 @@ from kivy.uix.image import Image
 
 # pylint: disable=no-name-in-module
 from kivy.graphics.texture import Texture
-from kivy.uix.label import Label
-from kivy.uix.screenmanager import Screen
 from kivy.properties import (
     StringProperty,
     NumericProperty,
@@ -59,10 +57,10 @@ from kivy.properties import (
 #################
 # Local libraries
 #################
-from utils.log import logger
+from screens.actioner import ActionerScreen
 
-
-class QRCodeScreen(Screen):
+# pylint: disable=too-many-instance-attributes
+class QRCodeScreen(ActionerScreen):
     """
     Class responsible to display qrcodes.
 
@@ -112,12 +110,6 @@ class QRCodeScreen(Screen):
     defined at :class:`~qrcode.QRCode`
     """
 
-    fill_color = ListProperty((1, 1, 1, 1))
-    """
-    :data:`background_color` is a tuple describing the color of background
-    defined at :class:`~qrcode.QRCode`
-    """
-
     loading_image = StringProperty("data/images/image-loading.gif")
     """
     Intermediate image to be displayed while the widget ios being loaded.
@@ -132,32 +124,11 @@ class QRCodeScreen(Screen):
     to set the default position on Screen
     """
 
-    label_pos_hint = ObjectProperty({"center_x": 0.5, "center_y": 0.125})
-    """
-    :data:`label_pos_hint` is a :class:`~kivy.properties.ObjectProperty`, 
-    to set the default position on Screen
-    """
-
-    warn_pos_hint = ObjectProperty({"center_x": 0.5, "center_y": 0.9})
-    """
-    :data:`warn_pos_hint` is a :class:`~kivy.properties.ObjectProperty`, 
-    to set the default position on Screen
-    """
-
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._label_warn = None
-        self._label_desc = None
         self._qrcode = None
         self._qrtexture = None
         self._img = None
-        self._keyboard = Window.request_keyboard(self._keyboard_closed, self, "text")
-        if self._keyboard.widget:
-            logger("WARNING", "QRCodeScreen: This widget is a VKeyboard object")
-            # which you can use
-            # to change the keyboard layout.
-            passss
-        self._keyboard.bind(on_key_down=self._on_keyboard_down)
 
     def on_pre_enter(self, *args):
         """
@@ -187,56 +158,43 @@ class QRCodeScreen(Screen):
         )
 
         self.add_widget(self._img)
-        logger("INFO", "QRCodeScreen: <Image> added")
+        self.log.info("QRCodeScreen: <Image> added")
 
     def set_label_warn(self):
         """
         Sets and add Label Widget that warn user about
         the what to do on QRCodeScreen
         """
-        self._label_warn = Label(
-            text="\n".join(
+        self._label_warn = self._make_label_warn(
+            "\n".join(
                 [
                     "[b]To sign this file with Krux:[/b]",
                     "",
                     " (a) load a 12/24 words key, with or without BIP39 password;",
                     " (b) use the Sign -> Message feature;",
                     " (c) scan this QR code below;",
-                    " (d) click on screen or type one of 'esc|backspace|enter|left' keys to proceed.",
+                    " (d) click on screen or type one of " +
+                        "'esc|backspace|enter|left' keys to proceed.",
                 ]
             ),
-            font_size=Window.height // 35,
-            font_name="terminus.ttf",
-            halign="center",
-            color=self.fill_color,
-            markup=True,
-            pos_hint=self.warn_pos_hint,
         )
         self.add_widget(self._label_warn)
-        logger("INFO", "QRCodeScreen: <Label::warning> added")
+        self.log.info("QRCodeScreen: <Label::warning> added")
 
     def set_label_desc(self):
         """
         Sets and add Label Widget that describe the qrcode's
         data to QRCodeScreen
         """
-        self._label_desc = Label(
-            text=self.text,
-            font_size=Window.height // 35,
-            font_name="terminus.ttf",
-            halign="center",
-            color=self.fill_color,
-            markup=True,
-            pos_hint=self.label_pos_hint,
-        )
+        self._label_desc = self._make_label_desc(self.text)
         self.add_widget(self._label_desc)
-        logger("INFO", "QRCodeScreen: <Label::description> added")
+        self.log.info("QRCodeScreen: <Label::description> added")
 
     def generate_qrcode(self):
         """
         Setup QRCode
         """
-        logger("INFO", "QRCodeScreen: Creating")
+        self.log("QRCodeScreen: Creating")
         self._qrcode = QRCode(
             version=self.version,
             error_correction=self.ecc,
@@ -244,13 +202,14 @@ class QRCodeScreen(Screen):
             border=self.border_size,
         )
         self._qrcode.add_data(self.code)
-        logger("DEBUG", "QRCodeScreen: data added")
+        self.log("QRCodeScreen: data added")
 
         self._qrcode.make(fit=True)
         self._update_texture()
 
-    def _create_texture(self, k, dt):
-        logger("DEBUG", "QRCodeScreen: <Texture> creating")
+    # pylint: disable=unused-argument
+    def _create_texture(self, k, delta):
+        self.log.info("QRCodeScreen: <Texture> creating")
         self._qrtexture = Texture.create(size=(k, k), colorfmt="rgb")
         # don't interpolate texture
         self._qrtexture.min_filter = "nearest"
@@ -259,11 +218,11 @@ class QRCodeScreen(Screen):
     def _update_texture(self):
         matrix = self._qrcode.get_matrix()
         k = len(matrix)
-        logger("DEBUG", f"QRCodeScreen: <Texture::matrix::len>={k}")
+        self.log.info("QRCodeScreen: <Texture::matrix::len>=%s", k)
 
         # create the texture in main UI thread otherwise
         # this will lead to memory corruption
-        logger("DEBUG", "QRCodeScreen: <Texture> in mainUI Thread")
+        self.log.info("QRCodeScreen: <Texture> in mainUI Thread")
         Clock.schedule_once(partial(self._create_texture, k), -1)
 
         _color = self.fill_color[:]
@@ -279,14 +238,14 @@ class QRCodeScreen(Screen):
         # join not necessary when using a byte array
         # buff =''.join(map(chr, buff))
         # update texture in UI thread.
-        logger("DEBUG", "QRCodeScreen: Blitting buffer in <QRCodeScreen@Texture>")
+        self.log.info("QRCodeScreen: Blitting buffer in <QRCodeScreen@Texture>")
         Clock.schedule_once(lambda dt: self._upd_texture(buff))
 
     def _upd_texture(self, buff):
         texture = self._qrtexture
 
         if not texture:
-            logger("WARNING", "QRCodeScreen: Texture hasn't been created")
+            self.log.warning("QRCodeScreen: Texture hasn't been created")
             Clock.schedule_once(lambda dt: self._upd_texture(buff))
             return
 
@@ -295,36 +254,4 @@ class QRCodeScreen(Screen):
         self._img.anim_delay = -1
         self._img.texture = texture
         self._img.canvas.ask_update()
-        logger("DEBUG", "QRCodeScreen: <Texture> updated")
-
-    def _back_to_signscreen(self):
-        """
-        Back to SignScreen
-        """
-        logger("DEBUG", "QRCodeScreen: Redirecting to <SignScreen>")
-        self.manager.transition.direction = "right"
-        self.manager.current = "sign"
-
-    def _keyboard_closed(self):
-        logger("WARNING", "QRCodeScreen: keyboard have been closed")
-        self._keyboard.unbind(on_key_down=self._on_keyboard_down)
-        self._keyboard = None
-
-    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
-        # Keycode is composed of an integer + a string
-        # If we hit escape, release the keyboard
-        if keycode[1] == "escape":
-            self._back_to_signscreen()
-
-        elif keycode[1] == "enter":
-            self._back_to_signscreen()
-
-        elif keycode[1] == "left":
-            self._back_to_signscreen()
-
-        elif keycode[1] == "backspace":
-            self._back_to_signscreen()
-        else:
-            logger("WARNING", f"QRCodeScreen: key '{keycode[1]}' not implemented")
-
-        return True
+        self.log.info("QRCodeScreen: <Texture> updated")

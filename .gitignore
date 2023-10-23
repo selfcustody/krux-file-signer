@@ -2,4 +2,6 @@ build
 dist
 *.spec
 *.sha256*.txt
+*.sig
+*.log
 src/**/__pycache__

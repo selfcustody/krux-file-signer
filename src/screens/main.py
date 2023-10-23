@@ -33,7 +33,7 @@ from kivy.uix.screenmanager import Screen
 #################
 # Local libraries
 #################
-from utils.log import logger
+from utils.log import build_logger
 
 
 class MainScreen(Screen):
@@ -44,6 +44,11 @@ class MainScreen(Screen):
     :class:`screens.VerifyScreen`.
     """
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.loglevel = kwargs.get("loglevel")
+        self.log = build_logger(__name__, self.loglevel)
+
     def on_press_sign_button(self):
         """
         on_press_sign_button
@@ -51,7 +56,7 @@ class MainScreen(Screen):
         - change background color of button to (.5,.5,.5,.5),
           giving a visual effect of 'pressed'
         """
-        logger("DEBUG", "MainScreen: <Button::sign> clicked")
+        self.log.debug("MainScreen: <Button::sign> clicked")
         self.ids.main_screen_sign_button.background_color = (0.5, 0.5, 0.5, 0.5)
 
     def on_release_sign_button(self):
@@ -62,7 +67,7 @@ class MainScreen(Screen):
           giving a visual effect of 'unpressed'
         - make a screen transition to SignScreen
         """
-        logger("DEBUG", "MainScreen: <Button::sign> released")
+        self.log.debug("MainScreen: <Button::sign> released")
         self.ids.main_screen_sign_button.background_color = (0, 0, 0, 0)
         self.manager.transition.direction = "left"
         self.manager.current = "sign"
@@ -74,7 +79,7 @@ class MainScreen(Screen):
         - change background color of button to (.5,.5,.5,.5),
           giving a visual effect of 'pressed'
         """
-        logger("DEBUG", "MainScreen: <Button::verify> clicked")
+        self.log.debug("MainScreen: <Button::verify> clicked")
         self.ids.main_screen_verify_button.background_color = (0.5, 0.5, 0.5, 0.5)
 
     def on_release_verify_button(self):
@@ -85,7 +90,7 @@ class MainScreen(Screen):
           giving a visual effect of 'unpressed'
         - make a screen transition to VerifyScreen
         """
-        logger("DEBUG", "MainScreen: <Button::verify> released")
+        self.log.debug("MainScreen: <Button::verify> released")
         self.ids.main_screen_verify_button.background_color = (0, 0, 0, 0)
         self.manager.transition.direction = "left"
         self.manager.current = "verify"

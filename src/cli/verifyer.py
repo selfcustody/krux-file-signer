@@ -1,143 +1,87 @@
+# The MIT License (MIT)
+
+# Copyright (c) 2021-2023 Krux contributors
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
 """
-signer.py
+verifyer.py
 
-Functions to be used during `sign` (on_sign function)
-and `verify` (on_verify) operations.
+functions that use openssl as a wrapper
+to verify signatures
+
+TODO: replace for pyca/cryptography or pyOpenSSL 
 """
 
-from utils.hash import open_and_hash_file
-from utils.pem import create_public_key_certificate
-from utils.qr import make_qr_code
-from utils.signandverify import verify_file
-from utils.video import scan_signature, scan_public_key
+####################
+# Standart libraries
+####################
+import subprocess
+import logging
 
+#################
+# Local libraries
+#################
+from utils.log import build_logger
 
-class Signer:
+class Verifyer:
     """
-    Signer is the class
-    that manages the `sign` command
-
-    Workflow:
-        
-    (1) Read a file;
-    (2) Save in a .sha256.txt file;
-    (3) Requires the user loads a xpriv key on his/her device:
-        (a) load a 12/24 words key;
-        (b) with or without BIP39 password;
-    (4) sign a message:
-        (a) once loaded the xpriv key, user goes
-            to Sign > Message feature on his/her device
-        (b) show a qrcode on device;
-        (c) this function will generate a qrcode on computer;
-        (d) once shown, the user will be prompted to scan it with device;
-        (e) once scanned, the device will show some qrcodes:
-            (i) the signature as a qrcode;
-            (ii) the public key;
-        (f) once above qrcodes are scanned, the computer
-            will generate a publickey certificate, in a compressed
-            or uncompressed format, in name of an owner.
+    Verifyer is the class
+    that manages the `verify` verify_openssl_command
+    with given :param:`file`, :param:`pubkey` and 
+    :param:`signature`
     """
-    
+
     def __init__(self, **kwargs):
-        self.file = kwargs.get('file')
-        self.owner = kwargs.get('owner')
-        self.uncompressed = kwargs.get('uncompressed')
+        self.file = kwargs.get("file")
+        self.pubkey = kwargs.get("pubkey")
+        self.signature = kwargs.get("signature")
+        self.loglevel = kwargs.get("loglevel")
+        self.log = build_logger(__name__, self.loglevel)
 
-    def sign(self):
-        self._show_warning_messages()
-        data = self._hash_file()
-        self._save_hash_file(data)
-        self._print_qrcode(data)
-        self._make_sig()
-
-    def _show_warning_messages(self):
+    def make_openssl_command(self) -> str:
         """
-        Shows warning messages before hash
+        Create the properly openssl command to verify
         """
-        logger("DEBUG", "cli:sign", "Showing warning messages to sign")        
-        
-        # Shows some message
-        print("")
-        print("To sign this file with Krux: ")
-        print(" (a) load a 12/24 words key with or without password;")
-        print(" (b) use the Sign->Message feature;")
-        print(" (c) and scan this QR code below.")
-        print("")
-
-    def _hash_file(self) -> str:
-        """
-        Creates a hash file before sign
-        """ 
-        logger("DEBUG", "cli:sign", f"Opening {self.file}")
-        return open_and_hash_file(path=self.file)
-
-    def _save_hash_file(self, data): 
-        """
-        Save the hash file in sha256sum format
-        """
-        # Saves a hash file
-        logger("INFO", "cli:sign", f"Saving {self.file}.sha256.txt")
-        __hash_file__ = f"{self.file}.sha256sum.txt" 
-        with open(__hash_file__, mode="w", encoding="utf-8") as hash_file:
-            hash_file.write(f"{data} {file_to_sign}")
-
-    def _print_qrcode(self, data):
-        """
-        Print QRCode to console
-        """
-        # Prints the QR code
-        logger("DEBUG", "cli:sign", f"Adding (data={data})")
-        __qrcode__ = make_qr_code(data=data, verbose=args.verbose)
-        print(f"{__qrcode__}")
-
-
-    def _make_sig(self):
-        """
-        Do signature, public key and public key certificates
-        """
-        # Scans the signature QR code
-        logger("INFO", "cli:sign", "Creating signature")
-        signature = scan_signature()
-        
-        # Saves a signature
-        signature_file = f"{self.file}.sig"
-        with open(signature_file, "wb") as sig_file:
-            sig_file.write(binary_signature)
-            logger("INFO", "cli:sign", f"Signature save on {self.owner}.sig")
-        
-        # Scans the public KeyboardInterruptardInterrupt
-        pubkey = scan_public_key()
-
-        # Create PEM data
-        # Save PEM data to a file
-        # with filename as owner's name
-        pem = create_public_key_certificate(
-            pubkey=pubkey,
-            uncompressed=uncompreesed,
-            owner=file_owner,
-        )
-
-        __pem_key_file__ = f"{args.file_owner}.pem"
-
-        with open(file=__pem_key_file__, mode="w", encoding="utf-8") as pem_file:
-            pem_file.write(pem)
-            logger("INFO", "cli:sign", f"Public key certificate saved as '{__pem_key_file__}'")
-            
-
-
-class Verify:
-
+        return " ".join(
+        [
+            f"openssl sha256 <{self.file} -binary",
+            "|",
+            f"openssl pkeyutl -verify -pubin -inkey {self.pubkey}",
+            f"-sigfile {self.signature}",
+        ]
+    )
 
     def verify(self):
         """
-        onVerify is executed when `verify` command is called
-
-        Args:
-            :param parser
-                the argument parser instance
-        """ 
-        verify_file(
-            filename=args.verify_file,
-            pubkey=args.pub_file,
-            sigfile=args.sig_file,
-        )
+        Uses openssl to verify the signature and public key
+        """
+        try:
+            self.log.debug("Verifyer: Creating openssl command")
+            __command__ = self.make_openssl_command()
+            self.log.debug("Verifyer: Running '%s'", __command__)
+            subprocess.run(__command__, check=True, shell=True)
+            self.log.debug("Verifyer: verified")
+        except subprocess.CalledProcessError as exc:
+            message = "Invalid command"
+            numeric_level = getattr(logging, self.loglevel.upper(), None)
+            if not numeric_level == logging.NOTSET:
+                self.log.error("%s: %s", message, __command__)
+            else:
+                raise subprocess.CalledProcessError(message, cmd=__command__) from exc
+            

@@ -19,7 +19,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-
 """
 This python script is a tool to create air-gapped signatures of files using Krux.
 The script can also convert hex publics exported from Krux to PEM public keys so
@@ -37,17 +36,17 @@ Requirements:
 # Standart libraries
 ####################
 import argparse
-import sys
 
 #################
 # Local libraries
 #################
-from constants import (
+from utils.constants import (
     KSIGNER_VERSION,
     KSIGNER_CLI_DESCRIPTION
 )
 from utils.log import build_logger
-from cli.signer import Signer 
+from cli.signer import Signer
+from cli.verifyer import Verifyer
 
 ################
 # Command parser
@@ -58,11 +57,7 @@ parser = argparse.ArgumentParser(
 
 # Version
 parser.add_argument(
-    "-v",
-    "--version",
-    action="store_true",
-    help="shows version",
-    default=False
+    "-v", "--version", action="store_true", help="shows version", default=False
 )
 
 # Verbose messages
@@ -71,9 +66,10 @@ parser.add_argument(
     "--log",
     dest="loglevel",
     help="log output (info|warning|debug|error, defaults to 'info')",
-    default='info',
+    default="info",
 )
 
+# Subparsers: sign and verify
 subparsers = parser.add_subparsers(help="sub-command help", dest="command")
 
 # Sign command
@@ -83,14 +79,12 @@ signer.add_argument(
     "--file",
     help="path to file to sign"
 )
-
 signer.add_argument(
     "-o",
     "--owner",
     help="the owner's name of public key certificate, i.e, the .pem file (default: 'pubkey')",
     default="pubkey",
 )
-
 signer.add_argument(
     "-u",
     "--uncompressed",
@@ -100,31 +94,54 @@ signer.add_argument(
 
 # Verify command
 verifier = subparsers.add_parser("verify", help="verify signature")
-verifier.add_argument("-f", "--file", dest="verify_file", help="path to file to verify")
 verifier.add_argument(
-    "-s", "--sig-file", dest="sig_file", help="path to signature file"
+    "-f",
+    "--file",
+    help="path to file to verify"
 )
-verifier.add_argument("-p", "--pub-file", dest="pub_file", help="path to pubkey file")
+verifier.add_argument(
+    "-s",
+    "--sig-file",
+    dest="sig_file",
+    help="path to signature file"
+)
+verifier.add_argument(
+    "-p",
+    "--pub-file",
+    dest="pub_file",
+    help="path to pubkey file"
+)
 
 
 if __name__ == "__main__":
     # parse arguments
     args = parser.parse_args()
     log = build_logger(__name__, args.loglevel)
-    
+
     # on --version
     if args.version:
         print(KSIGNER_VERSION)
 
-    elif args.command == None:
+    elif args.command is None:
         parser.print_help()
 
-    elif args.command == 'sign':
-        log.debug('Starting signer')
+    elif args.command == "sign":
+        log.debug("Starting signer")
         signer = Signer(
             file=args.file,
             owner=args.owner,
             uncompressed=args.uncompressed,
-            loglevel=args.loglevel
+            loglevel=args.loglevel,
         )
         signer.sign()
+        signer.make_pubkey_certificate()
+
+    elif args.command == "verify":
+        log.debug("Starting verifyer")
+        verifyer = Verifyer(
+            file=args.file,
+            pubkey=args.pub_key,
+            signature=args.sig_file,
+            loglevel=args.loglevel
+        )
+        verifyer.verify()

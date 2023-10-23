@@ -34,7 +34,7 @@ from kivy.uix.screenmanager import ScreenManager
 #################
 # Local libraries
 #################
-from utils.log import logger
+from utils.log import build_logger
 from screens.main import MainScreen
 from screens.sign import SignScreen
 from screens.verify import VerifyScreen
@@ -59,25 +59,28 @@ class KSignerApp(App):
         - verify;
         - TODO: others
         """
-        logger("DEBUG", "KSignerApp: Creating ScreenManager")
+        loglevel = "debug"
+        logger = build_logger(__name__, loglevel)
+
+        logger.debug("KSignerApp: Creating ScreenManager")
         screen_manager = ScreenManager()
 
-        logger("DEBUG", "KsignerApp: Adding <MainScreen>")
-        screen_manager.add_widget(MainScreen(name="main"))
+        logger.debug("KsignerApp: Adding <MainScreen>")
+        screen_manager.add_widget(MainScreen(name="main", loglevel=loglevel))
 
-        logger("DEBUG", "KsignerApp: Adding <SignScreen>")
+        logger.debug("KsignerApp: Adding <SignScreen>")
         screen_manager.add_widget(SignScreen(name="sign"))
 
-        logger("DEBUG", "KsignerApp: Adding <VerifyScreen>")
+        logger.debug("KsignerApp: Adding <VerifyScreen>")
         screen_manager.add_widget(VerifyScreen(name="verify"))
 
-        logger("DEBUG", "KsignerApp: Adding <QRCodeScreen>")
+        logger.debug("KsignerApp: Adding <QRCodeScreen>")
         screen_manager.add_widget(QRCodeScreen(name="qrcode"))
 
-        logger("DEBUG", "KsignerApp: Adding <ScanScreen::scan-import-save-signature>")
+        logger.debug("KsignerApp: Adding <ScanScreen::scan-import-save-signature>")
         screen_manager.add_widget(ScanScreen(name="scan-import-save-signature"))
 
-        logger("DEBUG", "KsignerApp: Adding <ScanScreen::scan-import-save-public-key>")
+        logger.debug("KsignerApp: Adding <ScanScreen::scan-import-save-public-key>")
         screen_manager.add_widget(ScanScreen(name="scan-import-save-public-key"))
 
         return screen_manager

@@ -34,8 +34,7 @@ from kivy.uix.screenmanager import Screen
 #################
 # Local libraries
 #################
-from utils.log import logger
-
+from utils.log import build_logger
 
 class VerifyScreen(Screen):
     """
@@ -50,6 +49,11 @@ class VerifyScreen(Screen):
     - Verify signature
     """
 
+    def __init__(self, **kwargs):
+        self.loglevel = kwargs.pop("loglevel")
+        super().__init__(**kwargs)
+        self.log = build_logger(__name__, self.loglevel)
+
     def on_press_verify_screen_load_file_button(self):
         """
         on_press_verify_screen_load_file_button
@@ -57,7 +61,7 @@ class VerifyScreen(Screen):
         - change background color of button to (.5,.5,.5,.5),
           giving a visual effect of 'pressed'
         """
-        logger("INFO", "<MainScreen:@Button::verify> clicked")
+        self.log.info("<MainScreen:@Button::verify> clicked")
         self.ids.verify_screen_load_file_button.background_color = (0.5, 0.5, 0.5, 0.5)
 
     def on_release_verify_screen_load_file_button(self):
@@ -68,5 +72,5 @@ class VerifyScreen(Screen):
           giving a visual effect of 'unpressed'
         - make a screen transition to SignScreen
         """
-        logger("INFO", "<MainScreen@Button::sign> released")
+        self.log.info("<MainScreen@Button::sign> released")
         self.ids.verify_screen_load_file_button.background_color = (0, 0, 0, 0)

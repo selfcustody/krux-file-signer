@@ -25,7 +25,8 @@ clear-cache-post-run=no
 # A comma-separated list of package or module names from where C extensions may
 # be loaded. Extensions are loading into the active Python interpreter and may
 # run arbitrary code.
-extension-pkg-allow-list=
+# see https://github.com/pylint-dev/pylint/issues/1524#issuecomment-1214435049
+extension-pkg-allow-list=kivy.properties,
 
 # A comma-separated list of package or module names from where C extensions may
 # be loaded. Extensions are loading into the active Python interpreter and may
