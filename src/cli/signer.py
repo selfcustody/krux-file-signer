@@ -161,18 +161,19 @@ class Signer:
         # Convert pubkey data to bytes
         self.log.debug("Converting public key to bytes")
         __public_key_data_bytes__ = bytes.fromhex(__public_key_data__)
-
+        self.log.debug("pubkey data bytes: %s", __public_key_data_bytes__)
+        
         self.log.debug("Encoding bytes to base64 format")
         __public_key_data_b64__ = base64.b64encode(__public_key_data_bytes__)
-
+        self.log.debug("encoded base64 pubkey: %s", __public_key_data_b64__)
+        
         self.log.debug("Decoding bas64 to utf8")
-        __public_key_data_b64__ = __public_key_data_b64__.decode("utf8")
-
-        self.log.debug("b64 (data=%s)", __public_key_data_b64__)
+        __public_key_data_b64_utf8__ = __public_key_data_b64__.decode("utf8")
+        self.log.debug("decoded base64 utf8: %s", __public_key_data_b64_utf8__)
 
         __public_key_name__ = f"{self.owner}.pem"
 
-        with open(__public_key_name__, "wb") as pb_file:
+        with open(__public_key_name__, mode="w", encoding="utf-8") as pb_file:
             self.log.debug("Saving %s", __public_key_name__)
-            pb_file.write(__public_key_data_b64__)
+            pb_file.write(str(__public_key_data_b64_utf8__))
             self.log.debug("%s saved", __public_key_name__)
