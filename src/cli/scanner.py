@@ -105,10 +105,8 @@ class Scanner:
 
         # Encode data
         self.log.debug("Encoding signature")
-        data = str.encode(signature)
-
-        self.log.debug("Signature (data=%s)", data)
-        return data
+        self.log.debug("Signature (data=%s)", signature)
+        return signature
 
     def scan_public_key(self) -> str:
         """

@@ -58,6 +58,8 @@ class Verifyer:
         """
         Create the properly openssl command to verify
         """
+        
+        self.log.debug("Verifyer: Creating openssl command")
         return " ".join(
         [
             f"openssl sha256 <{self.file} -binary",
@@ -65,23 +67,21 @@ class Verifyer:
             f"openssl pkeyutl -verify -pubin -inkey {self.pubkey}",
             f"-sigfile {self.signature}",
         ]
+    
     )
 
-    def verify(self):
+    def verify(self, command):
         """
         Uses openssl to verify the signature and public key
         """
         try:
-            self.log.debug("Verifyer: Creating openssl command")
-            __command__ = self.make_openssl_command()
-            self.log.debug("Verifyer: Running '%s'", __command__)
-            subprocess.run(__command__, check=True, shell=True)
-            self.log.debug("Verifyer: verified")
+            self.log.debug("Verifyer: Running '%s'", command)
+            subprocess.run(command, check=True, shell=True)
         except subprocess.CalledProcessError as exc:
             message = "Invalid command"
             numeric_level = getattr(logging, self.loglevel.upper(), None)
             if not numeric_level == logging.NOTSET:
-                self.log.error("%s: %s", message, __command__)
+                self.log.error("%s: %s", message, command)
             else:
-                raise subprocess.CalledProcessError(message, cmd=__command__) from exc
+                raise subprocess.CalledProcessError(message, cmd=command) from exc
             

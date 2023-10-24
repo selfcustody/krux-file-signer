@@ -129,10 +129,14 @@ class Signer:
         """
         # Saves a signature
         signature_file = f"{self.file}.sig"
+
+        # encode signature to binary format
+        binary_signature = base64.b64decode(signature.encode())
+        
         self.log.debug("Saving %s", signature_file)
 
         with open(signature_file, "wb") as sig_file:
-            sig_file.write(signature)
+            sig_file.write(binary_signature)
             self.log.debug("Signature saved on %s", signature_file)
 
     def make_pubkey_certificate(self):
@@ -171,9 +175,15 @@ class Signer:
         __public_key_data_b64_utf8__ = __public_key_data_b64__.decode("utf8")
         self.log.debug("decoded base64 utf8: %s", __public_key_data_b64_utf8__)
 
+        formated_pubkey = "\n".join([
+            "-----BEGIN PUBLIC KEY-----",
+            __public_key_data_b64_utf8__,
+            "-----END PUBLIC KEY-----"
+        ])
+        self.log.debug("formated pubkey: %s", formated_pubkey)
         __public_key_name__ = f"{self.owner}.pem"
 
         with open(__public_key_name__, mode="w", encoding="utf-8") as pb_file:
             self.log.debug("Saving %s", __public_key_name__)
-            pb_file.write(str(__public_key_data_b64_utf8__))
+            pb_file.write(formated_pubkey)
             self.log.debug("%s saved", __public_key_name__)

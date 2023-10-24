@@ -102,13 +102,11 @@ verifier.add_argument(
 verifier.add_argument(
     "-s",
     "--sig-file",
-    dest="sig_file",
     help="path to signature file"
 )
 verifier.add_argument(
     "-p",
     "--pub-file",
-    dest="pub_file",
     help="path to pubkey file"
 )
 
@@ -117,7 +115,7 @@ if __name__ == "__main__":
     # parse arguments
     args = parser.parse_args()
     log = build_logger(__name__, args.loglevel)
-
+    log.debug(args)
     # on --version
     if args.version:
         print(KSIGNER_VERSION)
@@ -127,6 +125,8 @@ if __name__ == "__main__":
 
     elif args.command == "sign":
         log.debug("Starting signer")
+
+        # first sign
         signer = Signer(
             file=args.file,
             owner=args.owner,
@@ -140,8 +140,9 @@ if __name__ == "__main__":
         log.debug("Starting verifyer")
         verifyer = Verifyer(
             file=args.file,
-            pubkey=args.pub_key,
+            pubkey=args.pub_file,
             signature=args.sig_file,
             loglevel=args.loglevel
         )
-        verifyer.verify()
+        command = verifyer.make_openssl_command()
+        verifyer.verify(command)
