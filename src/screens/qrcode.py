@@ -144,73 +144,78 @@ class QRCodeScreen(ActionerScreen):
         """
         Event fired when user clicked and release the left mouse button
         (or the touchable screen)
-        """
-        self._back_to_signscreen()
+        """        
+        self._set_screen(name="sign", direction="right")
 
     def set_image(self):
         """
         Sets and add Image Widget to QRCodeScreen
         """
-        self._img = Image(
-            pos_hint=self.image_pos_hint,
-            allow_stretch=True,
-            size_hint=(None, None),
-            size=(Window.height * 0.60, Window.height * 0.6),
-        )
-
+        kwargs = {
+            "pos_hint": self.image_pos_hint,
+            "allow_stretch": True,
+            "size_hint": (None, None),
+            "size": (Window.height * 0.60, Window.height * 0.6)
+        }
+        self._img = Image(**kwargs)
         self.add_widget(self._img)
-        self.log.info("QRCodeScreen: <Image> added")
-
+        self.info("QRCodeScreen: <Image> added")
+        self.debug(kwargs)
+ 
     def set_label_warn(self):
         """
         Sets and add Label Widget that warn user about
         the what to do on QRCodeScreen
         """
-        self._label_warn = self._make_label_warn(
-            "\n".join(
-                [
-                    "[b]To sign this file with Krux:[/b]",
-                    "",
-                    " (a) load a 12/24 words key, with or without BIP39 password;",
-                    " (b) use the Sign -> Message feature;",
-                    " (c) scan this QR code below;",
-                    " (d) click on screen or type one of "
-                    + "'esc|backspace|enter|left' keys to proceed.",
-                ]
-            ),
+        text = "\n".join(
+            [
+                "[b]To sign this file with Krux:[/b]",
+                "",
+                " (a) load a 12/24 words key, with or without BIP39 password;",
+                " (b) use the Sign -> Message feature;",
+                " (c) scan this QR code below;",
+                " (d) click on screen or type one of "
+                + "'esc|backspace|enter|left' keys to proceed.",
+            ]
         )
+
+        self._label_warn = self._make_label(text=text,type="warning")
         self.add_widget(self._label_warn)
-        self.log.info("QRCodeScreen: <Label::warning> added")
+        self.info("<Label::warning> added")
 
     def set_label_desc(self):
         """
         Sets and add Label Widget that describe the qrcode's
         data to QRCodeScreen
         """
-        self._label_desc = self._make_label_desc(self.text)
+        self._label_desc = self._make_label(text=self.text, type="description")
         self.add_widget(self._label_desc)
-        self.log.info("QRCodeScreen: <Label::description> added")
+        self.info("<Label::description> added")
 
     def generate_qrcode(self):
         """
         Setup QRCode
         """
-        self.log.info("QRCodeScreen: Creating")
-        self._qrcode = QRCode(
-            version=self.version,
-            error_correction=self.ecc,
-            box_size=self.box_size,
-            border=self.border_size,
-        )
+        self.info("Creating qrcode")
+        kwargs = {
+            "version": self.version,
+            "error_correction": self.ecc,
+            "box_size": self.box_size,
+            "border": self.border_size,
+        }
+        self.debug(kwargs)
+        self._qrcode = QRCode(**kwargs)
         self._qrcode.add_data(self.code)
-        self.log.info("QRCodeScreen: data added")
-
+        self.debug("QRCode data added")
+        
         self._qrcode.make(fit=True)
+        self.debug("QRCode fit=True")
+        
         self._update_texture()
 
     # pylint: disable=unused-argument
     def _create_texture(self, k, delta):
-        self.log.info("QRCodeScreen: <Texture> creating")
+        self.info("QRCodeScreen: <Texture> creating")
         self._qrtexture = Texture.create(size=(k, k), colorfmt="rgb")
         # don't interpolate texture
         self._qrtexture.min_filter = "nearest"
@@ -219,11 +224,11 @@ class QRCodeScreen(ActionerScreen):
     def _update_texture(self):
         matrix = self._qrcode.get_matrix()
         k = len(matrix)
-        self.log.info("QRCodeScreen: <Texture::matrix::len>=%s", k)
+        self.debug("<Texture::matrix::len>=%s" % k)
 
         # create the texture in main UI thread otherwise
         # this will lead to memory corruption
-        self.log.info("QRCodeScreen: <Texture> in mainUI Thread")
+        self.debug("<Texture> in mainUI Thread")
         Clock.schedule_once(partial(self._create_texture, k), -1)
 
         _color = self.fill_color[:]
@@ -239,14 +244,14 @@ class QRCodeScreen(ActionerScreen):
         # join not necessary when using a byte array
         # buff =''.join(map(chr, buff))
         # update texture in UI thread.
-        self.log.info("QRCodeScreen: Blitting buffer in <QRCodeScreen@Texture>")
+        self.debug("Blitting buffer in <QRCodeScreen@Texture>")
         Clock.schedule_once(lambda dt: self._upd_texture(buff))
 
     def _upd_texture(self, buff):
         texture = self._qrtexture
 
         if not texture:
-            self.log.warning("QRCodeScreen: Texture hasn't been created")
+            self.warning("Texture hasn't been created")
             Clock.schedule_once(lambda dt: self._upd_texture(buff))
             return
 
@@ -255,4 +260,4 @@ class QRCodeScreen(ActionerScreen):
         self._img.anim_delay = -1
         self._img.texture = texture
         self._img.canvas.ask_update()
-        self.log.info("QRCodeScreen: <Texture> updated")
+        self.debug("<Texture> updated")

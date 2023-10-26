@@ -37,7 +37,7 @@ from kivy.uix.screenmanager import ScreenManager
 #################
 # Local libraries
 #################
-from screens.logscreen import get_some_info
+from cli.getsome import info
 from screens.main import MainScreen
 from screens.sign import SignScreen
 from screens.verify import VerifyScreen
@@ -62,7 +62,7 @@ class KSignerApp(App):
         - verify;
         - TODO: others
         """
-        Logger.info("%s: %s", get_some_info(), "Starting ksigner")
+        Logger.info("%s: %s", info(), "Starting ksigner")
         screen_manager = ScreenManager()
         screens = (
             MainScreen(name="main"),
@@ -74,15 +74,12 @@ class KSignerApp(App):
         )
 
         for screen in screens:
-            Logger.debug("%s: adding screnn '%s'", get_some_info(), screen.name)
+            Logger.debug("%s: adding screnn '%s'", info(), screen.name)
             screen_manager.add_widget(screen)
 
         return screen_manager
 
 
 if __name__ == "__main__":
-    if os.environ.get('LOG_LEVEL') != None:
-        loglevel = KSignerApp()
-
     app = KSignerApp()
     app.run()

@@ -60,8 +60,7 @@ class MainScreen(ActionerScreen):
         - make a screen transition to SignScreen
         """
         self._on_release(id="main_screen_sign_button")
-        self._set_transition(direction="left")
-        self._set_current(screen="sign")
+        self._set_screen(name="sign", direction="left")
 
     def on_press_verify_button(self):
         """
@@ -81,5 +80,4 @@ class MainScreen(ActionerScreen):
         - make a screen transition to VerifyScreen
         """
         self._on_release(id="main_screen_verify_button")
-        self._set_transition(direction="left")
-        self._set_current(screen="verify")
+        self._set_screen(name="verify", direction="left")

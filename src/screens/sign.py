@@ -169,7 +169,7 @@ class SignScreen(ActionerScreen):
         """
         # cache file input
         self.file_input = args[1][0]
-        msg = "<Popup> loading %s", self.file_input
+        msg = "<Popup> loading %s" % self.file_input
         self.info(msg)
 
         # Use cli.signer module
@@ -207,5 +207,4 @@ class SignScreen(ActionerScreen):
         qrcodescreen.code = self.file_hash
 
         # Change the screen
-        self._set_transition(direction="left")
-        self._set_current(screen="qrcode")
+        self._set_screen(name="qrcode", direction="left")

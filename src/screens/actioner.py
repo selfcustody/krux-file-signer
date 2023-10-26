@@ -58,18 +58,18 @@ class ActionerScreen(LoggedScreen):
     to set the default position on Screen
     """
 
-    warn_pos_hint = ObjectProperty({"center_x": 0.5, "center_y": 1})
+    warn_pos_hint = ObjectProperty({"center_x": 0.5, "center_y": 0.9})
     """
     :data:`warn_pos_hint` is a :class:`~kivy.properties.ObjectProperty`, 
     to set the default position on Screen
     """
 
-    base_label_kwargs = ObjectProperty({
+    base_label_kwargs = {
         "font_size": Window.height // 35,
         "font_name": "terminus.ttf",
         "halign": "center",
         "markup": True
-    })
+    }
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -99,18 +99,14 @@ class ActionerScreen(LoggedScreen):
         widget = self.ids[id]
         widget.background_color = (r, g, b, a)
 
-    def _set_transition(self, **kwargs):
+    def _set_screen(self, **kwargs):
+        name = kwargs.get("name")
         direction = kwargs.get("direction")
-        msg = "<ScreenManager> manager.transition.direction=%s" % direction
-        self.debug(msg)
+        print(self.manager.screen_names)
+
+        self.debug("Switching to screen='%s' by direction='%s'" % (name, direction))
         self.manager.transition.direction = direction
-
-    def _set_current(self, **kwargs):
-        screen = kwargs.get("screen")
-        msg =  "<ScreenManager> manager.current=%s" % screen
-        self.debug(msg)
-        self.manager.current = "sign"
-
+        self.manager.current = name
 
     def _on_press(self, **kwargs):
         """
@@ -164,10 +160,11 @@ class ActionerScreen(LoggedScreen):
             :param text
             :param type can be 'description' or 'warning'
         """
-        self.info("building '%s' label='%s'", text)
+
         text = kwargs.get("text")
         type = kwargs.get("type")
-        __kwargs__ = self.base_label_kwargs.deepcopy()
+        self.info("building '%s' label='%s'" % (type, text))
+        __kwargs__ = self.base_label_kwargs
         __kwargs__["text"] = text
         __kwargs__["color"] = self.fill_color
 
@@ -183,13 +180,6 @@ class ActionerScreen(LoggedScreen):
         msg = "label args: %s" % __kwargs__ 
         self.debug(msg) 
         return Label(**__kwargs__)
-
-    def _back_to_signscreen(self):
-        """
-        Back to SignScreen
-        """
-        self._set_transition(direction="left")
-        self._set_current(screen="sign")
 
     def _keyboard_closed(self):
         self.debug("closing keyboard")
