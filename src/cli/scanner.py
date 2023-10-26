@@ -33,18 +33,13 @@ import cv2
 # Local libraries
 #################
 from utils.log import now
-from utils.log import build_logger
+from cli.actioner import Actioner
 
-
-class Scanner:
+class Scanner(Actioner):
     """
     Scanner is the cli utility to scan
     Signature and PublicKey
     """
-
-    def __init__(self, **kwargs):
-        loglevel = kwargs.get("loglevel")
-        self.log = build_logger(__name__, loglevel)
 
     def _scan(self) -> str:
         """
@@ -53,10 +48,10 @@ class Scanner:
         Can be applyed some normalization
         or gray scale
         """
-        self.log.debug("Starting OpenCV capture")
+        self.debug("Starting OpenCV capture")
         vid = cv2.VideoCapture(0)
 
-        self.log.debug("Starting OpenSV QRCode detector")
+        self.debug("Starting OpenSV QRCode detector")
         detector = cv2.QRCodeDetector()
 
         qr_data = None
@@ -65,7 +60,7 @@ class Scanner:
             # Capture the video frame by frame
             # use some dummy vars (__+[a-zA-Z0-9]*?$)
             # to avoid the W0612 'Unused variable' pylint message
-            self.log.debug("Waiting for data...")
+            self.warning("Waiting for data...")
 
             _ret, frame = vid.read()
 
@@ -74,7 +69,7 @@ class Scanner:
 
             # Verify null data
             if len(qr_data) > 0:
-                self.log.debug("QRCode detected")
+                self.debug("QRCode detected")
                 break
 
             # Display the resulting frame
@@ -84,13 +79,13 @@ class Scanner:
             # quitting button you may use any
             # desired button of your choice
             if cv2.waitKey(1) & 0xFF == ord("q"):
-                self.log.debug("Key 'q' pressed: exiting")
+                self.debug("Key 'q' pressed: exiting")
                 break
 
-        self.log.debug("Releasing video")
+        self.debug("Releasing video")
         vid.release()
 
-        self.log.debug("Destroying video window")
+        self.debug("Destroying video window")
         cv2.destroyAllWindows()
 
         return qr_data
@@ -104,8 +99,8 @@ class Scanner:
         signature = self._scan()
 
         # Encode data
-        self.log.debug("Encoding signature")
-        self.log.debug("Signature (data=%s)", signature)
+        self.debug("Encoding signature")
+        self.debug("Signature (data=%s)" % signature)
         return signature
 
     def scan_public_key(self) -> str:
@@ -115,5 +110,5 @@ class Scanner:
         _ = input(f"[{now()}] Press enter to scan public key")
         public_key = self._scan()
 
-        self.log.debug("Public Key (data={%s})", public_key)
+        self.debug("Public Key (data={%s})" % public_key)
         return public_key

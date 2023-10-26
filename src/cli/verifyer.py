@@ -32,18 +32,17 @@ TODO: replace for pyca/cryptography or pyOpenSSL
 # Standart libraries
 ####################
 import subprocess
-import logging
 
 #################
 # Local libraries
 #################
-from utils.log import build_logger
+from cli.actioner import Actioner
 
-class Verifyer:
+class Verifyer(Actioner):
     """
     Verifyer is the class
     that manages the `verify` verify_openssl_command
-    with given :param:`file`, :param:`pubkey` and 
+    with given :param:`file`, :param:`pubkey` and
     :param:`signature`
     """
 
@@ -51,37 +50,29 @@ class Verifyer:
         self.file = kwargs.get("file")
         self.pubkey = kwargs.get("pubkey")
         self.signature = kwargs.get("signature")
-        self.loglevel = kwargs.get("loglevel")
-        self.log = build_logger(__name__, self.loglevel)
 
     def make_openssl_command(self) -> str:
         """
         Create the properly openssl command to verify
         """
-        
-        self.log.debug("Verifyer: Creating openssl command")
+
+        self.debug("Verifyer: Creating openssl command")
         return " ".join(
-        [
-            f"openssl sha256 <{self.file} -binary",
-            "|",
-            f"openssl pkeyutl -verify -pubin -inkey {self.pubkey}",
-            f"-sigfile {self.signature}",
-        ]
-    
-    )
+            [
+                f"openssl sha256 <{self.file} -binary",
+                "|",
+                f"openssl pkeyutl -verify -pubin -inkey {self.pubkey}",
+                f"-sigfile {self.signature}",
+            ]
+        )
 
     def verify(self, command):
         """
         Uses openssl to verify the signature and public key
         """
         try:
-            self.log.debug("Verifyer: Running '%s'", command)
+            self.debug("Verifyer: Running '%s'" % command)
             subprocess.run(command, check=True, shell=True)
         except subprocess.CalledProcessError as exc:
-            message = "Invalid command"
-            numeric_level = getattr(logging, self.loglevel.upper(), None)
-            if not numeric_level == logging.NOTSET:
-                self.log.error("%s: %s", message, command)
-            else:
-                raise subprocess.CalledProcessError(message, cmd=command) from exc
-            
+            error = subprocess.CalledProcessError(message, cmd=command)
+            self.error("Invalid command: %s" % error)

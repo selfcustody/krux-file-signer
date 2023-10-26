@@ -20,10 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 """
-logscreen.py
+actioner.py
 
-Implements an inherited kivy.uix.screenmanager.Screen
-with inner logger. Use it as super class
+Implements an abstract class with the kivy.logger.Logger
+to be used with Signer and Verifyer
 """
 ####################
 # Standard libraries
@@ -35,37 +35,30 @@ import inspect
 # Third party libraries
 #######################
 from kivy.logger import Logger, LOG_LEVELS
-from kivy.uix.screenmanager import Screen
 
 #################
 # Local libraries
 #################
 from cli.getsome import info
 
-class LoggedScreen(Screen):
-    """
-    MainScreen
 
-    Class to manage :mod:`screens` :class:`screens.SignScreen` and
-    :class:`screens.VerifyScreen`.
-    """
+class Actioner:
 
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
         if (os.environ.get('LOG_LEVEL')):
             self.loglevel = LOG_LEVELS[os.environ["LOG_LEVEL"]]
         else:
             self.loglevel = LOG_LEVELS["info"]
         Logger.setLevel(self.loglevel)
-        
+
     def info(self, msg):
         Logger.info("%s: %s", info().strip(), msg)
-    
+
     def debug(self, msg):
         Logger.debug("%s: %s", info().strip(), msg)
-    
+
     def warning(self, msg):
         Logger.warning("%s: %s", info().strip(), msg)
-    
+
     def error(msg, *args):
         Logger.error("%s: %s", info().strip(), msg)

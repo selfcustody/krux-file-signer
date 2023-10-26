@@ -25,16 +25,19 @@ ksigner-gui.py
 
 A simple Graphical User Interface built with kivy
 """
+import os
+
 #######################
 # Third party libraries
 #######################
 from kivy.app import App
+from kivy.logger import Logger
 from kivy.uix.screenmanager import ScreenManager
 
 #################
 # Local libraries
 #################
-from utils.log import build_logger
+from screens.logscreen import get_some_info
 from screens.main import MainScreen
 from screens.sign import SignScreen
 from screens.verify import VerifyScreen
@@ -46,7 +49,7 @@ class KSignerApp(App):
     """
     KSignerApp is the Root widget
     """
-
+        
     def build(self):
         """
         build
@@ -59,23 +62,27 @@ class KSignerApp(App):
         - verify;
         - TODO: others
         """
-        loglevel = "debug"
-
+        Logger.info("%s: %s", get_some_info(), "Starting ksigner")
         screen_manager = ScreenManager()
         screens = (
-            MainScreen(name="main", loglevel=loglevel),
-            SignScreen(name="sign", loglevel=loglevel),
-            VerifyScreen(name="verify", loglevel=loglevel),
-            QRCodeScreen(name="qrcode", loglevel=loglevel),
-            ScanScreen(name="scan-import-save-signature", loglevel=loglevel),
-            ScanScreen(name="scan-import-save-public-key", loglevel=loglevel)
+            MainScreen(name="main"),
+            SignScreen(name="sign"),
+            VerifyScreen(name="verify"),
+            QRCodeScreen(name="qrcode"),
+            ScanScreen(name="scan-import-save-signature"),
+            ScanScreen(name="scan-import-save-public-key"),
         )
 
-        for i in range(len(screens)):
-            screen_manager.add_widget(screens[i])
-        
+        for screen in screens:
+            Logger.debug("%s: adding screnn '%s'", get_some_info(), screen.name)
+            screen_manager.add_widget(screen)
+
         return screen_manager
 
+
 if __name__ == "__main__":
+    if os.environ.get('LOG_LEVEL') != None:
+        loglevel = KSignerApp()
+
     app = KSignerApp()
     app.run()

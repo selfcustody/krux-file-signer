@@ -30,17 +30,18 @@ An inherited implementations of kivy.uix.screenmanager Screen
 from kivy.uix.popup import Popup
 
 # pylint: disable=no-name-in-module
-from kivy.properties import StringProperty
+from kivy.properties import StringProperty, ListProperty
+from kivy.logger import LOG_LEVELS
 
 #################
 # Local libraries
 #################
-from screens.logscreen import LoggedScreen
+from screens.actioner import ActionerScreen
 from cli.signer import Signer
 from filechooser import LoadDialog
 
 
-class SignScreen(LoggedScreen):
+class SignScreen(ActionerScreen):
     """
     SignScreen
 
@@ -52,6 +53,31 @@ class SignScreen(LoggedScreen):
     - Back: `__on_release__` method
     """
 
+    file_input = StringProperty("")
+    """
+    The input file to be hashed
+    """
+
+    file_content = StringProperty("")
+    """
+    The content of file input to be hashed
+    """
+
+    file_hash = StringProperty("")
+    """
+    The hash of file input
+    """
+
+    name = StringProperty("sign")
+    """
+    The screen's name 
+    """
+
+    popup_size_hint = ListProperty((0.9, 0.9))
+    """
+    Relative size of file popup
+    """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._content = LoadDialog(
@@ -60,176 +86,126 @@ class SignScreen(LoggedScreen):
             on_submit=self.on_submit_file,
         )
         self._popup = Popup(
-            title="Load a file", content=self._content, size_hint=(0.9, 0.9)
+            title="Load a file",
+            content=self._content,
+            size_hint=self.popup_size_hint
         )
-        self.file_input = StringProperty("")
-        self.file_content = StringProperty("")
-        self.file_hash = StringProperty("")
 
+        
     def on_press_sign_screen_load_file_and_export_hash_qrcode(self):
         """
-        on_press_sign_screen_load_file_and_export_hash_qrcode
-
-        - change background color of button to (.5,.5,.5,.5),
-          giving a visual effect of 'pressed'
+        Change background color of
+        :data:`sign_screen_load_file_and_export_hash_qrcode` widget
         """
-        self.log.info(
-            "SignScreen: <Button::sign_screen_load_file_and_export_hash_qrcode> clicked",
-        )
-        self.ids.sign_screen_load_file_and_export_hash_qrcode.background_color = (
-            0.5,
-            0.5,
-            0.5,
-            0.5,
-        )
-
+        self._on_press(id="sign_screen_load_file_and_export_hash_qrcode")
+        
     def on_release_sign_screen_load_file_and_export_hash_qrcode(self):
         """
-        on_release_sign_screen_load_file_and_export_hash_qrcode
-
-        - change background color of button to (0, 0, 0, 0),
-          giving a visual effect of 'unpressed'
-        - open the FileChooser popup
+        Change background of 
+        :data:`sign_screen_load_file_and_export_hash_qrcode` widget
+        and open popup to choose file
         """
-        self.log.info(
-            "SignScreen: <Button::sign_screen_load_file_and_export_hash_qrcode> released",
-        )
-        self.ids.sign_screen_load_file_and_export_hash_qrcode.background_color = (
-            0,
-            0,
-            0,
-            0,
-        )
-
-        self.log.info("SignScreen: <Popup> opening")
+        self._on_release(id="sign_screen_load_file_and_export_hash_qrcode")
+        self.info("opening <Popup>")
         self._popup.open()
 
     def on_press_sign_screen_import_and_save_signature(self):
         """
-        on_press_import_and_save_signature
-
-        - change background color of button to (.5,.5,.5,.5),
-          giving a visual effect of 'pressed'
+        Change background of 
+        :data:`sign_screen_import_and_save_signature` widget
         """
-        self.log.info(
-            "SignScreen: <Button::sign_screen_import_and_save_signature> pressed",
-        )
-        self.ids.sign_screen_import_and_save_signature.background_color = (
-            0.5,
-            0.5,
-            0.5,
-            0.5,
-        )
+        self._on_press(id="sign_screen_import_and_save_signature")
 
     def on_release_sign_screen_import_and_save_signature(self):
         """
-        on_release_sign_screen_import_and_save_signature
-
-        - change background color of button to (0, 0, 0, 0),
-          giving a visual effect of 'pressed'
-        - go to ScanScreen
+        Change background of 
+        :data:`sign_screen_import_and_save_signature` widget
+        and redirects to :data:`scan-import-save-signature`
+        screen
         """
-        self.log.info(
-            "SignScreen: <Button::sign_screen_import_and_save_signature> released",
-        )
-        self.ids.sign_screen_load_file_and_export_hash_qrcode.background_color = (
-            0,
-            0,
-            0,
-            0,
-        )
-        self.manager.transition.direction = "right"
-        self.manager.current = "scan-import-save-signature"
+        self._on_release(id="sign_screen_import_and_save_signature")
+        self._set_transition(direction="right")
+        self._set_current(screen="scan-import-save-signature")
 
     def on_press_sign_screen_import_and_save_public_key(self):
         """
-        on_press_import_and_save_public_key
-
-        - change background color of button to (.5,.5,.5,.5),
-          giving a visual effect of 'pressed'
-        """
-        self.log.info(
-            "SignScreen: <Button::sign_screen_import_and_save_public_key> pressed",
-        )
-        self.ids.sign_screen_import_and_save_public_key.background_color = (
-            0.5,
-            0.5,
-            0.5,
-            0.5,
-        )
+        Change background of 
+        :data:`sign_screen_import_and_save_public_key` widget
+         """
+        self._on_press(id="sign_screen_import_and_save_public_key")
 
     def on_release_sign_screen_import_and_save_public_key(self):
         """
-        on_release_sign_screen_import_and_save_public_key
-
-        - change background color of button to (0, 0, 0, 0),
-          giving a visual effect of 'pressed'
-        - go to ScanScreen
+        Change background of 
+        :data:`sign_screen_import_and_save_public_key` widget
+        and redirects to :data:`scan-import-save-public-key`
+        screen
         """
-        self.log.info(
-            "SignScreen: <Button::sign_screen_import_and_save_public_key> released",
-        )
-        self.ids.sign_screen_import_and_save_public_key.background_color = (
-            0,
-            0,
-            0,
-            0,
-        )
-        self.manager.transition.direction = "right"
-        self.manager.current = "scan-import-save-signature"
+        self._on_release(id="sign_screen_import_and_save_public_key")
+        self._set_transition(direction="right")
+        self._set_current(screen="scan-import-save-public-key")
 
     def on_press_back_main(self):
         """
-        on_press_back_main
-
-        - change background color of button to (.5,.5,.5,.5),
-          giving a visual effect of 'pressed'
+        Change background of 
+        :data:`sign_screen_back` widget
         """
-        self.log.info("SignScreen: <Button::back> pressed")
-        self.ids.sign_screen_back.background_color = (0.5, 0.5, 0.5, 0.5)
+        self._on_press(id="sign_screen_back")
 
     def on_release_back_main(self):
         """
+        Change background of 
+        :data:`sign_screen_back` widget
         on_release_back_main
-
-        - change background color of button to (.5,.5,.5,.5),
-          giving a visual effect of 'pressed'
-        - go back to MainScreen
         """
-        self.log.info("SignScreen: <Button::back> released")
-        self.ids.sign_screen_back.background_color = (0, 0, 0, 0)
-        self.manager.transition.direction = "right"
-        self.manager.current = "main"
+        self._on_release(id="sign_screen_back")
+        self._set_transition(direction="left")
+        self._set_current(screen="main")
 
     def on_submit_file(self, *args):
         """
-        on_submit_file
-
-        Call `open_and_hash_file` to open, read and hash (sha256sum)
-        a given file and redirect to QRCodeScreen
+        Call :class:`Signer` to open, read and hash
+        (sha256sum) a given file and redirect to QRCodeScreen
         """
+        # cache file input
         self.file_input = args[1][0]
-        self.log.info("SignScreen: <Popup> loading %s", self.file_input)
+        msg = "<Popup> loading %s", self.file_input
+        self.info(msg)
 
         # Use cli.signer module
         # to implement signature on GUI
+        if (self.loglevel == LOG_LEVELS["debug"]):
+            loglevel = "debug"
+        elif (self.loglevel == LOG_LEVELS["warning"]):
+            loglevel = "warning"
+        elif (self.loglevel == LOG_LEVELS["error"]):
+            loglevel = "error"
+        else:
+            loglevel = "info"
+            
         signer = Signer(
             file=self.file_input,
             owner=self.file_input,
             uncompressed=False,
-            loglevel=self.loglevel
+            loglevel=loglevel,
         )
+
+        # Saves the hash in a .sha256sum file
         self.file_hash = signer.hash_file()
         signer.save_hash_file(self.file_hash)
 
-        self.log.info("SignScreen: <Popup> closed")
+        # Close the popup
+        msg = "Closing <Popup>"
+        self.info(msg)
         self._popup.dismiss()
 
-        self.log.info("SignScreen: Caching filename and hash to <QRCodeScreen>")
+        # Cache qrcode data
+        msg = "Caching filename and hash to <QRCodeScreen>"
+        self.info(msg)
         qrcodescreen = self.manager.get_screen("qrcode")
         qrcodescreen.text = f"[b]{self.file_input}[/b]\n\n[b]{self.file_hash}[/b]"
         qrcodescreen.code = self.file_hash
 
-        self.log.info("SignScreen: Redirecting to <QRCodeScreen>")
-        self.manager.transition.direction = "left"
-        self.manager.current = "qrcode"
+        # Change the screen
+        self._set_transition(direction="left")
+        self._set_current(screen="qrcode")

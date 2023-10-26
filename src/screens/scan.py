@@ -91,16 +91,16 @@ class ScanScreen(ActionerScreen):
             text = "\n".join(
                 [
                     "(a) Scan the signed message;",
-                    "(b) click on scren or press one of "+
-                        "'esc|enter|backspace|left button' to proceed",
+                    "(b) click on scren or press one of "
+                    + "'esc|enter|backspace|left button' to proceed",
                 ]
             )
         elif self.manager.current == "scan-import-save-public-key":
             text = "\n".join(
                 [
                     "(a) Scan the hexadecimal public key;",
-                    "(b) click on scren or press one of "+
-                        "'esc|enter|backspace|left button' to proceed",
+                    "(b) click on scren or press one of "
+                    + "'esc|enter|backspace|left button' to proceed",
                 ]
             )
 

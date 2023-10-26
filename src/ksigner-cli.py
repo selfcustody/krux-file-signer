@@ -40,10 +40,7 @@ import argparse
 #################
 # Local libraries
 #################
-from utils.constants import (
-    KSIGNER_VERSION,
-    KSIGNER_CLI_DESCRIPTION
-)
+from utils.constants import KSIGNER_VERSION, KSIGNER_CLI_DESCRIPTION
 from utils.log import build_logger
 from cli.signer import Signer
 from cli.verifyer import Verifyer
@@ -72,11 +69,11 @@ parser.add_argument(
 # Subparsers: sign and verify
 subparsers = parser.add_subparsers(help="sub-command help", dest="command")
 
-# Sign command
+# Sign compilemmand
 signer = subparsers.add_parser("sign", help="sign a file")
 signer.add_argument(
-    "-f",
-    "--file",
+    "-f", 
+    "--file", 
     help="path to file to sign"
 )
 signer.add_argument(
@@ -94,28 +91,15 @@ signer.add_argument(
 
 # Verify command
 verifier = subparsers.add_parser("verify", help="verify signature")
-verifier.add_argument(
-    "-f",
-    "--file",
-    help="path to file to verify"
-)
-verifier.add_argument(
-    "-s",
-    "--sig-file",
-    help="path to signature file"
-)
-verifier.add_argument(
-    "-p",
-    "--pub-file",
-    help="path to pubkey file"
-)
+verifier.add_argument("-f", "--file", help="path to file to verify")
+verifier.add_argument("-s", "--sig-file", help="path to signature file")
+verifier.add_argument("-p", "--pub-file", help="path to pubkey file")
 
 
 if __name__ == "__main__":
     # parse arguments
     args = parser.parse_args()
-    log = build_logger(__name__, args.loglevel)
-    log.debug(args)
+
     # on --version
     if args.version:
         print(KSIGNER_VERSION)
@@ -124,25 +108,20 @@ if __name__ == "__main__":
         parser.print_help()
 
     elif args.command == "sign":
-        log.debug("Starting signer")
-
         # first sign
         signer = Signer(
             file=args.file,
             owner=args.owner,
-            uncompressed=args.uncompressed,
-            loglevel=args.loglevel,
+            uncompressed=args.uncompressed
         )
         signer.sign()
         signer.make_pubkey_certificate()
 
     elif args.command == "verify":
-        log.debug("Starting verifyer")
         verifyer = Verifyer(
             file=args.file,
             pubkey=args.pub_file,
             signature=args.sig_file,
-            loglevel=args.loglevel
         )
-        command = verifyer.make_openssl_command()
-        verifyer.verify(command)
+        COMMAND = verifyer.make_openssl_command()
+        verifyer.verify(COMMAND)

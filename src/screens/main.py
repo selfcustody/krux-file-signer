@@ -28,10 +28,11 @@ Implements an inherited screens.logscreen.LoggedScreen
 #################
 # Local libraries
 #################
-from screens.logscreen import LoggedScreen
+from screens.actioner import ActionerScreen
+# pylint: disable=no-name-in-module
+from kivy.properties import StringProperty, ListProperty
 
-
-class MainScreen(LoggedScreen):
+class MainScreen(ActionerScreen):
     """
     MainScreen
 
@@ -39,6 +40,8 @@ class MainScreen(LoggedScreen):
     :class:`screens.VerifyScreen`.
     """
 
+    name = StringProperty("main")
+         
     def on_press_sign_button(self):
         """
         on_press_sign_button
@@ -46,8 +49,7 @@ class MainScreen(LoggedScreen):
         - change background color of button to (.5,.5,.5,.5),
           giving a visual effect of 'pressed'
         """
-        self.log.debug("MainScreen: <Button::sign> clicked")
-        self.ids.main_screen_sign_button.background_color = (0.5, 0.5, 0.5, 0.5)
+        self._on_press(id="main_screen_sign_button")
 
     def on_release_sign_button(self):
         """
@@ -57,10 +59,9 @@ class MainScreen(LoggedScreen):
           giving a visual effect of 'unpressed'
         - make a screen transition to SignScreen
         """
-        self.log.debug("MainScreen: <Button::sign> released")
-        self.ids.main_screen_sign_button.background_color = (0, 0, 0, 0)
-        self.manager.transition.direction = "left"
-        self.manager.current = "sign"
+        self._on_release(id="main_screen_sign_button")
+        self._set_transition(direction="left")
+        self._set_current(screen="sign")
 
     def on_press_verify_button(self):
         """
@@ -69,9 +70,8 @@ class MainScreen(LoggedScreen):
         - change background color of button to (.5,.5,.5,.5),
           giving a visual effect of 'pressed'
         """
-        self.log.debug("MainScreen: <Button::verify> clicked")
-        self.ids.main_screen_verify_button.background_color = (0.5, 0.5, 0.5, 0.5)
-
+        self._on_press(id="main_screen_verify_button")
+        
     def on_release_verify_button(self):
         """
         on_release_verify_button
@@ -80,7 +80,6 @@ class MainScreen(LoggedScreen):
           giving a visual effect of 'unpressed'
         - make a screen transition to VerifyScreen
         """
-        self.log.debug("MainScreen: <Button::verify> released")
-        self.ids.main_screen_verify_button.background_color = (0, 0, 0, 0)
-        self.manager.transition.direction = "left"
-        self.manager.current = "verify"
+        self._on_release(id="main_screen_verify_button")
+        self._set_transition(direction="left")
+        self._set_current(screen="verify")

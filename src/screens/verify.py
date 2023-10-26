@@ -30,6 +30,7 @@ for verify signature options
 #################
 from screens.logscreen import LoggedScreen
 
+
 class VerifyScreen(LoggedScreen):
     """
     VerifyScreen
@@ -42,7 +43,7 @@ class VerifyScreen(LoggedScreen):
     - Load publickey
     - Verify signature
     """
-    
+
     def on_press_verify_screen_load_file_button(self):
         """
         on_press_verify_screen_load_file_button

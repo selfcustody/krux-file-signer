@@ -59,6 +59,7 @@ from kivy.properties import (
 #################
 from screens.actioner import ActionerScreen
 
+
 # pylint: disable=too-many-instance-attributes
 class QRCodeScreen(ActionerScreen):
     """
@@ -173,8 +174,8 @@ class QRCodeScreen(ActionerScreen):
                     " (a) load a 12/24 words key, with or without BIP39 password;",
                     " (b) use the Sign -> Message feature;",
                     " (c) scan this QR code below;",
-                    " (d) click on screen or type one of " +
-                        "'esc|backspace|enter|left' keys to proceed.",
+                    " (d) click on screen or type one of "
+                    + "'esc|backspace|enter|left' keys to proceed.",
                 ]
             ),
         )
