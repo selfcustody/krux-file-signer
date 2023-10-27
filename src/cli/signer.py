@@ -25,6 +25,14 @@ class Signer(Actioner):
     """
     Signer is the class
     that manages the `sign` command
+
+    Kwargs:
+    -------
+        :param:`file` the file to be signer
+        :param:`owner` the owner of file
+        :param:`uncompressed` if the file will use
+                uncompressed format for public files
+        
     """
 
     def __init__(self, **kwargs):
@@ -141,11 +149,15 @@ class Signer(Actioner):
         # Scans the public KeyboardInterruptardInterrupt
         self.debug("Creating public key certificate")
         pubkey = self.scanner.scan_public_key()
-
-        # Create PEM data
-        # Save PEM data to a file
-        # with filename as owner's name
-        # Choose if will be compressed or uncompressed
+        self.save_pubkey_certificate(pubkey)
+        
+    def save_pubkey_certificate(self, pubkey):
+        """
+        Create and save PEM data to a file
+        with filename as owner's name
+        
+        Choose if will be compressed or uncompressed
+        """
         if self.uncompressed:
             self.debug("Make it uncompressed key")
             __public_key_data__ = "".join(

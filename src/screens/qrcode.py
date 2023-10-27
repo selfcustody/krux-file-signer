@@ -58,6 +58,7 @@ from kivy.properties import (
 # Local libraries
 #################
 from screens.actioner import ActionerScreen
+from screens.cacher import LoggedCache
 
 
 # pylint: disable=too-many-instance-attributes
@@ -174,8 +175,7 @@ class QRCodeScreen(ActionerScreen):
                 " (a) load a 12/24 words key, with or without BIP39 password;",
                 " (b) use the Sign -> Message feature;",
                 " (c) scan this QR code below;",
-                " (d) click on screen or type one of "
-                + "'esc|backspace|enter|left' keys to proceed.",
+                " (d) click on screen or type 'enter'"
             ]
         )
 
@@ -188,7 +188,15 @@ class QRCodeScreen(ActionerScreen):
         Sets and add Label Widget that describe the qrcode's
         data to QRCodeScreen
         """
-        self._label_desc = self._make_label(text=self.text, type="description")
+        file_input = LoggedCache.get("ksigner", "file_input")
+        hash_file = LoggedCache.get("ksigner", "hash_file")
+        hash = LoggedCache.get("ksigner", "hash")
+        text = "\n".join([
+            f"File input: {file_input}",
+            f"File hash: {hash_file}",
+            f"\n{hash}"
+        ])
+        self._label_desc = self._make_label(text=text, type="description")
         self.add_widget(self._label_desc)
         self.info("<Label::description> added")
 
@@ -203,14 +211,12 @@ class QRCodeScreen(ActionerScreen):
             "box_size": self.box_size,
             "border": self.border_size,
         }
-        self.debug(kwargs)
+
+        # add data
+        data = LoggedCache.get("ksigner", "hash")
         self._qrcode = QRCode(**kwargs)
-        self._qrcode.add_data(self.code)
-        self.debug("QRCode data added")
-        
+        self._qrcode.add_data(data)
         self._qrcode.make(fit=True)
-        self.debug("QRCode fit=True")
-        
         self._update_texture()
 
     # pylint: disable=unused-argument

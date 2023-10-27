@@ -34,11 +34,14 @@ from kivy.core.window import Window
 from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import ObjectProperty
 from kivy_garden.zbarcam import ZBarCam
+from kivy.lang import Builder
 
 #################
 # Local libraries
 #################
 from screens.actioner import ActionerScreen
+from cli.signer import Signer
+from screens.cacher import LoggedCache
 
 
 class ScanScreen(ActionerScreen):
@@ -48,7 +51,8 @@ class ScanScreen(ActionerScreen):
 
     zbar_pos_hint = ObjectProperty({"center_x": 0.5, "center_y": 0.5})
     """
-    :data:`label_pos_hint` is a :class:`~kivy.properties.ObjectProperty`, 
+    :data:`label_pos_hint` is a 
+    :class:`~kivy.properties.ObjectProperty`,
     to set the default position on Screen
     """
 
@@ -58,98 +62,62 @@ class ScanScreen(ActionerScreen):
         # Widgets
         self._box_layout = None
         self._zbarcam = None
-        # Keyboard bindings for close ScanScreen
-        self._keyboard = Window.request_keyboard(self._keyboard_closed, self, "text")
-        if self._keyboard.widget:
-            self.log.warning("QRCodeScreen: This widget is a VKeyboard object")
-        self._keyboard.bind(on_key_down=self._on_keyboard_down)
 
     def on_pre_enter(self, *args):
         """
         Event fired when the screen is about to be used: the entering animation is started.
         """
-        self.set_box_layout()
-        self.set_label_warn()
-        self.set_zbarcam()
-        self.set_label_desc()
-
-    def set_box_layout(self):
-        """
-        Sets and add BoxLayout Widget that wrap
-        all needed widgets
-        """
-        self._box_layout = BoxLayout(orientation="vertical")
-        self.add_widget(self._box_layout)
-        self.log.info("ScanScreen: <BoxLayout> added")
-
-    def set_label_warn(self):
-        """
-        Sets and add Label Widget that warn user about
-        the what to do on ScanScreen
-        """
-        if self.manager.current == "scan-import-save-signature":
-            text = "\n".join(
-                [
-                    "(a) Scan the signed message;",
-                    "(b) click on scren or press one of "
-                    + "'esc|enter|backspace|left button' to proceed",
-                ]
-            )
-        elif self.manager.current == "scan-import-save-public-key":
-            text = "\n".join(
-                [
-                    "(a) Scan the hexadecimal public key;",
-                    "(b) click on scren or press one of "
-                    + "'esc|enter|backspace|left button' to proceed",
-                ]
-            )
-
-        self._label_warn = self._make_label_warn(text)
-        self.log.info("ScanScreen: <Label::warning> added to <BoxLayout>")
-        self._box_layout.add_widget(self._label_warn)
-
-    def set_zbarcam(self):
-        """
-        Sets and add ZBarCam Widget that describe the qrcode's
-        data to ScanScreen
-        """
         self._zbarcam = ZBarCam()
-        self._box_layout.add_widget(self._zbarcam)
-        self.log.info("ScanScreen: <ZBarCam> added to <BoxLayout>")
+        self.add_widget(self._zbarcam)
+        self.info("<ZBarCam> added")
         Clock.schedule_interval(self._decode_qrcode, 1)
-
-    def set_label_desc(self):
-        """
-        Sets and add Label Widget that describe the qrcode's
-        data to ScanScreen
-        """
-
-        if self.manager.current == "scan-import-save-signature":
-            text = ("Signed message: ",)
-        elif self.manager.current == "scan-import-save-public-key":
-            text = "Public key: "
-
-        self._label_desc = self._make_label_desc(text)
-        self._box_layout.add_widget(self._label_desc)
-        self.log.info("ScanScreen: <Label::description> added to <BoxLayout>")
 
     # pylint: disable=unused-argument
     def _decode_qrcode(self, *args):
         """
-        When camera capture the QRCode,
-        :data:`zbarcam.symbols` will be filled;
-        When it occurs, stop scanning
-
-        @see https://stackoverflow.com/questions/
-        73067952/kivy-load-camera-zbarscan-on-click-button/73077097#73077097
+        When camera capture the QRCode, :data:`zbarcam.symbols`
+        will be feeded to :class:`Signer` and saved as `.sig`
+        or `.pem` files. When it occurs, stop scanning
         """
-        self.log.info("ScanScreen: waiting for qrcode")
+        self.warning("Waiting for qrcode")
         if len(self._zbarcam.symbols) > 0:
             scanned_data = self._zbarcam.symbols[0].data.decode("UTF-8")
-            self._label_desc += ScanScreen._chunk_str(scanned_data, 12)
+            self.info("captured '%s'" % scanned_data)
 
-            self.log.debug("ScanScreen: captured '%s'", scanned_data)
-            Clock.unschedule(self._decode_qrcode, 1)
+            # Get cached data
+            file_input = LoggedCache.get("ksigner", "file_input")
+            owner = LoggedCache.get("ksigner", "owner")
+
+            if self.manager.current == "import-signature":
+                self.warning("Saving signature")
+                signer = Signer(
+                    file=file_input,
+                    owner=owner,
+                    uncompressed=False
+                )
+
+                signer.save_signature(scanned_data)
+
+            elif self.manager.current == "import-public-key":
+                self.warning("Saving publickey certificate")
+                signer = Signer(
+                    file=file_input,
+                    owner=owner,
+                    uncompressed=False
+                )
+                signer.save_pubkey_certificate(scanned_data)
+
+            else:
+                self.warning("Invalid screen '%s'" % self.manager.screen)
+
+            self.debug("Stopping <ZBarCam>")
             self._zbarcam.stop()  # stop zbarcam
+
+            self.debug("Releasing device")
+
             # pylint: disable=protected-access
-            self._zbarcam.ids["xcamera"]._camera._device.release()
+            self._zbarcam.ids.xcamera._camera._device.release()
+            self._zbarcam.ids.xcamera._camera = None
+            self.debug("Unscheduling QRCode decodification")
+            Clock.unschedule(self._decode_qrcode, 1)
+            self._set_screen(name="sign", direction="right")

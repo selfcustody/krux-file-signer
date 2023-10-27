@@ -37,6 +37,7 @@ from kivy.logger import LOG_LEVELS
 # Local libraries
 #################
 from screens.actioner import ActionerScreen
+from screens.cacher import LoggedCache
 from cli.signer import Signer
 from filechooser import LoadDialog
 
@@ -52,22 +53,7 @@ class SignScreen(ActionerScreen):
     - Import & save publickey: `TODO`;
     - Back: `__on_release__` method
     """
-
-    file_input = StringProperty("")
-    """
-    The input file to be hashed
-    """
-
-    file_content = StringProperty("")
-    """
-    The content of file input to be hashed
-    """
-
-    file_hash = StringProperty("")
-    """
-    The hash of file input
-    """
-
+    
     name = StringProperty("sign")
     """
     The screen's name 
@@ -91,59 +77,49 @@ class SignScreen(ActionerScreen):
             size_hint=self.popup_size_hint
         )
 
+    def on_press_export_sha256_message(self):
+        """
+        Change background color of :data:`export_sha256_message` widget
+        """
+        self._on_press(id="export_sha256_message")
         
-    def on_press_sign_screen_load_file_and_export_hash_qrcode(self):
+    def on_release_export_sha256_message(self):
         """
-        Change background color of
-        :data:`sign_screen_load_file_and_export_hash_qrcode` widget
-        """
-        self._on_press(id="sign_screen_load_file_and_export_hash_qrcode")
-        
-    def on_release_sign_screen_load_file_and_export_hash_qrcode(self):
-        """
-        Change background of 
-        :data:`sign_screen_load_file_and_export_hash_qrcode` widget
+        Change background of :data:`export_sha256_message` widget
         and open popup to choose file
         """
-        self._on_release(id="sign_screen_load_file_and_export_hash_qrcode")
+        self._on_release(id="export_sha256_message")
         self.info("opening <Popup>")
         self._popup.open()
 
-    def on_press_sign_screen_import_and_save_signature(self):
+    def on_press_import_signature_message(self):
         """
-        Change background of 
-        :data:`sign_screen_import_and_save_signature` widget
+        Change background of :data:`import_signature_message` widget
         """
-        self._on_press(id="sign_screen_import_and_save_signature")
+        self._on_press(id="import_signature_message")
 
-    def on_release_sign_screen_import_and_save_signature(self):
+    def on_release_import_signature_message(self):
         """
-        Change background of 
-        :data:`sign_screen_import_and_save_signature` widget
-        and redirects to :data:`scan-import-save-signature`
-        screen
+        Change background of :data:`import_signature_message` widget
+        and redirects to :data:`import_signature_message` screen
         """
-        self._on_release(id="sign_screen_import_and_save_signature")
-        self._set_transition(direction="right")
-        self._set_current(screen="scan-import-save-signature")
+        self._on_release(id="import_signature_message")
+        self._set_screen(name="import-signature", direction="right")
 
-    def on_press_sign_screen_import_and_save_public_key(self):
+    def on_press_import_publickey_message(self):
         """
         Change background of 
-        :data:`sign_screen_import_and_save_public_key` widget
+        :data:`import_publickey_message` widget
          """
-        self._on_press(id="sign_screen_import_and_save_public_key")
+        self._on_press(id="import_publickey_message")
 
-    def on_release_sign_screen_import_and_save_public_key(self):
+    def on_release_import_publickey_message(self):
         """
-        Change background of 
-        :data:`sign_screen_import_and_save_public_key` widget
-        and redirects to :data:`scan-import-save-public-key`
-        screen
+        Change background of :data:`import_publickey_message` widget
+        and redirects to :data:`import-public-key` screen
         """
-        self._on_release(id="sign_screen_import_and_save_public_key")
-        self._set_transition(direction="right")
-        self._set_current(screen="scan-import-save-public-key")
+        self._on_release(id="import_publickey_message")
+        self._set_screen(name="import-public-key", direction="right")
 
     def on_press_back_main(self):
         """
@@ -159,8 +135,7 @@ class SignScreen(ActionerScreen):
         on_release_back_main
         """
         self._on_release(id="sign_screen_back")
-        self._set_transition(direction="left")
-        self._set_current(screen="main")
+        self._set_screen(name="main", direction="right")
 
     def on_submit_file(self, *args):
         """
@@ -168,43 +143,33 @@ class SignScreen(ActionerScreen):
         (sha256sum) a given file and redirect to QRCodeScreen
         """
         # cache file input
-        self.file_input = args[1][0]
-        msg = "<Popup> loading %s" % self.file_input
+        LoggedCache.append("ksigner", "file_input", args[1][0])
+        LoggedCache.append("ksigner", "owner", args[1][0])
+        file_input = LoggedCache.get("ksigner", "file_input")
+        owner = LoggedCache.get("ksigner", "owner")
+        
+        msg = "<Popup> loading %s" % file_input
         self.info(msg)
 
-        # Use cli.signer module
-        # to implement signature on GUI
-        if (self.loglevel == LOG_LEVELS["debug"]):
-            loglevel = "debug"
-        elif (self.loglevel == LOG_LEVELS["warning"]):
-            loglevel = "warning"
-        elif (self.loglevel == LOG_LEVELS["error"]):
-            loglevel = "error"
-        else:
-            loglevel = "info"
-            
         signer = Signer(
-            file=self.file_input,
-            owner=self.file_input,
+            file=file_input,
+            owner=owner,
             uncompressed=False,
-            loglevel=loglevel,
         )
 
-        # Saves the hash in a .sha256sum file
-        self.file_hash = signer.hash_file()
-        signer.save_hash_file(self.file_hash)
+        # Cache the hash in a .sha256sum file
+        hash = signer.hash_file()
+        LoggedCache.append("ksigner", "hash", hash)
+
+        # Cache the hashed file
+        hash_file = f"{file_input}.sha256sum.txt"
+        LoggedCache.append("ksigner", "hash_file", hash_file)        
+        signer.save_hash_file(hash_file)
 
         # Close the popup
         msg = "Closing <Popup>"
         self.info(msg)
         self._popup.dismiss()
 
-        # Cache qrcode data
-        msg = "Caching filename and hash to <QRCodeScreen>"
-        self.info(msg)
-        qrcodescreen = self.manager.get_screen("qrcode")
-        qrcodescreen.text = f"[b]{self.file_input}[/b]\n\n[b]{self.file_hash}[/b]"
-        qrcodescreen.code = self.file_hash
-
         # Change the screen
-        self._set_screen(name="qrcode", direction="left")
+        self._set_screen(name="export-sha256", direction="left")

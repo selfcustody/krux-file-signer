@@ -20,56 +20,60 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 """
-logscreen.py
+signscreen.py
 
-Implements an inherited kivy.uix.screenmanager.Screen
-with inner logger. Use it as super class
+An inherited implementations of kivy.uix.screenmanager Screen    
 """
-####################
-# Standard libraries
-####################
-import os
-import inspect
-
-#######################
-# Third party libraries
-#######################
+#####################
+# Thirparty libraries
 from kivy.logger import Logger, LOG_LEVELS
-from kivy.uix.screenmanager import Screen
-
-#################
-# Local libraries
-#################
+from kivy.cache import Cache
 from cli.getsome import info
 
 
-class LoggedScreen(Screen):
+class LoggedCache:
     """
-    MainScreen
-
-    Class to manage :mod:`screens` :class:`screens.SignScreen` and
-    :class:`screens.VerifyScreen`.
+    Class to joint :class:`Cache` with :class:`Logger`
+    features
     """
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         if (os.environ.get('LOG_LEVEL')):
-            self.loglevel = LOG_LEVELS[os.environ["LOG_LEVEL"]]
+            loglevel = LOG_LEVELS[os.environ["LOG_LEVEL"]]
         else:
-            self.loglevel = LOG_LEVELS["info"]
+            loglevel = LOG_LEVELS["info"]
         Logger.setLevel(self.loglevel)
 
-    def _create_msg(self, msg):
-        return "%s: %s" % (info(), msg)
-    
-    def info(self, msg):
-        Logger.info(self._create_msg(msg))
+    @staticmethod
+    def register(name, **kwargs):
+        """
+        Do the same as :method:`register` from :class:`Cache`,
+        with logs
+        """
+        dicts = dict(kwargs)
+        Logger.debug("%s: '%s' setup: %s" % ("LoggedCache", name, dicts))
+        Cache.register(name, **kwargs)
+        Logger.info("%s: '%s' registered" % ("LoggedCache", name))
 
-    def debug(self, msg):
-        Logger.debug(self._create_msg(msg))
+    @staticmethod
+    def append(reg, key, value):
+        Logger.debug("%s: Saving %s->%s=%s" % (
+            "LoggedCache",
+            reg,
+            key,
+            value
+        ))
+        Cache.append(reg, key, value)
 
-    def warning(self, msg):
-        Logger.warning(self._create_msg(msg))
+    @staticmethod
+    def get(reg, key):
+        value = Cache.get(reg, key)        
+        Logger.debug("%s: Getting %s->%s=%s" % (
+            "LoggedCache",
+            reg,
+            key,
+            value
+        ))
+        return value
         
-    def error(self, msg):
-        Logger.error(self._create_msg(msg))

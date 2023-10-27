@@ -33,6 +33,7 @@ import os
 from kivy.app import App
 from kivy.logger import Logger
 from kivy.uix.screenmanager import ScreenManager
+from kivy.cache import Cache
 
 #################
 # Local libraries
@@ -62,19 +63,26 @@ class KSignerApp(App):
         - verify;
         - TODO: others
         """
-        Logger.info("%s: %s", info(), "Starting ksigner")
+        cache_name = "ksigner"
+        cache_args = { "limit": 10, "timeout": 300 }
+        
+        Cache.register(cache_name, **cache_args)
+
+        msg = "%s: %s" % (info(), "Starting ksigner")
+        Logger.info(msg)
         screen_manager = ScreenManager()
         screens = (
             MainScreen(name="main"),
             SignScreen(name="sign"),
             VerifyScreen(name="verify"),
-            QRCodeScreen(name="qrcode"),
-            ScanScreen(name="scan-import-save-signature"),
-            ScanScreen(name="scan-import-save-public-key"),
+            QRCodeScreen(name="export-sha256"),
+            ScanScreen(name="import-signature"),
+            ScanScreen(name="import-public-key"),
         )
 
         for screen in screens:
-            Logger.debug("%s: adding screnn '%s'", info(), screen.name)
+            msg = "%s: adding screen '%s'" % (info(), screen.name)
+            Logger.debug(msg)
             screen_manager.add_widget(screen)
 
         return screen_manager

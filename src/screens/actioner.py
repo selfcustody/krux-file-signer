@@ -100,6 +100,15 @@ class ActionerScreen(LoggedScreen):
         widget.background_color = (r, g, b, a)
 
     def _set_screen(self, **kwargs):
+        """
+        Change to some screen registered on
+        screenmanager.
+
+        Kwargs:
+        -------
+            :param:`name` of registered screen
+            :param:`direction` of transiction
+        """
         name = kwargs.get("name")
         direction = kwargs.get("direction")
         print(self.manager.screen_names)
@@ -188,29 +197,25 @@ class ActionerScreen(LoggedScreen):
 
     # pylint: disable=unused-argument
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
-        Logger.info("%s pressed", keycode[1])
         # Keycode is composed of an integer + a string
         # If we hit escape, release the keyboard
-        if keycode[1] == "escape":
-            self._back_to_signscreen()
-
-        elif keycode[1] == "enter":
-            self._back_to_signscreen()
-
-        elif keycode[1] == "left":
-            self._back_to_signscreen()
-
-        elif keycode[1] == "backspace":
-            self._back_to_signscreen()
-        else:
-            self.warning(
-                "key '%s' isnt implemented",
-                keycode[1]
-            )
+        # for key in ["escape"]
+        if keycode[1] == "enter":
+            self.info("%s pressed" % keycode[1])
+            if self.manager.current == "sign":
+                self._set_screen(name="main", direction="left")
+            elif self.manager.current == "export-sha256":
+                self._set_screen(name="sign", direction="left")
+            elif self.manager.current == "import-signature":
+                self._set_screen(name="sign", direction="left")
+            elif self.manager.current == "import-public-key":
+                self._set_screen(name="sign", direction="left")
+            else:
+                self.warning("key '%s' isnt implemented" % keycode[1])
             
         return True
 
-    def _chunk_str(msg, size):
+    def _chunk_str(self, msg, size):
         """
         Split a big string in multiple lines;
         Use with sha256 or signature strings.

@@ -48,14 +48,14 @@
 		rows: 4
 
 		Button:
-			id: sign_screen_load_file_and_export_hash_qrcode
-			text: 'Load file & export hash QRCode'
+			id: export_sha256_message
+			text: "Export sha256sum's message"
 			font_size: root.height // 25
         	font_name: 'terminus.ttf'
 			background_color: 0, 0, 0, 0,
 			color: 1, 1, 1, 1
-			on_press: root.on_press_sign_screen_load_file_and_export_hash_qrcode()    		
-			on_release: root.on_release_sign_screen_load_file_and_export_hash_qrcode()
+			on_press: root.on_press_export_sha256_message()    		
+			on_release: root.on_release_export_sha256_message()
 			canvas.before:
         		Color:
             		rgba: 1, 1, 1, 1
@@ -64,15 +64,14 @@
             		rectangle: self.x, self.y, self.width, self.height
 
 		Button:
-			id: sign_screen_import_and_save_signature
-			text: 'Import & save signature'
+			id: import_signature_message
+			text: "Import signature's message"
 			font_size: root.height // 25
         	font_name: 'terminus.ttf'
-			font_size: '20sp'
 			background_color: 0, 0, 0, 0,
 			color: 1, 1, 1, 1
-			on_press: root.on_press_sign_screen_import_and_save_signature()
-    		on_release:root.on_release_sign_screen_import_and_save_signature()
+			on_press: root.on_press_import_signature_message()
+    		on_release:root.on_release_import_signature_message()
 			canvas.before:
         		Color:
             		rgba: 1, 1, 1, 1
@@ -81,14 +80,14 @@
             		rectangle: self.x, self.y, self.width, self.height
 
 		Button:
-			id: sign_screen_import_and_save_public_key
-			text: 'Import & save public-key'
+			id: import_publickey_message
+			text: 'Import public-key message'
 			font_size: root.height // 25
         	font_name: 'terminus.ttf'
 			background_color: 0, 0, 0, 0,
 			color: 1, 1, 1, 1
-			on_press: root.on_press_sign_screen_import_and_save_public_key()
-    		on_release: root.on_release_sign_screen_import_and_save_public_key()
+			on_press: root.on_press_import_publickey_message()
+    		on_release: root.on_release_import_publickey_message()
 			canvas.before:
         		Color:
             		rgba: 1, 1, 1, 1
@@ -231,7 +230,7 @@
 
 <QRCodeScreen>:
 
-	id: qrcode
+	id: export-sha256
 	
 #	QRCodeWidget:
 #		id: qrcode_data

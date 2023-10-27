@@ -27,10 +27,14 @@ Check whether the calling function is really a method defined in a class
 
 import inspect
 
+
 def info():
     """
-    we can loop through the self's MRO and try to find the method that called us.
-    see htps://stackoverflow.com/questions/53153075/get-a-class-name-of-calling-method
+    we can loop through the self's
+    MRO and try to find the method 
+    that called us.
+    see htps://stackoverflow.com/questions/
+    53153075/get-a-class-name-of-calling-method
     """
     # get the call frame of the calling method
     frame = inspect.currentframe().f_back
@@ -52,7 +56,6 @@ def info():
         # check if the calling function is really a method
         self_type = type(self_obj)
         func_name = codeobj.co_name
-
         # iterate through all classes in the MRO
         for cls in self_type.__mro__:
             # see if this class has a method with the name
@@ -70,8 +73,9 @@ def info():
 
             # see if this is the method that called us
             if getattr(method, '__code__', None) is codeobj:
-                return self_type.__name__
-
+                name = self_type.__name__
+                return name
+            
         # if we didn't find a matching method, return None
         return None
     finally:
