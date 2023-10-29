@@ -25,10 +25,13 @@ scan.py
 Implements an inherited kivy.uix.screenmanager.Screen
 for scan QRCodes
 """
+import sys
+import os
 
 ################
 # Kivy libraries
 ################
+from kivy.lang import Builder
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.uix.boxlayout import BoxLayout
@@ -110,14 +113,27 @@ class ScanScreen(ActionerScreen):
             else:
                 self.warning("Invalid screen '%s'" % self.manager.screen)
 
+            # pylint: disable=protected-access
+            
+            self.debug("Unscheduling QRCode decodification")
+            Clock.unschedule(self._decode_qrcode, 1)
+            
+            self.debug("Releasing device")
+            self._zbarcam.ids.xcamera._camera._device.release()
+
             self.debug("Stopping <ZBarCam>")
             self._zbarcam.stop()  # stop zbarcam
 
-            self.debug("Releasing device")
-
-            # pylint: disable=protected-access
-            self._zbarcam.ids.xcamera._camera._device.release()
-            self._zbarcam.ids.xcamera._camera = None
-            self.debug("Unscheduling QRCode decodification")
-            Clock.unschedule(self._decode_qrcode, 1)
+            # unload zbarcam.kv file
+            mod_path = os.path.dirname(sys.modules['kivy_garden.zbarcam'].__file__)
+            zbar_kv_path = os.path.join(mod_path, 'zbarcam.kv')
+            self.debug("Unloading '%s'" % zbar_kv_path)            
+            Builder.unload_file(zbar_kv_path)
+            
+            # unload xcamera.kv file            
+            mod_path = os.path.dirname(sys.modules['kivy_garden.xcamera'].__file__)
+            xcam_kv_path = os.path.join(mod_path, 'xcamera.kv')
+            self.debug("Unloading '%s'" % xcam_kv_path)
+            Builder.unload_file(xcam_kv_path)
+            
             self._set_screen(name="sign", direction="right")
