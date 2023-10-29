@@ -120,13 +120,13 @@
 
 		Button:
 			id: verify_screen_load_file_button
-			text: 'Load file'			
+			text: 'Load file to be verified'			
 			font_size: root.height // 25
         	font_name: 'terminus.ttf'
 			background_color: 0, 0, 0, 0,
 			color: 1, 1, 1, 1
-			on_press: root.on_press_verify_screen_load_file_button()
-    		on_release: root.on_release_verify_screen_load_file_button()
+			on_press: root.on_press_load_file()
+    		on_release: root.on_release_load_file()
 			canvas.before:
         		Color:
             		rgba: 1, 1, 1, 1

@@ -25,13 +25,21 @@ verifyscreen.py
 Implements an inherited kivy.uix.screenmanager.Screen
 for verify signature options
 """
+#######################
+# Third party libraries
+#######################
+from kivy.uix.popup import Popup
+# pylint: disable=no-name-in-module
+from kivy.properties import StringProperty, ListProperty
+
 #################
 # Local libraries
 #################
-from screens.logscreen import LoggedScreen
+from screens.actioner import ActionerScreen
+from screens.cacher import LoggedCache
+from filechooser import LoadDialog
 
-
-class VerifyScreen(LoggedScreen):
+class VerifyScreen(ActionerScreen):
     """
     VerifyScreen
 
@@ -44,23 +52,52 @@ class VerifyScreen(LoggedScreen):
     - Verify signature
     """
 
-    def on_press_verify_screen_load_file_button(self):
-        """
-        on_press_verify_screen_load_file_button
+    name = StringProperty("sign")
+    """
+    The screen's name 
+    """
 
-        - change background color of button to (.5,.5,.5,.5),
-          giving a visual effect of 'pressed'
-        """
-        self.log.info("<MainScreen:@Button::verify> clicked")
-        self.ids.verify_screen_load_file_button.background_color = (0.5, 0.5, 0.5, 0.5)
+    popup_size_hint = ListProperty((0.9, 0.9))
+    """
+    Relative size of file popup
+    """
 
-    def on_release_verify_screen_load_file_button(self):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._load_file_dialog = LoadDialog(
+            load=LoadDialog.load,
+            cancel=lambda: self._load_file_popup.dismiss,
+            on_submit=self.on_submit_file_to_be_verified,
+         )
+        self._load_file_popup = Popup(
+            title="Load a file to be verified",
+            content=self._load_file_dialog,
+            size_hint=self.popup_size_hint
+        )
+    
+    def on_press_load_file(self):
         """
-        on_release_verify_screen_load_file_button
+        Change background color of :data:`verify_screen_load_file_button` widget
+        """
+        self._on_press(id="verify_screen_load_file_button")
 
-        - change background color of button to (0, 0, 0, 0),
-          giving a visual effect of 'unpressed'
-        - make a screen transition to SignScreen
+    def on_release_load_file(self):
         """
-        self.log.info("<MainScreen@Button::sign> released")
-        self.ids.verify_screen_load_file_button.background_color = (0, 0, 0, 0)
+        Change background of :data:`verifu_screen_load_file_button` widget
+        and open popup to choose file
+        """
+        self._on_release(id="verify_screen_load_file_button")
+        self.info("opening <Popup>")
+        self._load_file_popup.open()
+
+    def on_submit_file_to_be_verified(self, *args):
+        """
+        Cache file name to be verified
+        """        
+        # cache file input
+        LoggedCache.append("ksigner", "file_input", args[1][0])
+
+        # Close the popup
+        msg = "Closing <Popup>"
+        self.info(msg)
+        self._load_file_popup.dismiss()
