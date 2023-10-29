@@ -135,15 +135,14 @@
             		rectangle: self.x, self.y, self.width, self.height
 
 		Button:
+			id: verify_screen_load_signature
 			text: 'Load Signature'
 			font_size: root.height // 25
         	font_name: 'terminus.ttf'
 			background_color: 0, 0, 0, 0,
 			color: 1, 1, 1, 1
-			on_press:
-				self.background_color = (.5, .5, .5, .5)
-    		on_release:
-				self.background_color = (0, 0, 0, 0)
+			on_press: root.on_press_load_signature()
+    		on_release: root.on_release_load_signature()
 			canvas.before:
         		Color:
             		rgba: 1, 1, 1, 1
@@ -152,15 +151,14 @@
             		rectangle: self.x, self.y, self.width, self.height
 
 		Button:
+			id: verify_screen_load_pubkey
 			text: 'Load public-key'			
 			font_size: root.height // 25
         	font_name: 'terminus.ttf'
 			background_color: 0, 0, 0, 0,
 			color: 1, 1, 1, 1
-			on_press:
-				self.background_color = (.5, .5, .5, .5)
-    		on_release:
-				self.background_color = (0, 0, 0, 0)
+			on_press: root.on_press_load_pubkey()
+    		on_release: root.on_release_load_pubkey()
 			canvas.before:
         		Color:
             		rgba: 1, 1, 1, 1
@@ -169,15 +167,14 @@
             		rectangle: self.x, self.y, self.width, self.height
 
 		Button:
+			id: verify_screen_verification
 			text: 'Verify signature'			
 			font_size: root.height // 25
         	font_name: 'terminus.ttf'
 			background_color: 0, 0, 0, 0,
 			color: 1, 1, 1, 1
-			on_press:
-				self.background_color = (.5, .5, .5, .5)
-    		on_release:
-				self.background_color = (0, 0, 0, 0)
+			on_press: root.on_press_verify()
+    		on_release: root.on_release_verify()
 			canvas.before:
         		Color:
             		rgba: 1, 1, 1, 1

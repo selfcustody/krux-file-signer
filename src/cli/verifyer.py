@@ -72,7 +72,14 @@ class Verifyer(Actioner):
         """
         try:
             self.debug("Verifyer: Running '%s'" % command)
-            subprocess.run(command, check=True, shell=True)
+            result = subprocess.run(
+                command,
+                check=True,
+                shell=True,
+                capture_output=True,
+                text=True
+            )
+            return (str(result.stdout), str(result.stderr))
         except subprocess.CalledProcessError as exc:
             error = subprocess.CalledProcessError(message, cmd=command)
             self.error("Invalid command: %s" % error)
