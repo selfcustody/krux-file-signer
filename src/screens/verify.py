@@ -219,23 +219,29 @@ class VerifyScreen(ActionerScreen):
         # Verification popup
         self.debug("Creating <BoxLayout> for <Popup>")
         self._verification_box_popup = BoxLayout(orientation='vertical')
-        
-        self.debug("Adding <Label> to <Popup::BoxLayout> text='%s'" % result[0])
-        self._verification_box_popup.add_widget(Label(text=result[0]))
+
+        text = "\n".join((
+            ""
+            f"[b]{self._chunk_str(command, 88)}[/b]",
+            "",
+            result[0]                     
+        ))
+        self.debug("Adding <Label> to <Popup::BoxLayout> text='%s'" % text)
+        self._verification_box_popup.add_widget(Label(text=text, markup=True))
 
         self.debug("Creating <Popup>")
         self._verification_popup = Popup(
-            title="Openssl verification result",
+            title="Verify signature",
             title_align="center",
             content=self._verification_box_popup,
-            size_hint=(0.4, 0.4),
+            size_hint=(0.71, 0.27),
             auto_dismiss=True
         )
 
         self.debug("Adding <Button> 'ok' to <Popup::BoxLayout>")
         self._verification_box_popup.add_widget(Button(
             text="Back",
-            on_press=lambda *args: self._verification_popup.dismiss()
+            on_press=lambda *args: self._verification_popup.dismiss()                                            
         ))
 
         self.info("opening <Popup>")
