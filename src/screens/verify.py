@@ -214,7 +214,7 @@ class VerifyScreen(ActionerScreen):
 
         command = verifyer.make_openssl_command()
         result = verifyer.verify(command)
-        self.debug("verification result: %s" % result[0])
+        self.debug("verification result: %s" % result)
 
         # Verification popup
         self.debug("Creating <BoxLayout> for <Popup>")
@@ -224,7 +224,7 @@ class VerifyScreen(ActionerScreen):
             ""
             f"[b]{self._chunk_str(command, 88)}[/b]",
             "",
-            result[0]                     
+            result                    
         ))
         self.debug("Adding <Label> to <Popup::BoxLayout> text='%s'" % text)
         self._verification_box_popup.add_widget(Label(text=text, markup=True))
@@ -234,7 +234,7 @@ class VerifyScreen(ActionerScreen):
             title="Verify signature",
             title_align="center",
             content=self._verification_box_popup,
-            size_hint=(0.71, 0.27),
+            size_hint=(0.9, 0.9),
             auto_dismiss=True
         )
 

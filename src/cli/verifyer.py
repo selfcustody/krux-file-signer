@@ -79,7 +79,10 @@ class Verifyer(Actioner):
                 capture_output=True,
                 text=True
             )
-            return (str(result.stdout), str(result.stderr))
+            if result.stdout and not result.stderr:
+                return result.stdout
+            elif not result.stdout and result.stderr:
+                return result.stderr
         except subprocess.CalledProcessError as exc:
-            error = subprocess.CalledProcessError(message, cmd=command)
-            self.error("Invalid command: %s" % error)
+            self.error(exc)
+            return "Invalid command"
