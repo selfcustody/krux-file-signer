@@ -35,6 +35,9 @@ from kivy.lang import Builder
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.label import Label
+from kivy.uix.popup import Popup
+from kivy.uix.button import Button
 from kivy.properties import ObjectProperty
 from kivy_garden.zbarcam import ZBarCam
 from kivy.lang import Builder
@@ -75,6 +78,40 @@ class ScanScreen(ActionerScreen):
         self.info("<ZBarCam> added")
         Clock.schedule_interval(self._decode_qrcode, 1)
 
+    def _alert(self, **kwargs):
+        title = kwargs.get("title")
+        message = kwargs.get("message")
+        
+        # Verification popup
+        self.debug("Creating <Popup::BoxLayout>")
+        _box_popup = BoxLayout(orientation='vertical')
+
+        _label_popup = Label(text=message, markup=True)
+        self.debug("Creating <Popup::Label> text='%s'" % message)
+
+        self.debug("Adding <Popup::BoxLayout>")
+        _box_popup.add_widget(_label_popup)
+        
+        self.debug("Creating <Popup>")
+        _popup = Popup(
+            title=title,
+            title_align="center",
+            content=_box_popup,
+            size_hint=(0.9, 0.9),
+            auto_dismiss=True
+        )
+
+        _button = Button(
+            text="Back",
+            on_press=lambda *args: _popup.dismiss()                                            
+        )
+
+        self.debug("Adding <Popup::Button>")
+        _box_popup.add_widget(_button)
+
+        self.info("opening <Popup>")
+        _popup.open()
+        
     # pylint: disable=unused-argument
     def _decode_qrcode(self, *args):
         """
@@ -100,6 +137,8 @@ class ScanScreen(ActionerScreen):
                 )
 
                 signer.save_signature(scanned_data)
+                title = "Signature saved"
+                self._alert(title=title, message=f"{file_input}.sig")
 
             elif self.manager.current == "import-public-key":
                 self.warning("Saving publickey certificate")
@@ -109,12 +148,12 @@ class ScanScreen(ActionerScreen):
                     uncompressed=False
                 )
                 signer.save_pubkey_certificate(scanned_data)
+                title = "Public key saved"
+                self._alert(title=title, message=f"{file_input}.pem")
 
             else:
                 self.warning("Invalid screen '%s'" % self.manager.screen)
 
-            # pylint: disable=protected-access
-            
             self.debug("Unscheduling QRCode decodification")
             Clock.unschedule(self._decode_qrcode, 1)
             
