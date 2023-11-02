@@ -66,10 +66,13 @@ class ActionerScreen(LoggedScreen):
 
     base_label_kwargs = {
         "font_size": Window.height // 35,
-        "font_name": "terminus.ttf",
+        "font_name": "terminus",
         "halign": "center",
         "markup": True
     }
+    """
+    Base **kargs for for Labels 
+    """
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

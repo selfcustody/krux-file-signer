@@ -20,6 +20,12 @@ zbarcam = "^2020.524"
 black = "^23.9.1"
 pylint = "^2.17.5"
 pyinstaller = "^5.13.2"
+poethepoet = "^0.24.1"
+
+[tool.poe.tasks]
+build-cli = "python -m PyInstaller --onefile --name ksigner-cli src/ksigner-cli.py"
+build-gui = "python -m PyInstaller --add-data 'src/ksigner.kv:.' --add-data 'src/terminus.ttf:.' --windowed --onefile --name ksigner-gui src/ksigner-gui.py"
+build  = ["build-cli"] 
 
 [build-system]
 requires = ["poetry-core"]

@@ -34,6 +34,7 @@ from kivy.app import App
 from kivy.logger import Logger
 from kivy.uix.screenmanager import ScreenManager
 from kivy.cache import Cache
+from kivy.core.text import LabelBase
 
 #################
 # Local libraries
@@ -50,26 +51,26 @@ class KSignerApp(App):
     """
     KSignerApp is the Root widget
     """
+
+    def _register_font(self):
+        """
+        Register 'terminus' font
+        """
+        _font_name = "terminus"
+        _dirname = os.path.dirname(__file__)
+        _terminus_path = os.path.join(_dirname, "terminus.ttf")
+        _absdir = os.path.abspath(_terminus_path)
         
-    def build(self):
-        """
-        build
-
-        Create the Root widget with an ScreenManager
-        as manager for its sub-widgets:
-
-        - main;
-        - sign;
-        - verify;
-        - TODO: others
-        """
+        msg = "%s: Registering font '%s' at %s" % (info(), "terminus", _absdir)
+        Logger.warning(msg)
+        LabelBase.register(name=_font_name, fn_regular=_absdir)
+    
+    def _register_cacher(self):
         cache_name = "ksigner"
         cache_args = { "limit": 10, "timeout": 300 }
-        
         Cache.register(cache_name, **cache_args)
 
-        msg = "%s: %s" % (info(), "Starting ksigner")
-        Logger.info(msg)
+    def _register_screens(self) -> ScreenManager:        
         screen_manager = ScreenManager()
         screens = (
             MainScreen(name="main"),
@@ -84,10 +85,22 @@ class KSignerApp(App):
             msg = "%s: adding screen '%s'" % (info(), screen.name)
             Logger.debug(msg)
             screen_manager.add_widget(screen)
-
+            
         return screen_manager
+    
+    def build(self):
+        """
+        Create the Root widget with an ScreenManager
+        as manager for its sub-widgets:
+        """
+        msg = "%s: %s" % (info(), "Starting ksigner")
+        Logger.info(msg)
+
+        self._register_cacher()
+        self._register_font()
+        return self._register_screens()
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":    
     app = KSignerApp()
     app.run()

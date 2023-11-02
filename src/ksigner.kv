@@ -13,7 +13,7 @@
 			id: main_screen_sign_button
 			text: 'Sign'
 			font_size: root.height // 25
-			font_name: 'terminus.ttf'
+			font_name: 'terminus'
 			background_color: 0, 0, 0, 0
 			color: 1, 1, 1, 1
 			on_press: root.on_press_sign_button()
@@ -29,7 +29,7 @@
 			id: main_screen_verify_button
 			text: 'Verify'
 			font_size: root.height // 25
-        	font_name: 'terminus.ttf'
+        	font_name: 'terminus'
 			background_color: 0, 0, 0, 0
 			color: 1, 1, 1, 1
 			on_press: root.on_press_verify_button()
@@ -51,7 +51,7 @@
 			id: export_sha256_message
 			text: "Export sha256sum's message"
 			font_size: root.height // 25
-        	font_name: 'terminus.ttf'
+        	font_name: 'terminus'
 			background_color: 0, 0, 0, 0,
 			color: 1, 1, 1, 1
 			on_press: root.on_press_export_sha256_message()    		
@@ -67,7 +67,7 @@
 			id: import_signature_message
 			text: "Import signature's message"
 			font_size: root.height // 25
-        	font_name: 'terminus.ttf'
+        	font_name: 'terminus'
 			background_color: 0, 0, 0, 0,
 			color: 1, 1, 1, 1
 			on_press: root.on_press_import_signature_message()
@@ -83,7 +83,7 @@
 			id: import_publickey_message
 			text: 'Import public-key message'
 			font_size: root.height // 25
-        	font_name: 'terminus.ttf'
+        	font_name: 'terminus'
 			background_color: 0, 0, 0, 0,
 			color: 1, 1, 1, 1
 			on_press: root.on_press_import_publickey_message()
@@ -100,7 +100,7 @@
 			id: sign_screen_back
 			text: 'Back'
 			font_size: root.height // 25
-        	font_name: 'terminus.ttf'
+        	font_name: 'terminus'
 			background_color: 0, 0, 0, 0
 			color: 1, 1, 1, 1
 			on_press: root.on_press_back_main()
@@ -122,7 +122,7 @@
 			id: verify_screen_load_file_button
 			text: 'Load file to be verified'			
 			font_size: root.height // 25
-        	font_name: 'terminus.ttf'
+        	font_name: 'terminus'
 			background_color: 0, 0, 0, 0,
 			color: 1, 1, 1, 1
 			on_press: root.on_press_load_file()
@@ -138,7 +138,7 @@
 			id: verify_screen_load_signature
 			text: 'Load Signature'
 			font_size: root.height // 25
-        	font_name: 'terminus.ttf'
+        	font_name: 'terminus'
 			background_color: 0, 0, 0, 0,
 			color: 1, 1, 1, 1
 			on_press: root.on_press_load_signature()
@@ -154,7 +154,7 @@
 			id: verify_screen_load_pubkey
 			text: 'Load public-key'			
 			font_size: root.height // 25
-        	font_name: 'terminus.ttf'
+        	font_name: 'terminus'
 			background_color: 0, 0, 0, 0,
 			color: 1, 1, 1, 1
 			on_press: root.on_press_load_pubkey()
@@ -170,7 +170,7 @@
 			id: verify_screen_verification
 			text: 'Verify signature'			
 			font_size: root.height // 25
-        	font_name: 'terminus.ttf'
+        	font_name: 'terminus'
 			background_color: 0, 0, 0, 0,
 			color: 1, 1, 1, 1
 			on_press: root.on_press_verify()
@@ -185,7 +185,7 @@
 		Button:
 			text: 'Back'
 			font_size: root.height // 25
-        	font_name: 'terminus.ttf'
+        	font_name: 'terminus'
 			background_color: 0, 0, 0, 0,
 			color: 1, 1, 1, 1
 			on_press:
@@ -215,29 +215,13 @@
             height: 30
             Button:
 				font_size: root.height // 25
-        		font_name: 'terminus.ttf'
+        		font_name: 'terminus'
                 text: "Cancel"
                 on_release: root.cancel()
 
             Button:
 				font_size: root.height // 25
-				font_name: 'terminus.ttf'
+				font_name: 'terminus'
                 text: "Load"
                 on_release: root.load(filechooser.path, filechooser.selection)
 
-<QRCodeScreen>:
-
-	id: export-sha256
-	
-#	QRCodeWidget:
-#		id: qrcode_data
-#		data: root.code
-#		
-#	Label:
-#		id: qrcode_label
-#		font_size: root.height // 30
-#		font_name: 'terminus.ttf'
-#		halign: 'center'
-#		color: 1, 1, 1
-#		background_color: 0, 0, 0
-#		markup: True
