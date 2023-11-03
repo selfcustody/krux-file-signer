@@ -23,8 +23,14 @@ pyinstaller = "^5.13.2"
 poethepoet = "^0.24.1"
 
 [tool.poe.tasks]
-build-cli = "python inst/kbuilder.py cli"
-build-gui = "python inst/kbuilder.py gui"
+_black-src = "black src"
+_black-inst = "black inst/"
+_lint-src = "pylint src/"
+_lint-inst = "pylint inst/"
+_build-cli = "python inst/kbuilder.py cli"
+_build-gui = "python inst/kbuilder.py gui"
+lint = ["_black-inst", "_black-src", "_lint-inst", "_lint-src"]
+build = ["_build-cli", "_build-gui"]
 
 [build-system]
 requires = ["poetry-core"]
