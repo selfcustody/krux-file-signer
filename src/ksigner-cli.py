@@ -19,7 +19,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-
 """
 This python script is a tool to create air-gapped signatures of files using Krux.
 The script can also convert hex publics exported from Krux to PEM public keys so
@@ -41,13 +40,16 @@ import argparse
 #################
 # Local libraries
 #################
-import callbacks
-from constants import KSIGNER_CLI_DESCRIPTION
+from utils.constants import KSIGNER_VERSION, KSIGNER_CLI_DESCRIPTION
+from cli.signer import Signer
+from cli.verifyer import Verifyer
 
 ################
 # Command parser
 ################
-parser = argparse.ArgumentParser(prog="ksigner", description=KSIGNER_CLI_DESCRIPTION)
+parser = argparse.ArgumentParser(
+    prog="ksigner-cli", description=KSIGNER_CLI_DESCRIPTION
+)
 
 # Version
 parser.add_argument(
@@ -56,64 +58,63 @@ parser.add_argument(
 
 # Verbose messages
 parser.add_argument(
-    "-V",
-    "--verbose",
-    dest="verbose",
-    action="store_true",
-    help="verbose output (default: False)",
-    default=False,
+    "-l",
+    "--log",
+    dest="loglevel",
+    help="log output (info|warning|debug|error, defaults to 'info')",
+    default="info",
 )
 
-# Capture pos-processing camera flags
-parser.add_argument(
-    "-n",
-    "--normalize",
-    dest="is_normalized",
-    action="store_true",
-    help="normalizes the image of camera (default: False)",
-    default=False,
-)
-
-parser.add_argument(
-    "-g",
-    "--gray-scale",
-    dest="is_gray_scale",
-    action="store_true",
-    help="apply gray-scale filter on camera's image (default: False)",
-    default=False,
-)
-
+# Subparsers: sign and verify
 subparsers = parser.add_subparsers(help="sub-command help", dest="command")
 
-# Sign command
+# Sign compilemmand
 signer = subparsers.add_parser("sign", help="sign a file")
-signer.add_argument("-f", "--file", dest="file_to_sign", help="path to file to sign")
-
+signer.add_argument("-f", "--file", help="path to file to sign")
 signer.add_argument(
     "-o",
     "--owner",
-    dest="file_owner",
     help="the owner's name of public key certificate, i.e, the .pem file (default: 'pubkey')",
     default="pubkey",
 )
-
 signer.add_argument(
     "-u",
     "--uncompressed",
-    dest="uncompressed_pub_key",
     action="store_true",
     help="flag to create a uncompreesed public key (default: False)",
 )
 
 # Verify command
 verifier = subparsers.add_parser("verify", help="verify signature")
-verifier.add_argument("-f", "--file", dest="verify_file", help="path to file to verify")
-verifier.add_argument(
-    "-s", "--sig-file", dest="sig_file", help="path to signature file"
-)
-verifier.add_argument("-p", "--pub-file", dest="pub_file", help="path to pubkey file")
+verifier.add_argument("-f", "--file", help="path to file to verify")
+verifier.add_argument("-s", "--sig-file", help="path to signature file")
+verifier.add_argument("-p", "--pub-file", help="path to pubkey file")
+
 
 if __name__ == "__main__":
-    callbacks.on_version(parser)
-    callbacks.on_sign(parser)
-    callbacks.on_verify(parser)
+    # parse arguments
+    args = parser.parse_args()
+
+    # on --version
+    if args.version:
+        print(KSIGNER_VERSION)
+
+    elif args.command is None:
+        parser.print_help()
+
+    elif args.command == "sign":
+        # first sign
+        signer = Signer(
+            file=args.file, owner=args.owner, uncompressed=args.uncompressed
+        )
+        signer.sign()
+        signer.make_pubkey_certificate()
+
+    elif args.command == "verify":
+        verifyer = Verifyer(
+            file=args.file,
+            pubkey=args.pub_file,
+            signature=args.sig_file,
+        )
+        COMMAND = verifyer.make_openssl_command()
+        verifyer.verify(COMMAND)

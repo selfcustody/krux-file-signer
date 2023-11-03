@@ -4,22 +4,33 @@ version = "0.0.1"
 description = "A python script to sign files and verify signatures in a airgapped manner"
 authors = [
   "odudex <eduardo.schoenknecht@gmail.com>",
-  "qlrddev <qlrddev@gmail.com>"
+  "qlrd <qlrddev@gmail.com>"
 ]
 license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.8,<=3.11.5"
-opencv-python = "^4.8.0.76"
 qrcode = "^7.4.2"
 pillow = "^10.0.1"
-pyzbar = "^0.1.9"
+kivy = "^2.2.1"
+zbarcam = "^2020.524"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.9.1"
 pylint = "^2.17.5"
 pyinstaller = "^5.13.2"
+poethepoet = "^0.24.1"
+
+[tool.poe.tasks]
+_black-src = "black src"
+_black-inst = "black inst/"
+_lint-src = "pylint src/"
+_lint-inst = "pylint inst/"
+_build-cli = "python inst/kbuilder.py cli"
+_build-gui = "python inst/kbuilder.py gui"
+lint = ["_black-inst", "_black-src", "_lint-inst", "_lint-src"]
+build = ["_build-cli", "_build-gui"]
 
 [build-system]
 requires = ["poetry-core"]

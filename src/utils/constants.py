@@ -42,13 +42,20 @@ example for setup of 'pre' public key strings above:
 @see https://github.com/pebwindkraft/trx_cl_suite/blob/master/tcls_key2pem.sh#L134
 """
 
-KSIGNER_VERSION = "0.0.1-alpha-0"
+KSIGNER_VERSION = "0.0.1"
 KSIGNER_UNCOMPRESSED_PUBKEY_PREPEND = "3056301006072A8648CE3D020106052B8104000A034200"
 KSIGNER_COMPRESSED_PUBKEY_PREPEND = "3036301006072A8648CE3D020106052B8104000A032200"
-KSIGNER_CLI_DESCRIPTION = "".join(
+KSIGNER_CLI_DESCRIPTION = " ".join(
     [
-        "This python script is a tool to create air-gapped signatures of files using Krux. ",
-        "The script can also convert hex publics exported from Krux to PEM public keys so ",
-        "signatures can be verified using openssl.",
+        "This python script is a tool to create air-gapped signatures of files using Krux,",
+        "converting hexadecimal public keys exported from Krux to public key certificates in",
+        "base64 format, in a way that signatures can be verified using openssl.",
+    ]
+)
+KSIGNER_GUI_DESCRIPTION = " ".join(
+    [
+        "This is a kivy tool to create air-gapped signatures of files using Krux,",
+        "converting hexadecimal public keys exported from Krux to public key certificates in",
+        "base64 format, in a way that signatures can be verified using openssl.",
     ]
 )
