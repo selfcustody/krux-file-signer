@@ -35,6 +35,7 @@ import cv2
 from utils.log import now
 from cli.actioner import Actioner
 
+
 class Scanner(Actioner):
     """
     Scanner is the cli utility to scan
@@ -100,7 +101,9 @@ class Scanner(Actioner):
 
         # Encode data
         self.debug("Encoding signature")
-        self.debug("Signature (data=%s)" % signature)
+
+        msg = f"Signature data='{signature}'"
+        self.debug(msg)
         return signature
 
     def scan_public_key(self) -> str:

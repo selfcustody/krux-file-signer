@@ -41,7 +41,6 @@ import argparse
 # Local libraries
 #################
 from utils.constants import KSIGNER_VERSION, KSIGNER_CLI_DESCRIPTION
-from utils.log import build_logger
 from cli.signer import Signer
 from cli.verifyer import Verifyer
 
@@ -71,11 +70,7 @@ subparsers = parser.add_subparsers(help="sub-command help", dest="command")
 
 # Sign compilemmand
 signer = subparsers.add_parser("sign", help="sign a file")
-signer.add_argument(
-    "-f", 
-    "--file", 
-    help="path to file to sign"
-)
+signer.add_argument("-f", "--file", help="path to file to sign")
 signer.add_argument(
     "-o",
     "--owner",
@@ -110,9 +105,7 @@ if __name__ == "__main__":
     elif args.command == "sign":
         # first sign
         signer = Signer(
-            file=args.file,
-            owner=args.owner,
-            uncompressed=args.uncompressed
+            file=args.file, owner=args.owner, uncompressed=args.uncompressed
         )
         signer.sign()
         signer.make_pubkey_certificate()

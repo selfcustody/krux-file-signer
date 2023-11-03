@@ -61,7 +61,7 @@ from screens.actioner import ActionerScreen
 from screens.cacher import LoggedCache
 
 
-# pylint: disable=too-many-instance-attributes
+# pylint: disable=too-many-ancestors
 class QRCodeScreen(ActionerScreen):
     """
     Class responsible to display qrcodes.
@@ -145,7 +145,7 @@ class QRCodeScreen(ActionerScreen):
         """
         Event fired when user clicked and release the left mouse button
         (or the touchable screen)
-        """        
+        """
         self._set_screen(name="sign", direction="right")
 
     def set_image(self):
@@ -156,13 +156,13 @@ class QRCodeScreen(ActionerScreen):
             "pos_hint": self.image_pos_hint,
             "allow_stretch": True,
             "size_hint": (None, None),
-            "size": (Window.height * 0.60, Window.height * 0.6)
+            "size": (Window.height * 0.60, Window.height * 0.6),
         }
         self._img = Image(**kwargs)
         self.add_widget(self._img)
         self.info("QRCodeScreen: <Image> added")
         self.debug(kwargs)
- 
+
     def set_label_warn(self):
         """
         Sets and add Label Widget that warn user about
@@ -175,11 +175,11 @@ class QRCodeScreen(ActionerScreen):
                 " (a) load a 12/24 words key, with or without BIP39 password;",
                 " (b) use the Sign -> Message feature;",
                 " (c) scan this QR code below;",
-                " (d) click on screen or type 'enter'"
+                " (d) click on screen or type 'enter'",
             ]
         )
 
-        self._label_warn = self._make_label(text=text,type="warning")
+        self._label_warn = self._make_label(text=text, type="warning")
         self.add_widget(self._label_warn)
         self.info("<Label::warning> added")
 
@@ -190,12 +190,10 @@ class QRCodeScreen(ActionerScreen):
         """
         file_input = LoggedCache.get("ksigner", "file_input")
         hash_file = LoggedCache.get("ksigner", "hash_file")
-        hash = LoggedCache.get("ksigner", "hash")
-        text = "\n".join([
-            f"File input: {file_input}",
-            f"File hash: {hash_file}",
-            f"\n{hash}"
-        ])
+        _hash = LoggedCache.get("ksigner", "hash")
+        text = "\n".join(
+            [f"File input: {file_input}", f"File hash: {hash_file}", f"\n{_hash}"]
+        )
         self._label_desc = self._make_label(text=text, type="description")
         self.add_widget(self._label_desc)
         self.info("<Label::description> added")
@@ -230,7 +228,8 @@ class QRCodeScreen(ActionerScreen):
     def _update_texture(self):
         matrix = self._qrcode.get_matrix()
         k = len(matrix)
-        self.debug("<Texture::matrix::len>=%s" % k)
+        msg = f"<Texture::matrix::len>={k}"
+        self.debug(msg)
 
         # create the texture in main UI thread otherwise
         # this will lead to memory corruption

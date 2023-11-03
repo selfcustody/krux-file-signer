@@ -24,11 +24,16 @@ signscreen.py
 
 An inherited implementations of kivy.uix.screenmanager Screen    
 """
+####################
+# Standard libraries
+####################
+import os
+
 #####################
 # Thirparty libraries
+#####################
 from kivy.logger import Logger, LOG_LEVELS
 from kivy.cache import Cache
-from cli.getsome import info
 
 
 class LoggedCache:
@@ -39,11 +44,11 @@ class LoggedCache:
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        if (os.environ.get('LOG_LEVEL')):
+        if os.environ.get("LOG_LEVEL"):
             loglevel = LOG_LEVELS[os.environ["LOG_LEVEL"]]
         else:
             loglevel = LOG_LEVELS["info"]
-        Logger.setLevel(self.loglevel)
+        Logger.setLevel(loglevel)
 
     @staticmethod
     def register(name, **kwargs):
@@ -52,28 +57,29 @@ class LoggedCache:
         with logs
         """
         dicts = dict(kwargs)
-        Logger.debug("%s: '%s' setup: %s" % ("LoggedCache", name, dicts))
+        msg = f"LoggedCache: '{name}' setup: {dicts}"
+        Logger.debug(msg)
         Cache.register(name, **kwargs)
-        Logger.info("%s: '%s' registered" % ("LoggedCache", name))
+        msg = f"LoggedCache: '{name}' registered"
+        Logger.info(msg)
 
     @staticmethod
     def append(reg, key, value):
-        Logger.debug("%s: Saving %s->%s=%s" % (
-            "LoggedCache",
-            reg,
-            key,
-            value
-        ))
+        """
+        Append a mapped key:value in register cache
+        and log its
+        """
+        msg = f"LoggedCache: Saving {reg}->{key}={value}"
+        Logger.debug(msg)
         Cache.append(reg, key, value)
 
     @staticmethod
     def get(reg, key):
-        value = Cache.get(reg, key)        
-        Logger.debug("%s: Getting %s->%s=%s" % (
-            "LoggedCache",
-            reg,
-            key,
-            value
-        ))
-        return value
-        
+        """
+        Get a mapped key:value in register cache
+        and log its
+        """
+        _value = Cache.get(reg, key)
+        msg = f"LoggedCache: Getting {reg}->{key}={_value}"
+        Logger.debug(msg)
+        return _value

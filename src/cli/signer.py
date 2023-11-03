@@ -21,6 +21,7 @@ from utils.qr import make_qr_code
 from cli.actioner import Actioner
 from cli.scanner import Scanner
 
+
 class Signer(Actioner):
     """
     Signer is the class
@@ -32,10 +33,11 @@ class Signer(Actioner):
         :param:`owner` the owner of file
         :param:`uncompressed` if the file will use
                 uncompressed format for public files
-        
+
     """
 
     def __init__(self, **kwargs):
+        super().__init__()
         self.file = kwargs.get("file")
         self.owner = kwargs.get("owner")
         self.uncompressed = kwargs.get("uncompressed")
@@ -61,7 +63,7 @@ class Signer(Actioner):
                 will generate a publickey certificate, in a compressed
                 or uncompressed format, in name of an owner.
         """
-        
+
         self._show_warning_messages()
         data = self.hash_file()
         self.save_hash_file(data)
@@ -85,14 +87,16 @@ class Signer(Actioner):
         """
         Creates a hash file before sign
         """
-        self.debug("Opening %s" % self.file)
+        msg = f"Opening {self.file}"
+        self.debug(msg)
 
         with open(self.file, "rb") as f_sig:
             self.debug("Reading bytes...")
             _bytes = f_sig.read()
             self.debug("Hashing...")
             data = hashlib.sha256(_bytes).hexdigest()
-            self.debug("Hash (data=%s)" % data)
+            msg = f"Hash data='{data}'"
+            self.debug(msg)
             return data
 
     def save_hash_file(self, data):
@@ -101,20 +105,24 @@ class Signer(Actioner):
         """
         # Saves a hash file
         __hash_file__ = f"{self.file}.sha256sum.txt"
-        self.debug("Saving %s" % __hash_file__)
+        msg = f"Saving {__hash_file__}"
+        self.debug(msg)
 
         with open(__hash_file__, mode="w", encoding="utf-8") as hash_file:
             content = f"{data} {self.file}"
-            self.debug("%s content (data=%s)" % (__hash_file__, content))
             hash_file.write(content)
-            self.debug("%s saved" % __hash_file__)
+            msg = f"{__hash_file__} content data='{content}'"
+            self.debug(msg)
+            msg = f"{__hash_file__} saved"
+            self.info(msg)
 
     def _print_qrcode(self, data):
         """
         Print QRCode to console
         """
         # Prints the QR code
-        self.debug("Creating QRCode (data=%s)" % data)
+        msg = f"Creating QRCode data='{data}'"
+        self.debug(msg)
         __qrcode__ = make_qr_code(data=data)
         print(f"{__qrcode__}")
 
@@ -136,11 +144,11 @@ class Signer(Actioner):
         # encode signature to binary format
         binary_signature = base64.b64decode(signature.encode())
 
-        self.debug("Saving %s" % signature_file)
-
+        # Save
         with open(signature_file, "wb") as sig_file:
             sig_file.write(binary_signature)
-            self.debug("Signature saved on %s" % signature_file)
+            msg = f"Signature saved on {signature_file}"
+            self.info(msg)
 
     def make_pubkey_certificate(self):
         """
@@ -150,12 +158,12 @@ class Signer(Actioner):
         self.debug("Creating public key certificate")
         pubkey = self.scanner.scan_public_key()
         self.save_pubkey_certificate(pubkey)
-        
+
     def save_pubkey_certificate(self, pubkey):
         """
         Create and save PEM data to a file
         with filename as owner's name
-        
+
         Choose if will be compressed or uncompressed
         """
         if self.uncompressed:
@@ -172,15 +180,18 @@ class Signer(Actioner):
         # Convert pubkey data to bytes
         self.debug("Converting public key to bytes")
         __public_key_data_bytes__ = bytes.fromhex(__public_key_data__)
-        self.debug("pubkey data bytes: %s" % __public_key_data_bytes__)
+        msg = f"pubkey data bytes: {__public_key_data_bytes__}"
+        self.debug(msg)
 
         self.debug("Encoding bytes to base64 format")
         __public_key_data_b64__ = base64.b64encode(__public_key_data_bytes__)
-        self.debug("encoded base64 pubkey: %s" % __public_key_data_b64__)
+        msg = f"encoded base64 pubkey: {__public_key_data_b64__}"
+        self.debug(msg)
 
         self.debug("Decoding bas64 to utf8")
         __public_key_data_b64_utf8__ = __public_key_data_b64__.decode("utf8")
-        self.debug("decoded base64 utf8: %s" % __public_key_data_b64_utf8__)
+        msg = f"decoded base64 utf8: {__public_key_data_b64_utf8__}"
+        self.debug(msg)
 
         formated_pubkey = "\n".join(
             [
@@ -189,10 +200,10 @@ class Signer(Actioner):
                 "-----END PUBLIC KEY-----",
             ]
         )
-        self.debug("formated pubkey: %s" % formated_pubkey)
+        msg = f"formated pubkey: {formated_pubkey}"
         __public_key_name__ = f"{self.owner}.pem"
 
         with open(__public_key_name__, mode="w", encoding="utf-8") as pb_file:
-            self.debug("Saving %s" % __public_key_name__)
             pb_file.write(formated_pubkey)
-            self.debug("%s saved" % __public_key_name__)
+            msg = f"{__public_key_name__} saved"
+            self.info(msg)

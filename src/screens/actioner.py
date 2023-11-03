@@ -25,12 +25,9 @@ actioner.py
 Implements an inherited kivy.uix.screenmanager.Screen
 to be subclassed on qrcody.py and scan.py
 """
-import inspect
-
 ################
 # Kivy libraries
 ################
-from kivy.logger import Logger
 from kivy.core.window import Window
 from kivy.uix.label import Label
 from kivy.properties import ListProperty, ObjectProperty
@@ -68,7 +65,7 @@ class ActionerScreen(LoggedScreen):
         "font_size": Window.height // 35,
         "font_name": "terminus",
         "halign": "center",
-        "markup": True
+        "markup": True,
     }
     """
     Base **kargs for for Labels 
@@ -85,22 +82,21 @@ class ActionerScreen(LoggedScreen):
         self._keyboard = Window.request_keyboard(self._keyboard_closed, self, "text")
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
 
-    
     def _set_background(self, **kwargs):
         name = kwargs.get("name")
-        id = kwargs.get("id")
-        r = kwargs.get("r")
-        g =  kwargs.get("g")        
-        b =  kwargs.get("b")
-        a =  kwargs.get("a")
-        
+        _id = kwargs.get("id")
+        red = kwargs.get("r")
+        green = kwargs.get("g")
+        blue = kwargs.get("b")
+        alpha = kwargs.get("a")
+
         # Log first
-        msg = f"<Button::{name}> {id}.background_color=({r},{g},{b},{a})"
+        msg = f"<Button::{name}> {_id}.background_color=({red},{green},{blue},{alpha})"
         self.debug(msg)
 
         # set after
         widget = self.ids[id]
-        widget.background_color = (r, g, b, a)
+        widget.background_color = (red, green, blue, alpha)
 
     def _set_screen(self, **kwargs):
         """
@@ -116,7 +112,8 @@ class ActionerScreen(LoggedScreen):
         direction = kwargs.get("direction")
         print(self.manager.screen_names)
 
-        self.debug("Switching to screen='%s' by direction='%s'" % (name, direction))
+        msg = f"Switching to screen='{name}' by direction='{direction}'"
+        self.debug(msg)
         self.manager.transition.direction = direction
         self.manager.current = name
 
@@ -130,17 +127,10 @@ class ActionerScreen(LoggedScreen):
         -------
             :param:`id` the kivy id of widget
         """
-        id = kwargs.get("id")
-        msg = f"<Button::{id}> clicked"
+        _id = kwargs.get("id")
+        msg = f"<Button::{_id}> clicked"
         self.info(msg)
-        self._set_background(
-            name=self.name,
-            id=id,
-            r=0.5,
-            g=0.5,
-            b=0.5,
-            a=0.5
-        )
+        self._set_background(name=self.name, id=id, r=0.5, g=0.5, b=0.5, a=0.5)
 
     def _on_release(self, **kwargs):
         """
@@ -151,17 +141,11 @@ class ActionerScreen(LoggedScreen):
         Kwargs:
         -------
             :param:`id` the kivy id of widget
-        """ 
-        id = kwargs.get("id")
-        msg = f"<Button::{id}> released"
-        self._set_background(
-            name=self.name,
-            id=id,
-            r=0,
-            b=0,
-            g=0,
-            a=0
-        )
+        """
+        _id = kwargs.get("id")
+        msg = f"<Button::{_id}> released"
+        self.info(msg)
+        self._set_background(name=self.name, id=_id, r=0, b=0, g=0, a=0)
 
     def _make_label(self, **kwargs):
         """
@@ -173,24 +157,26 @@ class ActionerScreen(LoggedScreen):
             :param type can be 'description' or 'warning'
         """
 
-        text = kwargs.get("text")
-        type = kwargs.get("type")
-        self.info("building '%s' label='%s'" % (type, text))
+        _text = kwargs.get("text")
+        _type = kwargs.get("type")
+        msg = f"building '{_type}' label='{_text}'"
+        self.debug(msg)
         __kwargs__ = self.base_label_kwargs
-        __kwargs__["text"] = text
+        __kwargs__["text"] = _text
         __kwargs__["color"] = self.fill_color
 
-        if (type == "description"):
+        if _type == "description":
             __kwargs__["pos_hint"] = self.label_pos_hint
 
-        elif (type == "warning"):
+        elif _type == "warning":
             __kwargs__["pos_hint"] = self.warn_pos_hint
 
         else:
-            raise ValueError("Invalid type '%s'" % type)
+            msg = f"Invalid type '{_type}'"
+            raise ValueError(msg)
 
-        msg = "label args: %s" % __kwargs__ 
-        self.debug(msg) 
+        msg = "label args: %s" % __kwargs__
+        self.debug(msg)
         return Label(**__kwargs__)
 
     def _keyboard_closed(self):
@@ -204,7 +190,7 @@ class ActionerScreen(LoggedScreen):
         # If we hit escape, release the keyboard
         # for key in ["escape"]
         if keycode[1] == "enter":
-            self.info("%s pressed" % keycode[1])
+            msg = f"{keycode[1]} pressed"
             if self.manager.current == "sign":
                 self._set_screen(name="main", direction="left")
             elif self.manager.current == "export-sha256":
@@ -214,8 +200,8 @@ class ActionerScreen(LoggedScreen):
             elif self.manager.current == "import-public-key":
                 self._set_screen(name="sign", direction="left")
             else:
-                self.warning("key '%s' isnt implemented" % keycode[1])
-            
+                msg = f"key '{keycode[1]}' isnt implemented"
+                self.warning(msg)
         return True
 
     def _chunk_str(self, msg, size):
@@ -223,7 +209,7 @@ class ActionerScreen(LoggedScreen):
         Split a big string in multiple lines;
         Use with sha256 or signature strings.
         """
-        
-        _msg = "chunking %s to substrings with len=%s" % (msg, size)
+
+        _msg = f"chunking {msg} to substrings with len={size}"
         self.debug(_msg)
         return "\n".join([msg[i : i + size] for i in range(0, len(msg), size)])

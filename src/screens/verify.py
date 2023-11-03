@@ -32,6 +32,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
+
 # pylint: disable=no-name-in-module
 from kivy.properties import StringProperty, ListProperty
 
@@ -43,6 +44,8 @@ from screens.actioner import ActionerScreen
 from screens.cacher import LoggedCache
 from filechooser import LoadDialog
 
+
+# pylint: disable=too-many-ancestors
 class VerifyScreen(ActionerScreen):
     """
     VerifyScreen
@@ -74,37 +77,37 @@ class VerifyScreen(ActionerScreen):
             load=LoadDialog.load,
             cancel=lambda: self._load_file_popup.dismiss,
             on_submit=self.on_submit_file_to_be_verified,
-         )
+        )
         self._load_file_popup = Popup(
             title="Load a file to be verified",
             content=self._load_file_dialog,
-            size_hint=self.popup_size_hint
+            size_hint=self.popup_size_hint,
         )
 
         # Signature's file to be verified LoadDialog and Popup
         self._load_signature_dialog = LoadDialog(
             load=LoadDialog.load,
             cancel=lambda: self._load_signature_popup.dismiss,
-            on_submit=self.on_submit_signature
-         )
+            on_submit=self.on_submit_signature,
+        )
         self._load_signature_popup = Popup(
             title="Load the signature's file to be verified",
             content=self._load_signature_dialog,
-            size_hint=self.popup_size_hint
+            size_hint=self.popup_size_hint,
         )
-    
+
         # Public key certificate's file to be verified LoadDialog and Popup
         self._load_pubkey_dialog = LoadDialog(
             load=LoadDialog.load,
             cancel=lambda: self._load_pubkey_popup.dismiss,
-            on_submit=self.on_submit_pubkey
-         )
+            on_submit=self.on_submit_pubkey,
+        )
         self._load_pubkey_popup = Popup(
             title="Load the public-key certificate's file to be verified",
             content=self._load_pubkey_dialog,
-            size_hint=self.popup_size_hint
+            size_hint=self.popup_size_hint,
         )
-        
+
     def on_press_load_file(self):
         """
         Change background color of :data:`verify_screen_load_file_button` widget
@@ -123,7 +126,7 @@ class VerifyScreen(ActionerScreen):
     def on_submit_file_to_be_verified(self, *args):
         """
         Cache file name to be verified
-        """        
+        """
         # cache file input
         LoggedCache.append("ksigner", "file_input", args[1][0])
 
@@ -150,7 +153,7 @@ class VerifyScreen(ActionerScreen):
     def on_submit_signature(self, *args):
         """
         Cache signature's file be verified
-        """        
+        """
         # cache file input
         LoggedCache.append("ksigner", "signature", args[1][0])
 
@@ -177,7 +180,7 @@ class VerifyScreen(ActionerScreen):
     def on_submit_pubkey(self, *args):
         """
         Cache public key certificate's file be verified
-        """        
+        """
         # cache file input
         LoggedCache.append("ksigner", "pubkey", args[1][0])
 
@@ -186,7 +189,7 @@ class VerifyScreen(ActionerScreen):
         self.info(msg)
         self._load_pubkey_popup.dismiss()
 
-    def on_press_verify(self): 
+    def on_press_verify(self):
         """
         Change background color of :data:`verify_screen_verification` widget
         """
@@ -206,44 +209,36 @@ class VerifyScreen(ActionerScreen):
 
         # Verify
         self.debug("Building verification")
-        verifyer = Verifyer(
-            file=file,
-            signature=sig,
-            pubkey=pub
-        )
+        verifyer = Verifyer(file=file, signature=sig, pubkey=pub)
 
         command = verifyer.make_openssl_command()
         result = verifyer.verify(command)
-        self.debug("verification result: %s" % result)
+        msg = f"verification result: {result}"
+        self.info(msg)
 
         # Verification popup
         self.debug("Creating <BoxLayout> for <Popup>")
-        self._verification_box_popup = BoxLayout(orientation='vertical')
+        _verification_box_popup = BoxLayout(orientation="vertical")
 
-        text = "\n".join((
-            ""
-            f"[b]{self._chunk_str(command, 88)}[/b]",
-            "",
-            result                    
-        ))
-        self.debug("Adding <Label> to <Popup::BoxLayout> text='%s'" % text)
-        self._verification_box_popup.add_widget(Label(text=text, markup=True))
+        # show an alert
+        text = "\n".join(("" f"[b]{self._chunk_str(command, 88)}[/b]", "", result))
+        msg = f"Adding <Label> to <Popup::BoxLayout> text='{text}'"
+        self.debug(msg)
+        _verification_box_popup.add_widget(Label(text=text, markup=True))
 
         self.debug("Creating <Popup>")
-        self._verification_popup = Popup(
+        _verification_popup = Popup(
             title="Verify signature",
             title_align="center",
-            content=self._verification_box_popup,
+            content=_verification_box_popup,
             size_hint=(0.9, 0.9),
-            auto_dismiss=True
+            auto_dismiss=True,
         )
 
         self.debug("Adding <Button> 'ok' to <Popup::BoxLayout>")
-        self._verification_box_popup.add_widget(Button(
-            text="Back",
-            on_press=lambda *args: self._verification_popup.dismiss()                                            
-        ))
+        _verification_box_popup.add_widget(
+            Button(text="Back", on_press=lambda *args: _verification_popup.dismiss())
+        )
 
         self.info("opening <Popup>")
-        self._verification_popup.open()
-   
+        _verification_popup.open()

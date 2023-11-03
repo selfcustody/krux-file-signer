@@ -60,17 +60,17 @@ class KSignerApp(App):
         _dirname = os.path.dirname(__file__)
         _terminus_path = os.path.join(_dirname, "terminus.ttf")
         _absdir = os.path.abspath(_terminus_path)
-        
-        msg = "%s: Registering font '%s' at %s" % (info(), "terminus", _absdir)
+
+        msg = f"{info()}: Registering font '{_font_name}' at {_absdir}"
         Logger.warning(msg)
         LabelBase.register(name=_font_name, fn_regular=_absdir)
-    
+
     def _register_cacher(self):
         cache_name = "ksigner"
-        cache_args = { "limit": 10, "timeout": 300 }
+        cache_args = {"limit": 10, "timeout": 300}
         Cache.register(cache_name, **cache_args)
 
-    def _register_screens(self) -> ScreenManager:        
+    def _register_screens(self) -> ScreenManager:
         screen_manager = ScreenManager()
         screens = (
             MainScreen(name="main"),
@@ -82,18 +82,18 @@ class KSignerApp(App):
         )
 
         for screen in screens:
-            msg = "%s: adding screen '%s'" % (info(), screen.name)
+            msg = f"{info()}: adding screen '{screen.name}'"
             Logger.debug(msg)
             screen_manager.add_widget(screen)
-            
+
         return screen_manager
-    
+
     def build(self):
         """
         Create the Root widget with an ScreenManager
         as manager for its sub-widgets:
         """
-        msg = "%s: %s" % (info(), "Starting ksigner")
+        msg = f"{info()}: Starting ksigner"
         Logger.info(msg)
 
         self._register_cacher()
@@ -101,6 +101,6 @@ class KSignerApp(App):
         return self._register_screens()
 
 
-if __name__ == "__main__":    
+if __name__ == "__main__":
     app = KSignerApp()
     app.run()

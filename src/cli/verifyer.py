@@ -38,6 +38,7 @@ import subprocess
 #################
 from cli.actioner import Actioner
 
+
 class Verifyer(Actioner):
     """
     Verifyer is the class
@@ -47,6 +48,7 @@ class Verifyer(Actioner):
     """
 
     def __init__(self, **kwargs):
+        super().__init__()
         self.file = kwargs.get("file")
         self.pubkey = kwargs.get("pubkey")
         self.signature = kwargs.get("signature")
@@ -66,23 +68,23 @@ class Verifyer(Actioner):
             ]
         )
 
+    # pylint: disable=inconsistent-return-statements
     def verify(self, command):
         """
         Uses openssl to verify the signature and public key
         """
         try:
-            self.debug("Verifyer: Running '%s'" % command)
+            msg = f"Verifyer: Running '{command}'"
+            self.info(msg)
             result = subprocess.run(
-                command,
-                check=True,
-                shell=True,
-                capture_output=True,
-                text=True
+                command, check=True, shell=True, capture_output=True, text=True
             )
             if result.stdout and not result.stderr:
                 return result.stdout
-            elif not result.stdout and result.stderr:
+
+            if not result.stdout and result.stderr:
                 return result.stderr
+
         except subprocess.CalledProcessError as exc:
             self.error(exc)
             return "Invalid command"

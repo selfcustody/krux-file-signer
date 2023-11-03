@@ -29,7 +29,6 @@ with inner logger. Use it as super class
 # Standard libraries
 ####################
 import os
-import inspect
 
 #######################
 # Third party libraries
@@ -53,23 +52,43 @@ class LoggedScreen(Screen):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        if (os.environ.get('LOG_LEVEL')):
+        if os.environ.get("LOG_LEVEL"):
             self.loglevel = LOG_LEVELS[os.environ["LOG_LEVEL"]]
         else:
             self.loglevel = LOG_LEVELS["info"]
         Logger.setLevel(self.loglevel)
 
     def _create_msg(self, msg):
-        return "%s: %s" % (info(), msg)
-    
+        """
+        Create the logged message with current
+        class caller
+        """
+        return f"%{info()}: {msg}"
+
     def info(self, msg):
+        """
+        Create the info message with the current
+        class caller
+        """
         Logger.info(self._create_msg(msg))
 
     def debug(self, msg):
+        """
+        Create the debug message with the current
+        class caller
+        """
         Logger.debug(self._create_msg(msg))
 
     def warning(self, msg):
+        """
+        Create the warning message with the current
+        class caller
+        """
         Logger.warning(self._create_msg(msg))
-        
+
     def error(self, msg):
+        """
+        Create the error message with the current
+        class caller
+        """
         Logger.error(self._create_msg(msg))

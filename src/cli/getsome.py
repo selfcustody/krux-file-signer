@@ -31,7 +31,7 @@ import inspect
 def info():
     """
     we can loop through the self's
-    MRO and try to find the method 
+    MRO and try to find the method
     that called us.
     see htps://stackoverflow.com/questions/
     53153075/get-a-class-name-of-calling-method
@@ -72,10 +72,10 @@ def info():
                 pass
 
             # see if this is the method that called us
-            if getattr(method, '__code__', None) is codeobj:
+            if getattr(method, "__code__", None) is codeobj:
                 name = self_type.__name__
                 return name
-            
+
         # if we didn't find a matching method, return None
         return None
     finally:

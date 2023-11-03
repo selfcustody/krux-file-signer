@@ -29,7 +29,6 @@ to be used with Signer and Verifyer
 # Standard libraries
 ####################
 import os
-import inspect
 
 #######################
 # Third party libraries
@@ -43,22 +42,37 @@ from cli.getsome import info
 
 
 class Actioner:
+    """
+    Base class for Signer and Verifyer
+    """
 
-    def __init__(self, **kwargs):
-        if (os.environ.get('LOG_LEVEL')):
-            self.loglevel = LOG_LEVELS[os.environ["LOG_LEVEL"]]
+    def __init__(self):
+        if os.environ.get("LOG_LEVEL"):
+            _loglevel = LOG_LEVELS[os.environ["LOG_LEVEL"]]
         else:
-            self.loglevel = LOG_LEVELS["info"]
-        Logger.setLevel(self.loglevel)
+            _loglevel = LOG_LEVELS["info"]
+        Logger.setLevel(_loglevel)
 
     def info(self, msg):
+        """
+        Logger with info level
+        """
         Logger.info("%s: %s", info().strip(), msg)
 
     def debug(self, msg):
+        """
+        Logger with debug level
+        """
         Logger.debug("%s: %s", info().strip(), msg)
 
     def warning(self, msg):
+        """
+        Logger with warning level
+        """
         Logger.warning("%s: %s", info().strip(), msg)
 
-    def error(msg, *args):
+    def error(self, msg):
+        """
+        Logger with error level
+        """
         Logger.error("%s: %s", info().strip(), msg)

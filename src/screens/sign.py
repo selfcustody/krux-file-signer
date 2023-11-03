@@ -31,7 +31,6 @@ from kivy.uix.popup import Popup
 
 # pylint: disable=no-name-in-module
 from kivy.properties import StringProperty, ListProperty
-from kivy.logger import LOG_LEVELS
 
 #################
 # Local libraries
@@ -42,6 +41,7 @@ from cli.signer import Signer
 from filechooser import LoadDialog
 
 
+# pylint: disable=too-many-ancestors
 class SignScreen(ActionerScreen):
     """
     SignScreen
@@ -53,7 +53,7 @@ class SignScreen(ActionerScreen):
     - Import & save publickey: `TODO`;
     - Back: `__on_release__` method
     """
-    
+
     name = StringProperty("sign")
     """
     The screen's name 
@@ -72,9 +72,7 @@ class SignScreen(ActionerScreen):
             on_submit=self.on_submit_file,
         )
         self._popup = Popup(
-            title="Load a file",
-            content=self._content,
-            size_hint=self.popup_size_hint
+            title="Load a file", content=self._content, size_hint=self.popup_size_hint
         )
 
     def on_press_export_sha256_message(self):
@@ -82,7 +80,7 @@ class SignScreen(ActionerScreen):
         Change background color of :data:`export_sha256_message` widget
         """
         self._on_press(id="export_sha256_message")
-        
+
     def on_release_export_sha256_message(self):
         """
         Change background of :data:`export_sha256_message` widget
@@ -108,9 +106,9 @@ class SignScreen(ActionerScreen):
 
     def on_press_import_publickey_message(self):
         """
-        Change background of 
+        Change background of
         :data:`import_publickey_message` widget
-         """
+        """
         self._on_press(id="import_publickey_message")
 
     def on_release_import_publickey_message(self):
@@ -123,14 +121,14 @@ class SignScreen(ActionerScreen):
 
     def on_press_back_main(self):
         """
-        Change background of 
+        Change background of
         :data:`sign_screen_back` widget
         """
         self._on_press(id="sign_screen_back")
 
     def on_release_back_main(self):
         """
-        Change background of 
+        Change background of
         :data:`sign_screen_back` widget
         on_release_back_main
         """
@@ -147,8 +145,8 @@ class SignScreen(ActionerScreen):
         LoggedCache.append("ksigner", "owner", args[1][0])
         file_input = LoggedCache.get("ksigner", "file_input")
         owner = LoggedCache.get("ksigner", "owner")
-        
-        msg = "<Popup> loading %s" % file_input
+
+        msg = f"<Popup> loading {file_input}"
         self.info(msg)
 
         signer = Signer(
@@ -158,12 +156,12 @@ class SignScreen(ActionerScreen):
         )
 
         # Cache the hash in a .sha256sum file
-        hash = signer.hash_file()
-        LoggedCache.append("ksigner", "hash", hash)
+        _hash = signer.hash_file()
+        LoggedCache.append("ksigner", "hash", _hash)
 
         # Cache the hashed file
         hash_file = f"{file_input}.sha256sum.txt"
-        LoggedCache.append("ksigner", "hash_file", hash_file)        
+        LoggedCache.append("ksigner", "hash_file", hash_file)
         signer.save_hash_file(hash_file)
 
         # Close the popup

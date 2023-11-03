@@ -24,24 +24,28 @@ mainscreen.py
 
 Implements an inherited screens.logscreen.LoggedScreen
 """
+#######################
+# Third party libraries
+#######################
+# pylint: disable=no-name-in-module
+from kivy.properties import StringProperty
 
 #################
 # Local libraries
 #################
 from screens.actioner import ActionerScreen
-# pylint: disable=no-name-in-module
-from kivy.properties import StringProperty, ListProperty
 
+
+# pylint: disable=too-many-ancestors
 class MainScreen(ActionerScreen):
     """
-    MainScreen
-
-    Class to manage :mod:`screens` :class:`screens.SignScreen` and
+    Class to manage :mod:`screens`
+    :class:`screens.SignScreen` and
     :class:`screens.VerifyScreen`.
     """
 
     name = StringProperty("main")
-         
+
     def on_press_sign_button(self):
         """
         on_press_sign_button
@@ -70,7 +74,7 @@ class MainScreen(ActionerScreen):
           giving a visual effect of 'pressed'
         """
         self._on_press(id="main_screen_verify_button")
-        
+
     def on_release_verify_button(self):
         """
         on_release_verify_button
