@@ -32,11 +32,6 @@ from pathlib import Path
 from platform import system
 import PyInstaller.__main__
 
-# Check if correct argument is set
-if not sys.argv[1] == "cli" or not sys.argv[1] == "gui":
-    # pylint: disable=broad-exception-raised
-    raise ValueError(f"Invalid '{sys.argv[1]}' build type")
-
 # Get root path of ksigners to properly setup
 ROOT_PATH = Path(__file__).parent.parent.absolute()
 pyname = f"ksigner-{sys.argv[1]}"

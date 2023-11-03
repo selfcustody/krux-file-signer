@@ -125,21 +125,11 @@ poetry run python src/ksigner-gui.py
 `ksigner` intends to be Operating System agnostic.
 To achieve this goal, the project requires the correct use of pyinstaller:
 
-#### `ksigner-cli` build
-
 ```bash
-poetry run poe build-cli
+poetry run poe build
 ```
 
-Will generate a platform specific executable placed on `dist/ksigner-cli-<platform>`
-
-#### `ksigner-gui` build
-
-```bash
-poetry run poe build-gui
-```
-
-Will generate a platform specific executable placed on `dist/ksigner-gui-<platform>`
+Will generate a platform specific executable placed on `dist/ksigner-<cli|gui>-<platform>`
 
 ## Usage
 
