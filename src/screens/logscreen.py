@@ -63,7 +63,7 @@ class LoggedScreen(Screen):
         Create the logged message with current
         class caller
         """
-        return f"%{info()}: {msg}"
+        return f"{info()}: {msg}"
 
     def info(self, msg):
         """

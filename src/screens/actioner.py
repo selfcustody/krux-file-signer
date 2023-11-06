@@ -83,6 +83,18 @@ class ActionerScreen(LoggedScreen):
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
 
     def _set_background(self, **kwargs):
+        """
+        Changes the widget's background by it's id
+
+        Kwargs:
+        -------
+            :param:`name` identify the widget for debug purposes
+            :param:`id` widget identification on kv file
+            :param:`r` red color
+            :param:`g` green color
+            :param:`b` blue color
+            :param:`a` alpha color
+        """
         name = kwargs.get("name")
         _id = kwargs.get("id")
         red = kwargs.get("r")
@@ -95,7 +107,7 @@ class ActionerScreen(LoggedScreen):
         self.debug(msg)
 
         # set after
-        widget = self.ids[id]
+        widget = self.ids[_id]
         widget.background_color = (red, green, blue, alpha)
 
     def _set_screen(self, **kwargs):
@@ -110,7 +122,6 @@ class ActionerScreen(LoggedScreen):
         """
         name = kwargs.get("name")
         direction = kwargs.get("direction")
-        print(self.manager.screen_names)
 
         msg = f"Switching to screen='{name}' by direction='{direction}'"
         self.debug(msg)
@@ -130,7 +141,7 @@ class ActionerScreen(LoggedScreen):
         _id = kwargs.get("id")
         msg = f"<Button::{_id}> clicked"
         self.info(msg)
-        self._set_background(name=self.name, id=id, r=0.5, g=0.5, b=0.5, a=0.5)
+        self._set_background(name=self.name, id=_id, r=0.5, g=0.5, b=0.5, a=0.5)
 
     def _on_release(self, **kwargs):
         """
@@ -180,15 +191,19 @@ class ActionerScreen(LoggedScreen):
         return Label(**__kwargs__)
 
     def _keyboard_closed(self):
+        """
+        Unbind this method from :data:`self._keyboard`
+        """
         self.debug("closing keyboard")
         self._keyboard.unbind(on_key_down=self._on_keyboard_down)
         self._keyboard = None
 
     # pylint: disable=unused-argument
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
-        # Keycode is composed of an integer + a string
-        # If we hit escape, release the keyboard
-        # for key in ["escape"]
+        """
+        Keycode is composed of an integer + a string
+        If we hit escape, release the keyboard for key in ["escape"]
+        """
         if keycode[1] == "enter":
             msg = f"{keycode[1]} pressed"
             if self.manager.current == "sign":

@@ -3,7 +3,7 @@ name: Pylint
 on: [push]
 
 jobs:
-  build:
+  build-linux:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -27,3 +27,11 @@ jobs:
         
     - name: Build ksigner-cli and ksigner-gui
       run: poetry run poe build
+
+    - name: Upload ksigner-cli artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ksigner-linux
+        path: |
+          ./dist/ksigner-cli-linux
+          ./dist/ksigner-gui-linux
