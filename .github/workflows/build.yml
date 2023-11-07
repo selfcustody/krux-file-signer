@@ -3,59 +3,43 @@ name: Build
 on: [push]
 
 jobs:
-  build-linux:
+  
+  build:
     strategy:
       matrix:
-        os: ["ubuntu-latest", "macOS-latest"]
+        os: ["ubuntu-latest"]
         python-version: ["3.10", "3.11"]
 
     runs-on: ${{ matrix.os }}
 
     steps:
     
-    - name: Checkout
-      uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
 
-    - name: Set up Python ${{ matrix.python-version }} for ${{ runner.os }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
-  
-    - name: Install dependencies for ${{ runner.os }}
-      if: runner.os == 'Linux'
-      run: |
-        sudo apt-get install -y libzbar0
-        python -m pip install --upgrade pip
-        pip install poetry
-        poetry install
-
-    - name: Install dependencies for ${{ runner.os }}
-      if: runner.os == 'macOS'
-      run: |
-        sudo brew install zbar
-        mkdir ~/lib
-        ln -s $(brew --prefix zbar)/lib/libzbar.dylib ~/lib/libzbar.dylib 
-        python -m pip install --upgrade pip
-        pip install poetry
-        poetry install
+      - name: Update System
+        if: runner.os == 'Linux'
+        run: |          
+          sudo apt-get install -y libzbar0
           
-    - name: Build ksigner-cli and ksigner-gui for ${{ runner.os }}
-      run: poetry run poe build
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - name: Upload ksigner-cli artifact
-      uses: actions/upload-artifact@v3
-      if: runner.os == 'Linux'
-      with:
-        name: ksigner-${{ runner.os }}-py${{ matrix.python-version }}
-        path: |
-          ./dist/ksigner-cli-linux
-          ./dist/ksigner-gui-linux
-            
-    - name: Upload ksigner-cli artifact
-      uses: actions/upload-artifact@v3
-      if: runner.os == 'macOS'
-      with:
-        name: ksigner-${{ runner.os }}-py${{ matrix.python-version }}
-        path: |
-          ./dist/ksigner-cli-mac
-          ./dist/ksigner-gui-mac
+      - name: Install dependencies
+        if: runner.os == 'Linux'
+        run: |
+          python -m pip install --upgrade pip
+          pip install --upgrade Cython
+          pip install poetry
+          poetry install
+        
+      - name: Build executables
+        run: poetry run poe build
+
+      - name: Upload ksigner-cli artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ksigner-${{ runner.os }}-py${{ matrix.python-version }}
+          path: ./dist/ksigner-*
