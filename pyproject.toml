@@ -25,11 +25,12 @@ poethepoet = "^0.24.1"
 [tool.poe.tasks]
 _black-src = "black src"
 _black-inst = "black inst/"
+black = ["_black-src", "_black-inst"]
 _lint-src = "pylint src/"
 _lint-inst = "pylint inst/"
+lint = ["_lint-src", "_lint-inst"]
 _build-cli = "python inst/kbuilder.py cli"
 _build-gui = "python inst/kbuilder.py gui"
-lint = ["_black-inst", "_black-src", "_lint-inst", "_lint-src"]
 build = ["_build-cli", "_build-gui"]
 
 [build-system]

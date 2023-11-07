@@ -1,13 +1,14 @@
-name: Pylint
+name: Lint
 
 on: [push]
 
 jobs:
+
   lint:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.11"]
+        python-version: ["3.10", "3.11"]
     steps:
     
     - name: Checkout
