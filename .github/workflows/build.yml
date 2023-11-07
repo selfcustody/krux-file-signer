@@ -20,7 +20,8 @@ jobs:
       - name: Update System
         if: runner.os == 'Linux'
         run: |          
-          sudo apt-get install -y libzbar0
+          sudo apt-get install -y libzbar0 libmtdev1 libmtdev-dev
+          sudo ldconfig -v 
           
       - name: Setup Python
         uses: actions/setup-python@v3
