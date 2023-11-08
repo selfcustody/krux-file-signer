@@ -20,8 +20,19 @@ jobs:
       - name: Update System
         if: runner.os == 'Linux'
         run: |          
-          sudo apt-get install -y libzbar0 libmtdev1 libmtdev-dev
-          sudo ldconfig -v 
+          sudo apt-get install -y libzbar0 libmtdev1 libmtdev-dev xvfb
+          sudo ldconfig -v
+
+      # Build needs some display
+      # Running without a headless display
+      # into github-action worker
+      # will cause a "Couldn't connect to X Server"
+      # To fix that, setup a headless window server 
+      - name: Setup a headless X server for linux
+        if: runner.os == 'Linux'
+        run: |
+          export DISPLAY=:99.0
+          Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
           
       - name: Setup Python
         uses: actions/setup-python@v3
@@ -29,13 +40,12 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
-        if: runner.os == 'Linux'
         run: |
           python -m pip install --upgrade pip
           pip install --upgrade Cython
           pip install poetry
           poetry install
-        
+
       - name: Build executables
         run: poetry run poe build
 
