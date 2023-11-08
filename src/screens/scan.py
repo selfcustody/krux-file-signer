@@ -116,7 +116,7 @@ class ScanScreen(ActionerScreen):
         will be feeded to :class:`Signer` and saved as `.sig`
         or `.pem` files. When it occurs, stop scanning
         """
-        self.warning("Waiting for qrcode")
+        self.debug("Waiting for qrcode")
         if len(self._zbarcam.symbols) > 0:
             scanned_data = self._zbarcam.symbols[0].data.decode("UTF-8")
             msg = f"captured '{scanned_data}'"
@@ -127,7 +127,7 @@ class ScanScreen(ActionerScreen):
             owner = LoggedCache.get("ksigner", "owner")
 
             if self.manager.current == "import-signature":
-                self.warning("Saving signature")
+                self.debug("Saving signature")
                 signer = Signer(file=file_input, owner=owner, uncompressed=False)
 
                 signer.save_signature(scanned_data)
@@ -135,7 +135,7 @@ class ScanScreen(ActionerScreen):
                 self._alert(title=title, message=f"{file_input}.sig")
 
             elif self.manager.current == "import-public-key":
-                self.warning("Saving publickey certificate")
+                self.debug("Saving publickey certificate")
                 signer = Signer(file=file_input, owner=owner, uncompressed=False)
                 signer.save_pubkey_certificate(scanned_data)
                 title = "Public key saved"
@@ -143,7 +143,7 @@ class ScanScreen(ActionerScreen):
 
             else:
                 msg = f"Invalid screen '{self.manager.screen}'"
-                self.warning(msg)
+                self.debug(msg)
 
             self.debug("Unscheduling QRCode decodification")
             Clock.unschedule(self._decode_qrcode, 1)

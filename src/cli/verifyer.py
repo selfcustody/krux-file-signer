@@ -73,18 +73,13 @@ class Verifyer(Actioner):
         """
         Uses openssl to verify the signature and public key
         """
-        try:
-            msg = f"Verifyer: Running '{command}'"
-            self.info(msg)
-            result = subprocess.run(
-                command, check=True, shell=True, capture_output=True, text=True
-            )
-            if result.stdout and not result.stderr:
-                return result.stdout
+        msg = f"Verifyer: Running '{command}'"
+        self.info(msg)
+        result = subprocess.run(
+            command, check=True, shell=True, capture_output=True, text=True
+        )
+        if result.stdout and not result.stderr:
+            return result.stdout
 
-            if not result.stdout and result.stderr:
-                return result.stderr
-
-        except subprocess.CalledProcessError as exc:
-            self.error(exc)
-            return "Invalid command"
+        if not result.stdout and result.stderr:
+            return result.stderr
