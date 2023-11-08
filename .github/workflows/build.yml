@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         os: ["ubuntu-latest"]
-        python-version: ["3.10", "3.11"]
+        python-version: ["3.11"]
 
     runs-on: ${{ matrix.os }}
 
@@ -20,19 +20,8 @@ jobs:
       - name: Update System
         if: runner.os == 'Linux'
         run: |          
-          sudo apt-get install -y libzbar0 libmtdev1 libmtdev-dev xvfb
+          sudo apt-get install -y libzbar0 libmtdev1 libmtdev-dev
           sudo ldconfig -v
-
-      # Build needs some display
-      # Running without a headless display
-      # into github-action worker
-      # will cause a "Couldn't connect to X Server"
-      # To fix that, setup a headless window server 
-      - name: Setup a headless X server for linux
-        if: runner.os == 'Linux'
-        run: |
-          export DISPLAY=:99.0
-          Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
           
       - name: Setup Python
         uses: actions/setup-python@v3
@@ -46,8 +35,15 @@ jobs:
           pip install poetry
           poetry install
 
+      # Build needs some display
+      # Running without a headless display
+      # into github-action worker
+      # will cause a "Couldn't connect to X Server"
+      # To fix that, setup a headless window server
       - name: Build executables
-        run: poetry run poe build
+        uses: coactions/setup-xvfb@v1
+        with:
+          run: poetry run poe build
 
       - name: Upload ksigner-cli artifact
         uses: actions/upload-artifact@v3
