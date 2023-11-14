@@ -15,6 +15,7 @@ qrcode = "^7.4.2"
 pillow = "^10.0.1"
 kivy = "^2.2.1"
 zbarcam = "^2020.524"
+kivysome = "^0.2.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.9.1"
@@ -31,7 +32,8 @@ _lint-inst = "pylint inst/"
 lint = ["_lint-src", "_lint-inst"]
 _build-cli = "python inst/kbuilder.py cli"
 _build-gui = "python inst/kbuilder.py gui"
-build = ["_build-cli", "_build-gui"]
+_build_font = "python inst/fontawesome.py"
+build = ["_build-cli", "_build_font", "_build-gui"]
 
 [build-system]
 requires = ["poetry-core"]

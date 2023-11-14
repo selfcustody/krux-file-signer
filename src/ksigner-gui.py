@@ -26,6 +26,7 @@ ksigner-gui.py
 A simple Graphical User Interface built with kivy
 """
 import os
+from pathlib import Path
 
 #######################
 # Third party libraries
@@ -35,6 +36,7 @@ from kivy.logger import Logger
 from kivy.uix.screenmanager import ScreenManager
 from kivy.cache import Cache
 from kivy.core.text import LabelBase
+from kivysome.iconfonts import register
 
 #################
 # Local libraries
@@ -88,16 +90,33 @@ class KSignerApp(App):
 
         return screen_manager
 
+    def _register_fontawesome(self, group):
+        root_path = Path(__file__).parent.parent.absolute()
+        ttf_path = str(root_path / "fonts" / f"fa-{group}-6.4.2.ttf")
+        fontd_path = str(root_path / "fonts" / f"fa-{group}-6.4.2.fontd")
+        Logger.warning(f"{info()}: Loading ttf {ttf_path}")
+        Logger.warning(f"{info()}: Loading fontd {fontd_path}")
+        register(f"fa-{group}", ttf_path, fontd_path)
+        
     def build(self):
-        """
+        """ 
         Create the Root widget with an ScreenManager
         as manager for its sub-widgets:
         """
-        msg = f"{info()}: Starting ksigner"
+        msg = f"{info()}: Registering terminus font"
         Logger.info(msg)
-
-        self._register_cacher()
         self._register_font()
+
+        msg = f"{info()}: Registering fontawesome"
+        Logger.info(msg)
+        self._register_fontawesome("regular")
+        
+        msg = f"{info()}: Loading cacher"
+        Logger.info(msg)
+        self._register_cacher()
+        
+        msg = f"{info()}: Loading screens"
+        Logger.info(msg)
         return self._register_screens()
 
 
