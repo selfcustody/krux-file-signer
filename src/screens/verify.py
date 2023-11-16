@@ -186,7 +186,15 @@ class VerifyScreen(ActionerScreen):
         self.info(msg)
         self._load_signature_popup.dismiss()
 
-        if args[1][0] is not None:
+        if not args[1][0].endswith(".sig"):
+            message = "\n".join([
+                f"'{args[1][0]}' do not have a valid extension.",
+                "Valid files ends with '.sig'"
+            ])
+            self._make_alert(title="Invalid file", message=message)
+            self.file_signature_to_verify_message_text = "Load Signature"
+
+        elif args[1][0] is not None:
             _icon = self._build_check_icon(color="00ff00", font_name="fa-regular-6.4.2")
             self.file_signature_to_verify_message_text = " ".join(
                 [_icon, self.file_signature_to_verify_message_text]
@@ -223,7 +231,15 @@ class VerifyScreen(ActionerScreen):
         self.info(msg)
         self._load_pubkey_popup.dismiss()
 
-        if args[1][0] is not None:
+        if not args[1][0].endswith(".pem"):
+            message = "\n".join([
+                f"'{args[1][0]}' do not have a valid extension.",
+                "Valid files ends with '.pem'"
+            ])
+            self._make_alert(title="Invalid file", message=message)
+            self.file_pubkey_to_verify_message_text = "Load Public Key"
+            
+        elif args[1][0] is not None:
             _icon = self._build_check_icon(color="00ff00", font_name="fa-regular-6.4.2")
             self.file_pubkey_to_verify_message_text = " ".join(
                 [_icon, self.file_pubkey_to_verify_message_text]
@@ -264,23 +280,5 @@ class VerifyScreen(ActionerScreen):
 
         # show an alert
         text = "\n".join(("" f"[b]{self._chunk_str(command, 88)}[/b]", "", result))
-        msg = f"Adding <Label> to <Popup::BoxLayout> text='{text}'"
-        self.debug(msg)
-        _verification_box_popup.add_widget(Label(text=text, markup=True))
+        self._make_alert(title="Verification result", message=text, markup=True)        
 
-        self.debug("Creating <Popup>")
-        _verification_popup = Popup(
-            title="Verify signature",
-            title_align="center",
-            content=_verification_box_popup,
-            size_hint=(0.9, 0.9),
-            auto_dismiss=True,
-        )
-
-        self.debug("Adding <Button> 'ok' to <Popup::BoxLayout>")
-        _verification_box_popup.add_widget(
-            Button(text="Back", on_press=lambda *args: _verification_popup.dismiss())
-        )
-
-        self.info("opening <Popup>")
-        _verification_popup.open()

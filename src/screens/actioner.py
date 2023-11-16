@@ -33,6 +33,9 @@ from pathlib import Path
 from kivy.core.window import Window
 from kivy.uix.label import Label
 from kivy.properties import ListProperty, ObjectProperty
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.popup import Popup
+from kivy.uix.button import Button
 
 #################
 # Local libraries
@@ -254,3 +257,41 @@ class ActionerScreen(LoggedScreen):
                 "[/color]",
             ]
         )
+
+    def _make_alert(self, **kwargs):
+        """
+        Build an alert popup
+        """
+        title = kwargs.get("title")
+        message = kwargs.get("message")
+        markup = kwargs.get("markup") or False
+
+        
+        # Creating alert popup
+        self.debug("Creating <BoxLayout>")
+        _alert_box_popup = BoxLayout(orientation="vertical")
+         
+        msg = f"Creating <Label text='{message}'>"
+        self.debug(msg)
+        _alert_label = Label(text=message, markup=markup)
+
+        self.debug("Creating <Button>")
+        _alert_button = Button(text="Back", on_press=lambda *args: _alert_popup.dismiss())
+        
+        self.debug("Adding <Label> to <BoxLayout>")
+        _alert_box_popup.add_widget(_alert_label)
+        
+        self.debug("Adding <Button> to <BoxLayout>")
+        _alert_box_popup.add_widget(_alert_button)
+
+        self.debug("Creating <Popup>")
+        _alert_popup = Popup(
+            title=title,
+            title_align="center",
+            content=_alert_box_popup,
+            size_hint=(0.9, 0.9),
+            auto_dismiss=True,
+        )
+
+        self.info("opening <Popup>")
+        _alert_popup.open()
