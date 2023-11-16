@@ -24,8 +24,6 @@ signscreen.py
 
 An inherited implementations of kivy.uix.screenmanager Screen    
 """
-from pathlib import Path
-
 #####################
 # Thirparty libraries
 #####################
@@ -33,7 +31,6 @@ from kivy.uix.popup import Popup
 
 # pylint: disable=no-name-in-module
 from kivy.properties import StringProperty, ListProperty
-from kivysome import icon
 
 #################
 # Local libraries
@@ -70,6 +67,16 @@ class SignScreen(ActionerScreen):
     export_sha256_message_text = StringProperty("Export sha256sum's message")
     """
     The button message of export sha256 file
+    """
+
+    import_signature_message_text = StringProperty("Import signature's message")
+    """
+    The button message of import signature file
+    """
+
+    import_publickey_message_text = StringProperty("Import public-key message")
+    """
+    The button message of import publickey file
     """
 
     def __init__(self, **kwargs):
@@ -177,30 +184,9 @@ class SignScreen(ActionerScreen):
         self.info(msg)
         self._popup.dismiss()
 
-        icon_params = {
-            "size": self.height // 25,
-            "color": "00ff00",
-            "font_name": "fa-regular"
-        }
-        msg = f"creating icon with params {icon_params}"
-        self.debug(msg)
-
-        ROOT_PATH = Path(__file__).parent.parent.parent.absolute()
-        FONT_PATH = str(ROOT_PATH / "fonts")
-        icon = "".join([
-            "[color=00ff00]",
-            f"[size={self.height // 25}]",
-            f"[font={FONT_PATH}/fa-regular-6.4.2.ttf]✅[/font]",
-            "[/size]",
-            "[/color]"
-        ])
-        #self.export_sha256_message_text = "%s %s" % (
-        #    icon("creative-commons-by", **icon_params),
-        #    self.export_sha256_message_text
-        #)
-
-        self.export_sha256_message_text = f"{icon} {self.export_sha256_message_text}"
+        _icon = self._build_check_icon(color="00ff00", font_name="fa-regular-6.4.2")
+        self.export_sha256_message_text = f"{_icon} {self.export_sha256_message_text}"
         self.debug(f"new button text '{self.export_sha256_message_text}'")
 
         # Change the screen
-        self._set_screen(name="export-sha256", direction="left")        
+        self._set_screen(name="export-sha256", direction="left")

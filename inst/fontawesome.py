@@ -1,3 +1,6 @@
+"""
+Simple script to build fontawsome glyphs
+"""
 ####################
 # Standard libraries
 ####################

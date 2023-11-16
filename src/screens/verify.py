@@ -46,6 +46,7 @@ from filechooser import LoadDialog
 
 
 # pylint: disable=too-many-ancestors
+# pylint: disable=too-many-instance-attributes
 class VerifyScreen(ActionerScreen):
     """
     VerifyScreen
@@ -67,6 +68,21 @@ class VerifyScreen(ActionerScreen):
     popup_size_hint = ListProperty((0.9, 0.9))
     """
     Relative size of file popup
+    """
+
+    file_to_be_verified_message_text = StringProperty("Load file to be verified")
+    """
+    File to be verified message text
+    """
+
+    file_signature_to_verify_message_text = StringProperty("Load Signature")
+    """
+    Signature file message text
+    """
+
+    file_pubkey_to_verify_message_text = StringProperty("Load Public Key")
+    """
+    Public key file message text
     """
 
     def __init__(self, **kwargs):
@@ -135,6 +151,14 @@ class VerifyScreen(ActionerScreen):
         self.info(msg)
         self._load_file_popup.dismiss()
 
+        if args[1][0] is not None:
+            _icon = self._build_check_icon(color="00ff00", font_name="fa-regular-6.4.2")
+            self.file_to_be_verified_message_text = " ".join(
+                [_icon, self.file_to_be_verified_message_text]
+            )
+
+            self.debug(f"new button text '{self.file_to_be_verified_message_text}'")
+
     def on_press_load_signature(self):
         """
         Change background color of :data:`verify_screen_load_signature` widget
@@ -162,6 +186,16 @@ class VerifyScreen(ActionerScreen):
         self.info(msg)
         self._load_signature_popup.dismiss()
 
+        if args[1][0] is not None:
+            _icon = self._build_check_icon(color="00ff00", font_name="fa-regular-6.4.2")
+            self.file_signature_to_verify_message_text = " ".join(
+                [_icon, self.file_signature_to_verify_message_text]
+            )
+
+            self.debug(
+                f"new button text '{self.file_signature_to_verify_message_text}'"
+            )
+
     def on_press_load_pubkey(self):
         """
         Change background color of :data:`verify_screen_load_pubkey` widget
@@ -188,6 +222,14 @@ class VerifyScreen(ActionerScreen):
         msg = "Closing <Popup>"
         self.info(msg)
         self._load_pubkey_popup.dismiss()
+
+        if args[1][0] is not None:
+            _icon = self._build_check_icon(color="00ff00", font_name="fa-regular-6.4.2")
+            self.file_pubkey_to_verify_message_text = " ".join(
+                [_icon, self.file_pubkey_to_verify_message_text]
+            )
+
+            self.debug(f"new button text '{self.file_pubkey_to_verify_message_text}'")
 
     def on_press_verify(self):
         """

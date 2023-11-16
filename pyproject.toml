@@ -24,6 +24,8 @@ pyinstaller = "^5.13.2"
 poethepoet = "^0.24.1"
 
 [tool.poe.tasks]
+dev-gui = "python src/ksigner-gui.py"
+dev-cli = "python src/ksigner-cli.py"
 _black-src = "black src"
 _black-inst = "black inst/"
 black = ["_black-src", "_black-inst"]

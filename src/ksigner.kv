@@ -66,7 +66,7 @@
 
 		Button:
 			id: import_signature_message
-			text: "Import signature's message"
+			text: root.import_signature_message_text
 			font_size: root.height // 25
         	font_name: 'terminus'
 			background_color: 0, 0, 0, 0,
@@ -82,7 +82,7 @@
 
 		Button:
 			id: import_publickey_message
-			text: 'Import public-key message'
+			text: root.import_publickey_message_text
 			font_size: root.height // 25
         	font_name: 'terminus'
 			background_color: 0, 0, 0, 0,
@@ -121,7 +121,8 @@
 
 		Button:
 			id: verify_screen_load_file_button
-			text: 'Load file to be verified'			
+			markup: True
+			text: root.file_to_be_verified_message_text 
 			font_size: root.height // 25
         	font_name: 'terminus'
 			background_color: 0, 0, 0, 0,
@@ -137,7 +138,8 @@
 
 		Button:
 			id: verify_screen_load_signature
-			text: 'Load Signature'
+			markup: True
+			text: root.file_signature_to_verify_message_text
 			font_size: root.height // 25
         	font_name: 'terminus'
 			background_color: 0, 0, 0, 0,
@@ -153,7 +155,8 @@
 
 		Button:
 			id: verify_screen_load_pubkey
-			text: 'Load public-key'			
+			markup: True
+			text: root.file_pubkey_to_verify_message_text
 			font_size: root.height // 25
         	font_name: 'terminus'
 			background_color: 0, 0, 0, 0,

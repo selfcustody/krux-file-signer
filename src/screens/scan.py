@@ -169,4 +169,16 @@ class ScanScreen(ActionerScreen):
             self.debug(msg)
             Builder.unload_file(xcam_kv_path)
 
+            # Now create some glyph icon to button
+            _icon = self._build_check_icon(color="00ff00", font_name="fa-regular-6.4.2")
+
+            # add the glyph icon to button text
+
+            if self.manager.current == "import-signature":
+                _text = f"{_icon} {self.import_signature_message_text}"
+                setattr(self, "import_signature_message_text", _text)
+            if self.manager.current == "import-public-key":
+                _text = f"{_icon} {self.import_publickey_message_text}"
+                setattr(self, "import_publickey_message_text", _text)
+
             self._set_screen(name="sign", direction="right")

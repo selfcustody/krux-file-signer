@@ -25,6 +25,8 @@ actioner.py
 Implements an inherited kivy.uix.screenmanager.Screen
 to be subclassed on qrcody.py and scan.py
 """
+from pathlib import Path
+
 ################
 # Kivy libraries
 ################
@@ -228,3 +230,27 @@ class ActionerScreen(LoggedScreen):
         _msg = f"chunking {msg} to substrings with len={size}"
         self.debug(_msg)
         return "\n".join([msg[i : i + size] for i in range(0, len(msg), size)])
+
+    def _build_check_icon(self, **kwargs) -> str:
+        """
+        Build a check glyph
+
+        :param: color
+            some color in hexadecimal format
+
+        :param: font_name
+            the font name found at fonts directory
+        """
+        _color = kwargs.get("color")
+        _font_name = kwargs.get("font_name")
+        _root_path = Path(__file__).parent.parent.parent.absolute()
+        _font_path = str(_root_path / "fonts")
+        return "".join(
+            [
+                f"[color={_color}]",
+                f"[size={self.height // 25}]",
+                f"[font={_font_path}/{_font_name}.ttf]✅[/font]",
+                "[/size]",
+                "[/color]",
+            ]
+        )

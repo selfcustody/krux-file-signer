@@ -92,14 +92,19 @@ class KSignerApp(App):
 
     def _register_fontawesome(self, group):
         root_path = Path(__file__).parent.parent.absolute()
+
         ttf_path = str(root_path / "fonts" / f"fa-{group}-6.4.2.ttf")
+        msg = f"{info()}: Loading ttf at '{ttf_path}'"
+        Logger.warning(msg)
+
         fontd_path = str(root_path / "fonts" / f"fa-{group}-6.4.2.fontd")
-        Logger.warning(f"{info()}: Loading ttf {ttf_path}")
-        Logger.warning(f"{info()}: Loading fontd {fontd_path}")
+        msg = f"{info()}: Loading fontd at '{fontd_path}'"
+        Logger.warning(msg)
+
         register(f"fa-{group}", ttf_path, fontd_path)
-        
+
     def build(self):
-        """ 
+        """
         Create the Root widget with an ScreenManager
         as manager for its sub-widgets:
         """
@@ -110,11 +115,11 @@ class KSignerApp(App):
         msg = f"{info()}: Registering fontawesome"
         Logger.info(msg)
         self._register_fontawesome("regular")
-        
+
         msg = f"{info()}: Loading cacher"
         Logger.info(msg)
         self._register_cacher()
-        
+
         msg = f"{info()}: Loading screens"
         Logger.info(msg)
         return self._register_screens()
