@@ -173,12 +173,13 @@ class ScanScreen(ActionerScreen):
             _icon = self._build_check_icon(color="00ff00", font_name="fa-regular-6.4.2")
 
             # add the glyph icon to button text
-
+            sign_screen = self.manager.get_screen("sign")
+            
             if self.manager.current == "import-signature":
-                _text = f"{_icon} {self.import_signature_message_text}"
-                setattr(self, "import_signature_message_text", _text)
+                _text = f"{_icon} {sign_screen.import_signature_message_text}"
+                setattr(sign_screen, "import_signature_message_text", _text)
             if self.manager.current == "import-public-key":
-                _text = f"{_icon} {self.import_publickey_message_text}"
-                setattr(self, "import_publickey_message_text", _text)
+                _text = f"{_icon} {sign_screen.import_publickey_message_text}"
+                setattr(sign_screen, "import_publickey_message_text", _text)
 
             self._set_screen(name="sign", direction="right")

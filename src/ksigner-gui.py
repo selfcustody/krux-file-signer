@@ -31,8 +31,6 @@ from pathlib import Path
 #######################
 # Third party libraries
 #######################
-from kivy.app import App
-from kivy.logger import Logger
 from kivy.uix.screenmanager import ScreenManager
 from kivy.cache import Cache
 from kivy.core.text import LabelBase
@@ -47,25 +45,28 @@ from screens.sign import SignScreen
 from screens.verify import VerifyScreen
 from screens.qrcode import QRCodeScreen
 from screens.scan import ScanScreen
+from loggedapp import LoggedApp
 
-
-class KSignerApp(App):
+class KSignerApp(LoggedApp):
     """
     KSignerApp is the Root widget
     """
-
-    def _register_font(self):
+        
+    def _register_font(self, **kwargs):
         """
-        Register 'terminus' font
+        Register a font located at :path:`fonts`
         """
-        _font_name = "terminus"
-        _dirname = os.path.dirname(__file__)
-        _terminus_path = os.path.join(_dirname, "terminus.ttf")
-        _absdir = os.path.abspath(_terminus_path)
+        font_name = kwargs.get("font_name")
+        root_path = Path(__file__).parent.parent.absolute()
+        font_path = str(root_path / "fonts" / f"{font_name}.ttf")
+        msg = f"{info()}: Registering font '{font_name}' at {font_path}"
+        self.debug(msg)
 
-        msg = f"{info()}: Registering font '{_font_name}' at {_absdir}"
-        Logger.warning(msg)
-        LabelBase.register(name=_font_name, fn_regular=_absdir)
+        if font_name.startswith("fa"):
+            fontd_path = str(root_path / "fonts" / f"{font_name}.fontd")
+            register(font_name, font_path, fontd_path)
+        else:
+            LabelBase.register(name=font_name, fn_regular=font_path)
 
     def _register_cacher(self):
         cache_name = "ksigner"
@@ -85,43 +86,19 @@ class KSignerApp(App):
 
         for screen in screens:
             msg = f"{info()}: adding screen '{screen.name}'"
-            Logger.debug(msg)
+            self.debug(msg)
             screen_manager.add_widget(screen)
 
         return screen_manager
-
-    def _register_fontawesome(self, group):
-        root_path = Path(__file__).parent.parent.absolute()
-
-        ttf_path = str(root_path / "fonts" / f"fa-{group}-6.4.2.ttf")
-        msg = f"{info()}: Loading ttf at '{ttf_path}'"
-        Logger.warning(msg)
-
-        fontd_path = str(root_path / "fonts" / f"fa-{group}-6.4.2.fontd")
-        msg = f"{info()}: Loading fontd at '{fontd_path}'"
-        Logger.warning(msg)
-
-        register(f"fa-{group}", ttf_path, fontd_path)
 
     def build(self):
         """
         Create the Root widget with an ScreenManager
         as manager for its sub-widgets:
         """
-        msg = f"{info()}: Registering terminus font"
-        Logger.info(msg)
-        self._register_font()
-
-        msg = f"{info()}: Registering fontawesome"
-        Logger.info(msg)
-        self._register_fontawesome("regular")
-
-        msg = f"{info()}: Loading cacher"
-        Logger.info(msg)
+        self._register_font(font_name="terminus")
+        self._register_font(font_name="fa-regular-6.4.2")
         self._register_cacher()
-
-        msg = f"{info()}: Loading screens"
-        Logger.info(msg)
         return self._register_screens()
 
 
