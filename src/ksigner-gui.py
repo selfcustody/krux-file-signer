@@ -25,12 +25,12 @@ ksigner-gui.py
 
 A simple Graphical User Interface built with kivy
 """
-import os
 from pathlib import Path
 
 #######################
 # Third party libraries
 #######################
+from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager
 from kivy.cache import Cache
 from kivy.core.text import LabelBase
@@ -45,13 +45,14 @@ from screens.sign import SignScreen
 from screens.verify import VerifyScreen
 from screens.qrcode import QRCodeScreen
 from screens.scan import ScanScreen
-from loggedapp import LoggedApp
+from utils.klogger import KLogger
 
-class KSignerApp(LoggedApp):
+
+class KSignerApp(App, KLogger):
     """
     KSignerApp is the Root widget
     """
-        
+
     def _register_font(self, **kwargs):
         """
         Register a font located at :path:`fonts`
@@ -69,11 +70,17 @@ class KSignerApp(LoggedApp):
             LabelBase.register(name=font_name, fn_regular=font_path)
 
     def _register_cacher(self):
+        """
+        Create a cacher to store values
+        """
         cache_name = "ksigner"
         cache_args = {"limit": 10, "timeout": 300}
         Cache.register(cache_name, **cache_args)
 
     def _register_screens(self) -> ScreenManager:
+        """
+        Register many screens to :class:`ScreenManager`
+        """
         screen_manager = ScreenManager()
         screens = (
             MainScreen(name="main"),

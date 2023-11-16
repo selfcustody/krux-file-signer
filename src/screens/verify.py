@@ -29,8 +29,6 @@ for verify signature options
 # Third party libraries
 #######################
 from kivy.uix.popup import Popup
-from kivy.uix.button import Button
-from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 
 # pylint: disable=no-name-in-module
@@ -187,10 +185,12 @@ class VerifyScreen(ActionerScreen):
         self._load_signature_popup.dismiss()
 
         if not args[1][0].endswith(".sig"):
-            message = "\n".join([
-                f"'{args[1][0]}' do not have a valid extension.",
-                "Valid files ends with '.sig'"
-            ])
+            message = "\n".join(
+                [
+                    f"'{args[1][0]}' do not have a valid extension.",
+                    "Valid files ends with '.sig'",
+                ]
+            )
             self._make_alert(title="Invalid file", message=message)
             self.file_signature_to_verify_message_text = "Load Signature"
 
@@ -232,13 +232,15 @@ class VerifyScreen(ActionerScreen):
         self._load_pubkey_popup.dismiss()
 
         if not args[1][0].endswith(".pem"):
-            message = "\n".join([
-                f"'{args[1][0]}' do not have a valid extension.",
-                "Valid files ends with '.pem'"
-            ])
+            message = "\n".join(
+                [
+                    f"'{args[1][0]}' do not have a valid extension.",
+                    "Valid files ends with '.pem'",
+                ]
+            )
             self._make_alert(title="Invalid file", message=message)
             self.file_pubkey_to_verify_message_text = "Load Public Key"
-            
+
         elif args[1][0] is not None:
             _icon = self._build_check_icon(color="00ff00", font_name="fa-regular-6.4.2")
             self.file_pubkey_to_verify_message_text = " ".join(
@@ -280,5 +282,4 @@ class VerifyScreen(ActionerScreen):
 
         # show an alert
         text = "\n".join(("" f"[b]{self._chunk_str(command, 88)}[/b]", "", result))
-        self._make_alert(title="Verification result", message=text, markup=True)        
-
+        self._make_alert(title="Verification result", message=text, markup=True)

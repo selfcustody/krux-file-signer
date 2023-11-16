@@ -19,21 +19,20 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-
 """
-loggedapp.py
+logscreen.py
 
-A simple class to add logger features on :class:`App`
+Implements an inherited kivy.uix.screenmanager.Screen
+with inner logger. Use it as super class
 """
 ####################
-# Stardard libraries
+# Standard libraries
 ####################
 import os
 
 #######################
 # Third party libraries
 #######################
-from kivy.app import App
 from kivy.logger import Logger, LOG_LEVELS
 
 #################
@@ -41,9 +40,12 @@ from kivy.logger import Logger, LOG_LEVELS
 #################
 from cli.getsome import info
 
-class LoggedApp(App):
+
+class KLogger:
     """
-    Class to make some log features on :class:`App`
+    KLogger
+
+    Class to manage logger on kivy classes
     """
 
     def __init__(self, **kwargs):

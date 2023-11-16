@@ -174,7 +174,7 @@ class ScanScreen(ActionerScreen):
 
             # add the glyph icon to button text
             sign_screen = self.manager.get_screen("sign")
-            
+
             if self.manager.current == "import-signature":
                 _text = f"{_icon} {sign_screen.import_signature_message_text}"
                 setattr(sign_screen, "import_signature_message_text", _text)
