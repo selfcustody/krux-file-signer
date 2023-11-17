@@ -25,7 +25,7 @@ ksigner-gui.py
 
 A simple Graphical User Interface built with kivy
 """
-from pathlib import Path
+import os
 
 #######################
 # Third party libraries
@@ -58,13 +58,13 @@ class KSignerApp(App, KLogger):
         Register a font located at :path:`fonts`
         """
         font_name = kwargs.get("font_name")
-        root_path = Path(__file__).parent.parent.absolute()
-        font_path = str(root_path / "fonts" / f"{font_name}.ttf")
+        root_path = os.path.abspath(os.path.dirname(__file__))
+        font_path = f"{root_path}/{font_name}.ttf"
         msg = f"{info()}: Registering font '{font_name}' at {font_path}"
         self.debug(msg)
 
         if font_name.startswith("fa"):
-            fontd_path = str(root_path / "fonts" / f"{font_name}.fontd")
+            fontd_path = f"{root_path}/{font_name}.fontd"
             register(font_name, font_path, fontd_path)
         else:
             LabelBase.register(name=font_name, fn_regular=font_path)

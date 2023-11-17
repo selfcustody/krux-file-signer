@@ -247,13 +247,12 @@ class ActionerScreen(Screen, KLogger):
         """
         _color = kwargs.get("color")
         _font_name = kwargs.get("font_name")
-        _root_path = Path(__file__).parent.parent.parent.absolute()
-        _font_path = str(_root_path / "fonts")
+        _root_path = Path(__file__).parent.parent.absolute()
         return "".join(
             [
                 f"[color={_color}]",
                 f"[size={self.height // 25}]",
-                f"[font={_font_path}/{_font_name}.ttf]✅[/font]",
+                f"[font={_root_path}/{_font_name}.ttf]✅[/font]",
                 "[/size]",
                 "[/color]",
             ]
