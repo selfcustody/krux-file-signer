@@ -56,15 +56,6 @@ parser.add_argument(
     "-v", "--version", action="store_true", help="shows version", default=False
 )
 
-# Verbose messages
-parser.add_argument(
-    "-l",
-    "--log",
-    dest="loglevel",
-    help="log output (info|warning|debug|error, defaults to 'info')",
-    default="info",
-)
-
 # Subparsers: sign and verify
 subparsers = parser.add_subparsers(help="sub-command help", dest="command")
 
@@ -117,4 +108,4 @@ if __name__ == "__main__":
             signature=args.sig_file,
         )
         COMMAND = verifyer.make_openssl_command()
-        verifyer.verify(COMMAND)
+        print(verifyer.verify(COMMAND))

@@ -78,10 +78,12 @@ class Signer(Actioner):
         self.debug("Showing warning messages to sign")
 
         # Shows some message
-        self.info("To sign this file with Krux: ")
-        self.info(" (a) load a 12/24 words key with or without password;")
-        self.info(" (b) use the Sign->Message feature;")
-        self.info(" (c) and scan this QR code below.")
+        print("")
+        print("To sign this file with Krux: ")
+        print(" (a) load a 12/24 words key with or without password;")
+        print(" (b) use the Sign->Message feature;")
+        print(" (c) and scan this QR code below.")
+        print("")
 
     def hash_file(self) -> str:
         """
@@ -113,8 +115,9 @@ class Signer(Actioner):
             hash_file.write(content)
             msg = f"{__hash_file__} content data='{content}'"
             self.debug(msg)
+            print(msg)
             msg = f"{__hash_file__} saved"
-            self.info(msg)
+            self.debug(msg)
 
     def _print_qrcode(self, data):
         """
@@ -140,6 +143,7 @@ class Signer(Actioner):
         """
         # Saves a signature
         signature_file = f"{self.file}.sig"
+        print(signature.encode())
 
         # encode signature to binary format
         binary_signature = base64.b64decode(signature.encode())
@@ -149,6 +153,7 @@ class Signer(Actioner):
             sig_file.write(binary_signature)
             msg = f"Signature saved on {signature_file}"
             self.info(msg)
+            print(msg)
 
     def make_pubkey_certificate(self):
         """
@@ -207,3 +212,4 @@ class Signer(Actioner):
             pb_file.write(formated_pubkey)
             msg = f"{__public_key_name__} saved"
             self.info(msg)
+            print(msg)

@@ -29,11 +29,12 @@ to be used with Signer and Verifyer
 # Standard libraries
 ####################
 import os
+from pathlib import Path
 
 #######################
 # Third party libraries
 #######################
-from kivy.logger import Logger, LOG_LEVELS
+import logging
 
 #################
 # Local libraries
@@ -47,32 +48,47 @@ class Actioner:
     """
 
     def __init__(self):
+        dirname = os.path.join(str(Path.home()), '.ksigner')
+
+        # create dir log if not exists
+        if not os.path.exists(dirname):
+            os.makedirs(dirname)
+
+        # create a fresh log
+        filename = os.path.join(dirname, 'ksigner-cli.log')
+        
+        # Custom log level
         if os.environ.get("LOG_LEVEL"):
-            _loglevel = LOG_LEVELS[os.environ["LOG_LEVEL"]]
+            level  = os.environ.get("LOG_LEVEL")
+
+            # setup log
+            level = getattr(logging, level.upper())
+            logging.basicConfig(filename=filename, encoding="utf-8", level=level)
+        
+        # default log level
         else:
-            _loglevel = LOG_LEVELS["info"]
-        Logger.setLevel(_loglevel)
+            logging.basicConfig(filename=filename, encoding="utf-8", level=logging.NONE)
 
     def info(self, msg):
         """
         Logger with info level
         """
-        Logger.info("%s: %s", info().strip(), msg)
+        logging.info("%s: %s", info().strip(), msg)
 
     def debug(self, msg):
         """
         Logger with debug level
         """
-        Logger.debug("%s: %s", info().strip(), msg)
+        logging.debug("%s: %s", info().strip(), msg)
 
     def warning(self, msg):
         """
         Logger with warning level
         """
-        Logger.warning("%s: %s", info().strip(), msg)
+        logging.warning("%s: %s", info().strip(), msg)
 
     def error(self, msg):
         """
         Logger with error level
         """
-        Logger.error("%s: %s", info().strip(), msg)
+        logging.error("%s: %s", info().strip(), msg)
