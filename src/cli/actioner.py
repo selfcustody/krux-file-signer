@@ -48,26 +48,26 @@ class Actioner:
     """
 
     def __init__(self):
-        dirname = os.path.join(str(Path.home()), '.ksigner')
+        dirname = os.path.join(str(Path.home()), ".ksigner")
 
         # create dir log if not exists
         if not os.path.exists(dirname):
             os.makedirs(dirname)
 
         # create a fresh log
-        filename = os.path.join(dirname, 'ksigner-cli.log')
-        
+        filename = os.path.join(dirname, "ksigner-cli.log")
+
         # Custom log level
         if os.environ.get("LOG_LEVEL"):
-            level  = os.environ.get("LOG_LEVEL")
+            level = os.environ.get("LOG_LEVEL")
 
             # setup log
             level = getattr(logging, level.upper())
             logging.basicConfig(filename=filename, encoding="utf-8", level=level)
-        
+
         # default log level
         else:
-            logging.basicConfig(filename=filename, encoding="utf-8", level=logging.NONE)
+            logging.basicConfig(filename=filename, encoding="utf-8", level=logging.NOTSET)
 
     def info(self, msg):
         """
