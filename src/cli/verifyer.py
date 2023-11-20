@@ -32,6 +32,7 @@ TODO: replace for pyca/cryptography or pyOpenSSL
 # Standart libraries
 ####################
 import subprocess
+import re
 
 #################
 # Local libraries
@@ -59,12 +60,15 @@ class Verifyer(Actioner):
         """
 
         self.debug("Verifyer: Creating openssl command")
+        _file = re.escape(self.file)
+        _pubkey = re.escape(self.pubkey)
+        _signature = re.escape(self.signature)
         return " ".join(
             [
-                f"openssl sha256 <{self.file} -binary",
+                f"openssl sha256 <{_file} -binary",
                 "|",
-                f"openssl pkeyutl -verify -pubin -inkey {self.pubkey}",
-                f"-sigfile {self.signature}",
+                f"openssl pkeyutl -verify -pubin -inkey {_pubkey}",
+                f"-sigfile {_signature}",
             ]
         )
 
