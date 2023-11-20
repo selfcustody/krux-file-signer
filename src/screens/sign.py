@@ -64,7 +64,7 @@ class SignScreen(ActionerScreen):
     Relative size of file popup
     """
 
-    export_sha256_message_text = StringProperty("Export sha256sum's message")
+    export_sha256_message_text = StringProperty("Load file to be signed")
     """
     The button message of export sha256 file
     """

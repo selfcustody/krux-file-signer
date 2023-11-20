@@ -115,7 +115,6 @@ class Signer(Actioner):
             hash_file.write(content)
             msg = f"{__hash_file__} content data='{content}'"
             self.debug(msg)
-            print(msg)
             msg = f"{__hash_file__} saved"
             self.debug(msg)
 
@@ -143,7 +142,6 @@ class Signer(Actioner):
         """
         # Saves a signature
         signature_file = f"{self.file}.sig"
-        print(signature.encode())
 
         # encode signature to binary format
         binary_signature = base64.b64decode(signature.encode())
@@ -171,16 +169,10 @@ class Signer(Actioner):
 
         Choose if will be compressed or uncompressed
         """
-        if self.uncompressed:
-            self.debug("Make it uncompressed key")
-            __public_key_data__ = "".join(
-                [KSIGNER_UNCOMPRESSED_PUBKEY_PREPEND, pubkey.upper()]
-            )
-        else:
-            self.debug("Make it compressed key")
-            __public_key_data__ = "".join(
-                [KSIGNER_COMPRESSED_PUBKEY_PREPEND, pubkey.upper()]
-            )
+        self.debug("Creating compressed public key")
+        __public_key_data__ = "".join(
+            [KSIGNER_COMPRESSED_PUBKEY_PREPEND, pubkey.upper()]
+        )
 
         # Convert pubkey data to bytes
         self.debug("Converting public key to bytes")
