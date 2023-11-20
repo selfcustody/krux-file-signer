@@ -67,7 +67,9 @@ class Actioner:
 
         # default log level
         else:
-            logging.basicConfig(filename=filename, encoding="utf-8", level=logging.NOTSET)
+            logging.basicConfig(
+                filename=filename, encoding="utf-8", level=logging.NOTSET
+            )
 
     def info(self, msg):
         """

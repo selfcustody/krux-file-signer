@@ -13,10 +13,7 @@ import base64
 #################
 # Local libraries
 #################
-from utils.constants import (
-    KSIGNER_COMPRESSED_PUBKEY_PREPEND,
-    KSIGNER_UNCOMPRESSED_PUBKEY_PREPEND,
-)
+from utils.constants import KSIGNER_COMPRESSED_PUBKEY_PREPEND
 from utils.qr import make_qr_code
 from cli.actioner import Actioner
 from cli.scanner import Scanner
