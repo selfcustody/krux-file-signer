@@ -44,7 +44,11 @@ from cli.getsome import info
 
 class Actioner:
     """
-    Base class for Signer and Verifyer
+    Base class for Signer and Verifyer. It creates a
+    $USER/.ksigner/ksigner-cli.log file for debug purposes.
+
+    When LOG_LEVEL is set, it will configure a basic logger
+    different of :param:`NOTSET` level.
     """
 
     def __init__(self):
@@ -74,23 +78,33 @@ class Actioner:
     def info(self, msg):
         """
         Logger with info level
+
+        :param str msg: The message to be logged
         """
         logging.info("%s: %s", info().strip(), msg)
 
     def debug(self, msg):
         """
         Logger with debug level
+
+
+        :param str msg: The message to be logged
         """
         logging.debug("%s: %s", info().strip(), msg)
 
     def warning(self, msg):
         """
         Logger with warning level
+
+        :param str msg: The message to be logged
         """
         logging.warning("%s: %s", info().strip(), msg)
 
     def error(self, msg):
         """
         Logger with error level
+
+
+        :param str msg: The message to be logged
         """
         logging.error("%s: %s", info().strip(), msg)

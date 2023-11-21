@@ -31,8 +31,13 @@ TODO: replace for pyca/cryptography or pyOpenSSL
 ####################
 # Standart libraries
 ####################
-import subprocess
-import re
+import os
+
+#######################
+# Third party libraries
+#######################
+# from OpenSSL.crypto import load_publickey, FILETYPE_PEM, verify, X509
+from OpenSSL import crypto
 
 #################
 # Local libraries
@@ -50,40 +55,48 @@ class Verifyer(Actioner):
 
     def __init__(self, **kwargs):
         super().__init__()
-        self.file = kwargs.get("file")
-        self.pubkey = kwargs.get("pubkey")
-        self.signature = kwargs.get("signature")
+        self.file = os.path.abspath(kwargs.get("file"))
+        self.pubkey = os.path.abspath(kwargs.get("pubkey"))
+        self.signature = os.path.abspath(kwargs.get("signature"))
 
-    def make_openssl_command(self) -> str:
+    def verify(self) -> str:
         """
-        Create the properly openssl command to verify
+        Use pyopenssl to verify a file with its signature and public key
+        provided in class instantiation
         """
+        msg = ""
+        try:
+            self.debug("Loading X509 object")
+            x509 = crypto.X509()
 
-        self.debug("Verifyer: Creating openssl command")
-        _file = re.escape(self.file)
-        _pubkey = re.escape(self.pubkey)
-        _signature = re.escape(self.signature)
-        return " ".join(
-            [
-                f"openssl sha256 <{_file} -binary",
-                "|",
-                f"openssl pkeyutl -verify -pubin -inkey {_pubkey}",
-                f"-sigfile {_signature}",
-            ]
-        )
+            # load data
+            self.debug("Loading file data")
+            with open(self.file, "rb") as f_data:
+                file_data = f_data.read()
 
-    # pylint: disable=inconsistent-return-statements
-    def verify(self, command):
-        """
-        Uses openssl to verify the signature and public key
-        """
-        msg = f"Verifyer: Running '{command}'"
-        self.info(msg)
-        result = subprocess.run(
-            command, check=True, shell=True, capture_output=True, text=True
-        )
-        if result.stdout and not result.stderr:
-            return result.stdout
+            # load signature
+            self.debug("Loading signature bytes")
+            with open(self.signature, "rb") as f_data:
+                signature = f_data.read()
 
-        if not result.stdout and result.stderr:
-            return result.stderr
+            # load public key
+            self.debug("Loading public key certificate")
+            with open(self.pubkey, encoding="utf-8") as f_data:
+                pubkey_data = f_data.read()
+
+            pkey = crypto.load_publickey(crypto.FILETYPE_PEM, pubkey_data)
+            x509.set_pubkey(pkey)
+
+            # Now verify
+            # According de documentation found in
+            # https://pyopenssl.org/en/stable/api/crypto.html#OpenSSL.crypto.verify
+            # it will return :data:`None` if signature is correct
+            self.debug("Verifying...")
+            crypto.verify(x509, signature, file_data, "sha256")
+            msg = "Signature verified with success"
+
+        # pylint: disable=broad-exception-caught
+        except Exception as exc:
+            msg = f"Something wrong is not correct:\n\t{exc}"
+
+        return msg

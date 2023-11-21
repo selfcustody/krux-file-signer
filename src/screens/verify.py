@@ -271,8 +271,7 @@ class VerifyScreen(ActionerScreen):
         self.debug("Building verification")
         verifyer = Verifyer(file=file, signature=sig, pubkey=pub)
 
-        command = verifyer.make_openssl_command()
-        result = verifyer.verify(command)
+        result = verifyer.verify()
         msg = f"verification result: {result}"
         self.info(msg)
 
@@ -281,5 +280,4 @@ class VerifyScreen(ActionerScreen):
         _verification_box_popup = BoxLayout(orientation="vertical")
 
         # show an alert
-        text = "\n".join(("" f"[b]{self._chunk_str(command, 88)}[/b]", "", result))
-        self._make_alert(title="Verification result", message=text, markup=True)
+        self._make_alert(title="Verification result", message=result, markup=True)

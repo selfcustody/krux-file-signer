@@ -107,5 +107,5 @@ if __name__ == "__main__":
             pubkey=args.pub_file,
             signature=args.sig_file,
         )
-        COMMAND = verifyer.make_openssl_command()
-        print(verifyer.verify(COMMAND))
+        # COMMAND = verifyer.make_openssl_command()
+        print(verifyer.verify())
