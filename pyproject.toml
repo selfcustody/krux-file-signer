@@ -19,7 +19,7 @@ kivysome = "^0.2.1"
 pyopenssl = "^23.3.0"
 
 [tool.poetry.group.dev.dependencies]
-black = "^23.9.1"
+black = "^23.11.0"
 pylint = "^2.17.5"
 pyinstaller = "^5.13.2"
 poethepoet = "^0.24.1"
