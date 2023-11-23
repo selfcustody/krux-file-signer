@@ -30,6 +30,9 @@ jobs:
               - '.pylintrc'
               - 'poetry.lock'
               - 'src/terminus.ttf'
+              - 'src/fa-regular-6.4.2.css'
+              - 'src/fa-regular-6.4.2.ttf'
+              - 'src/fa-regular-6.4.2.fontd'
             
       # ref: https://github.com/github/docs/blob/main/.github/workflows/triage-unallowed-contributions.yml
       - name: Comment About Changes We Can't Accept
@@ -39,10 +42,13 @@ jobs:
           script: |
             let workflowFailMessage = "It looks like you've modified some files that we can't accept as contributions."
             try {
-              const badFilesArr = [
+              const badFilesArray = [
                 '.pylintrc',
                 'poetry.lock',
-                'src/terminus.ttf'
+                'src/terminus.ttf',
+                'src/fa-regular-6.4.2.css',
+                'src/fa-regular-6.4.2.ttf',
+                'src/fa-regular-6.4.2.fontd'
               ]
               const reviewMessageArray = [
                 "👋 Hey there kruxer,",
