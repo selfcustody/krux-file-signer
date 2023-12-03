@@ -24,9 +24,10 @@ signscreen.py
 
 An inherited implementations of kivy.uix.screenmanager Screen    
 """
-#####################
-# Thirparty libraries
-#####################
+#######################
+# Third party libraries
+#######################
+from kivy.core.window import Window
 from kivy.uix.popup import Popup
 
 # pylint: disable=no-name-in-module
@@ -64,23 +65,26 @@ class SignScreen(ActionerScreen):
     Relative size of file popup
     """
 
-    export_sha256_message_text = StringProperty("Load file to be signed")
+    export_sha256_message_text = StringProperty("Drop a file or click here to sign one")
     """
     The button message of export sha256 file
     """
 
-    import_signature_message_text = StringProperty("Import signature's message")
+    import_signature_message_text = StringProperty(
+        "Click to import signature's message"
+    )
     """
     The button message of import signature file
     """
 
-    import_publickey_message_text = StringProperty("Import public-key message")
+    import_publickey_message_text = StringProperty("Click to import public-key message")
     """
     The button message of import publickey file
     """
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
         self._content = LoadDialog(
             load=LoadDialog.load,
             cancel=lambda: self._popup.dismiss,
@@ -89,6 +93,34 @@ class SignScreen(ActionerScreen):
         self._popup = Popup(
             title="Load a file", content=self._content, size_hint=self.popup_size_hint
         )
+
+        # pylint: disable=unused-argument
+        def _on_drop_file_sha256_message(window, filename, x_pos, y_pos, *args):
+            """
+            Callback for when user drag a file to window
+            """
+            export_button = self.ids["export_sha256_message"]
+
+            self.export_sha256_message_text = "Drop a file or click here to sign one"
+            
+            # Sign file
+            if (
+                (x_pos >= 0 and x_pos < export_button.width) and 
+                (y_pos >= 0 and y_pos < export_button.height)
+            ):
+                self.debug(f"Dropped at {window} ({x_pos}, {y_pos})")
+                _filename = filename.decode("utf-8")
+                self.info(f"Opening {_filename}")
+
+                self._sign_and_save(file_input=_filename)
+
+                # rebuild text with check icon
+                self._rebuild_export_button_text()
+
+                # Change the screen
+                self._set_screen(name="export-sha256", direction="left")
+
+        Window.bind(on_drop_file=_on_drop_file_sha256_message)
 
     def on_press_export_sha256_message(self):
         """
@@ -102,6 +134,7 @@ class SignScreen(ActionerScreen):
         and open popup to choose file
         """
         self._on_release(id="export_sha256_message")
+        self.export_sha256_message_text = "Drop a file or click here to sign one"
         self.info("opening <Popup>")
         self._popup.open()
 
@@ -132,7 +165,6 @@ class SignScreen(ActionerScreen):
         and redirects to :data:`import-public-key` screen
         """
         self._on_release(id="import_publickey_message")
-        self._set_screen(name="import-public-key", direction="right")
 
     def on_press_back_main(self):
         """
@@ -155,20 +187,29 @@ class SignScreen(ActionerScreen):
         Call :class:`Signer` to open, read and hash
         (sha256sum) a given file and redirect to QRCodeScreen
         """
-        # cache file input
-        LoggedCache.append("ksigner", "file_input", args[1][0])
-        LoggedCache.append("ksigner", "owner", args[1][0])
-        file_input = LoggedCache.get("ksigner", "file_input")
-        owner = LoggedCache.get("ksigner", "owner")
-
-        msg = f"<Popup> loading {file_input}"
+        self._sign_and_save(file_input=args[1][0])
+        self._rebuild_export_button_text()
+        msg = "Closing <Popup>"
         self.info(msg)
+        self._popup.dismiss()
+        self._set_screen(name="export-sha256", direction="right")
 
-        signer = Signer(
-            file=file_input,
-            owner=owner,
-            uncompressed=False,
-        )
+    def _sign_and_save(self, **kwargs):
+        """
+        Save a :data:`key` with :data:`value` in
+        `ksigner` :class:`LoggedCache` register
+
+        Params:
+        -------
+            :param:`file_input`
+        """
+        file_input = kwargs.get("file_input")
+
+        # cache file input
+        LoggedCache.append("ksigner", "file_input", file_input)
+        LoggedCache.append("ksigner", "owner", file_input)
+
+        signer = Signer(file=file_input, owner=file_input)
 
         # Cache the hash in a .sha256sum file
         _hash = signer.hash_file()
@@ -179,14 +220,11 @@ class SignScreen(ActionerScreen):
         LoggedCache.append("ksigner", "hash_file", hash_file)
         signer.save_hash_file(hash_file)
 
-        # Close the popup
-        msg = "Closing <Popup>"
-        self.info(msg)
-        self._popup.dismiss()
-
+    def _rebuild_export_button_text(self):
+        """
+        Rebuild the current text `export` message
+        with a check icon
+        """
         _icon = self._build_check_icon(color="00ff00", font_name="fa-regular-6.4.2")
-        self.export_sha256_message_text = f"{_icon} {self.export_sha256_message_text}"
+        self.export_sha256_message_text = f"{_icon} File to be signed loaded"
         self.debug(f"new button text '{self.export_sha256_message_text}'")
-
-        # Change the screen
-        self._set_screen(name="export-sha256", direction="left")

@@ -206,28 +206,3 @@
         		Line:
             		width: 0.5
             		rectangle: self.x, self.y, self.width, self.height
-
-<FileLoader>:
-    BoxLayout:
-        size: root.size
-        pos: root.pos
-        orientation: "vertical"
-        FileChooserListView:
-            id: filechooser
-			on_selection: root.select(*args)
-
-        BoxLayout:
-            size_hint_y: None
-            height: 30
-            Button:
-				font_size: root.height // 25
-        		font_name: 'terminus'
-                text: "Cancel"
-                on_release: root.cancel()
-
-            Button:
-				font_size: root.height // 25
-				font_name: 'terminus'
-                text: "Load"
-                on_release: root.load(filechooser.path, filechooser.selection)
-
