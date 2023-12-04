@@ -28,6 +28,7 @@ for verify signature options
 #######################
 # Third party libraries
 #######################
+from kivy.core.window import Window
 from kivy.uix.popup import Popup
 from kivy.uix.boxlayout import BoxLayout
 
@@ -68,7 +69,9 @@ class VerifyScreen(ActionerScreen):
     Relative size of file popup
     """
 
-    file_to_be_verified_message_text = StringProperty("Load file to be verified")
+    file_to_be_verified_message_text = StringProperty(
+        "Drop a file or click to load one to be verified"
+    )
     """
     File to be verified message text
     """
@@ -122,6 +125,29 @@ class VerifyScreen(ActionerScreen):
             size_hint=self.popup_size_hint,
         )
 
+        # pylint: disable=unused-argument
+        def _on_drop_file(window, filename, x_pos, y_pos, *args):
+            """
+            Callback for when user drag a file to window
+            """
+            verify_screen_load_file_button = self.ids["verify_screen_load_file_button"]
+
+            # Load file to be verified
+            # pylint: disable=chained-comparison
+            if (x_pos >= 0 and x_pos < verify_screen_load_file_button.width) and (
+                y_pos >= 0 and y_pos < verify_screen_load_file_button.height
+            ):
+                self.file_to_be_verified_message_text = (
+                    "Drop a file or click to load one to be verified"
+                )
+                self.debug(f"Dropped at {window} ({x_pos}, {y_pos})")
+                _filename = filename.decode("utf-8")
+                self.info(f"Opening {_filename}")
+                self._load_file_to_be_verified(filename=_filename)
+                self._add_icon_file_to_be_verified()
+
+        Window.bind(on_drop_file=_on_drop_file)
+
     def on_press_load_file(self):
         """
         Change background color of :data:`verify_screen_load_file_button` widget
@@ -142,20 +168,30 @@ class VerifyScreen(ActionerScreen):
         Cache file name to be verified
         """
         # cache file input
-        LoggedCache.append("ksigner", "file_input", args[1][0])
+        self._load_file_to_be_verified(filename=args[1][0])
 
         # Close the popup
         msg = "Closing <Popup>"
         self.info(msg)
         self._load_file_popup.dismiss()
 
-        if args[1][0] is not None:
-            _icon = self._build_check_icon(color="00ff00", font_name="fa-regular-6.4.2")
-            self.file_to_be_verified_message_text = " ".join(
-                [_icon, self.file_to_be_verified_message_text]
-            )
+        # Change icon
+        self._add_icon_file_to_be_verified()
 
-            self.debug(f"new button text '{self.file_to_be_verified_message_text}'")
+    def _load_file_to_be_verified(self, **kwargs):
+        """
+        Load file to be verified in cache
+        """
+        filename = kwargs.get("filename")
+        LoggedCache.append("ksigner", "file_input", filename)
+
+    def _add_icon_file_to_be_verified(self):
+        """
+        Add a check icon to button that load file to be verified
+        """
+        _icon = self._build_check_icon(color="00ff00", font_name="fa-regular-6.4.2")
+        self.file_to_be_verified_message_text = f"{_icon} File to be verified loaded"
+        self.debug(f"new button text '{self.file_to_be_verified_message_text}'")
 
     def on_press_load_signature(self):
         """

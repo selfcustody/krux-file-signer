@@ -102,11 +102,11 @@ class SignScreen(ActionerScreen):
             export_button = self.ids["export_sha256_message"]
 
             self.export_sha256_message_text = "Drop a file or click here to sign one"
-            
+
             # Sign file
-            if (
-                (x_pos >= 0 and x_pos < export_button.width) and 
-                (y_pos >= 0 and y_pos < export_button.height)
+            # pylint: disable=chained-comparison
+            if (x_pos >= 0 and x_pos < export_button.width) and (
+                y_pos >= 0 and y_pos < export_button.height
             ):
                 self.debug(f"Dropped at {window} ({x_pos}, {y_pos})")
                 _filename = filename.decode("utf-8")
