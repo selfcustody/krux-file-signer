@@ -165,6 +165,7 @@ class SignScreen(ActionerScreen):
         and redirects to :data:`import-public-key` screen
         """
         self._on_release(id="import_publickey_message")
+        self._set_screen(name="import-public-key", direction="right")
 
     def on_press_back_main(self):
         """
