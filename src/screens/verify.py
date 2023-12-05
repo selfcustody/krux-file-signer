@@ -33,7 +33,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.boxlayout import BoxLayout
 
 # pylint: disable=no-name-in-module
-from kivy.properties import StringProperty, ListProperty, ObjectProperty
+from kivy.properties import StringProperty, ListProperty
 
 #################
 # Local libraries
@@ -58,7 +58,7 @@ class VerifyScreen(ActionerScreen):
     - Load publickey
     - Verify signature
     """
- 
+
     popup_size_hint = ListProperty((0.9, 0.9))
     """
     Relative size of file popup
@@ -67,7 +67,7 @@ class VerifyScreen(ActionerScreen):
     verify_screen_load_file_text = StringProperty(
         "Drop a file or click to load one to be verified"
     )
-    
+
     verify_screen_load_signature_text = StringProperty(
         "Drop a file or click to load a signature"
     )
@@ -78,13 +78,15 @@ class VerifyScreen(ActionerScreen):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self._load_public_key_popup = None
+        self._load_public_key_dialog = None
         self._set_load_screen_dialog()
         self._set_load_file_popup()
         self._set_load_signature_dialog()
         self._set_load_signature_popup()
         self._set_load_signature_dialog()
         self._set_load_signature_popup()
-        
+
         # pylint: disable=unused-argument
         def _on_drop_file(window, filename, x_pos, y_pos, *args):
             """
@@ -94,26 +96,49 @@ class VerifyScreen(ActionerScreen):
             vs_sig = self.ids["verify_screen_load_signature"]
             vs_pub = self.ids["verify_screen_load_pubkey"]
 
-            vs_file_y = vs_file.to_window(*vs_file.pos)[1]
-            vs_sig_y = vs_file.to_window(*vs_sig.pos)[1]
-            vs_pub_y = vs_file.to_window(*vs_pub.pos)[1]
-            
             _filename = filename.decode("utf-8")
+
+            # pylint: disable=chained-comparison
             if y_pos > 0 and y_pos < vs_file.height:
                 # log some data
-                self.debug(f"{_filename} dropped on 'verify_screen_load_file' at position ({x_pos}, {y_pos})")
-                self.verify_screen_load_file_text = "Drop a file or click to load one to be verified"
-                self._on_submit_file_to_be_verified(filename=filename)
-                
-            if y_pos > vs_file.height and y_pos < (vs_file.height + vs_sig.height):         
-                self.debug(f"{_filename} dropped on 'verify_screen_load_signature' at position ({x_pos}, {y_pos})")
-                self.verify_screen_load_signature_text = "Drop a file or click to load a signature"
-                self._on_submit_signature(filename=filename)
+                self.debug(
+                    " ".join(
+                        [
+                            f"{_filename} dropped on",
+                            "'verify_screen_load_file' at position",
+                            f"({x_pos}, {y_pos})",
+                        ]
+                    )
+                )
+                self._on_submit_file_to_be_verified(filename=_filename)
 
-            if y_pos > (vs_file.height + vs_sig.height) and y_pos < (vs_file.height + vs_sig.height + vs_pub.height):
-                self.debug(f"{_filename} dropped on 'verify_screen_load_pubkey' at position ({x_pos}, {y_pos})")
-                self.verify_screen_load_pubkey_text = "Drop a file or click to load the public key"
-                self._on_submit_public_key(filename=filename)
+            # pylint: disable=chained-comparison
+            if y_pos > vs_file.height and y_pos < (vs_file.height + vs_sig.height):
+                self.debug(
+                    " ".join(
+                        [
+                            f"{_filename} dropped on",
+                            "'verify_screen_load_signature' at position",
+                            f"({x_pos}, {y_pos})",
+                        ]
+                    )
+                )
+                self._on_submit_signature(filename=_filename)
+
+            # pylint: disable=chained-comparison
+            if y_pos > (vs_file.height + vs_sig.height) and y_pos < (
+                vs_file.height + vs_sig.height + vs_pub.height
+            ):
+                self.debug(
+                    " ".join(
+                        [
+                            f"{_filename} dropped on ",
+                            "'verify_screen_load_pubkey' at position",
+                            f"({x_pos}, {y_pos})",
+                        ]
+                    )
+                )
+                self._on_submit_public_key(filename=_filename)
 
         Window.bind(on_drop_file=_on_drop_file)
 
@@ -149,14 +174,14 @@ class VerifyScreen(ActionerScreen):
 
     def _set_load_public_key_dialog(self):
         # Public key certificate's file to be verified LoadDialog and Popup
-        self._load_pubkey_dialog = LoadDialog(
+        self._load_public_key_dialog = LoadDialog(
             load=LoadDialog.load,
             cancel=lambda: self._load_public_key_popup.dismiss,
             on_submit=self.on_submit_public_key,
         )
 
     def _set_load_public_key_popup(self):
-        self._load_pubkey_popup = Popup(
+        self._load_public_key_popup = Popup(
             title="Load the public-key certificate's file to be verified",
             content=self._load_public_key_dialog,
             size_hint=self.popup_size_hint,
@@ -166,11 +191,11 @@ class VerifyScreen(ActionerScreen):
         """
         Add a check icon to button that load file to be verified
         """
-        id = kwargs.get("id")
+        _id = kwargs.get("id")
         text = kwargs.get("text")
         _icon = self._build_check_icon(color="00ff00", font_name="fa-regular-6.4.2")
-        setattr(self, f"{id}_text", f"{_icon} {text}")
-        textid = f"{id}_text"
+        textid = f"{_id}_text"
+        setattr(self, textid, f"{_icon} {text}")
         self.debug(f"new button text '{getattr(self, textid)}'")
 
     def _on_submit_file_to_be_verified(self, **kwargs):
@@ -181,10 +206,7 @@ class VerifyScreen(ActionerScreen):
         LoggedCache.append("ksigner", "file_input", filename)
 
         # Change icon
-        self._add_icon(
-            id="verify_screen_load_file",
-            text="File to verified loaded"
-        )
+        self._add_icon(id="verify_screen_load_file", text="File to verified loaded")
 
     def _on_submit_signature(self, **kwargs):
         """
@@ -194,10 +216,10 @@ class VerifyScreen(ActionerScreen):
         # cache file input
         filename = kwargs.get("filename")
 
-        if not filename.endswith(b".sig"):
+        if not filename.endswith(".sig"):
             message = "\n".join(
                 [
-                    f"'{args[1][0]}' do not have a valid extension.",
+                    f"'{filename}' do not have a valid extension.",
                     "Valid files ends with '.sig'",
                 ]
             )
@@ -207,8 +229,7 @@ class VerifyScreen(ActionerScreen):
         else:
             LoggedCache.append("ksigner", "signature", filename)
             self._add_icon(
-                id="verify_screen_load_signature",
-                text="Signature file loaded"
+                id="verify_screen_load_signature", text="Signature file loaded"
             )
 
     def _on_submit_public_key(self, **kwargs):
@@ -219,10 +240,10 @@ class VerifyScreen(ActionerScreen):
         # cache file input
         filename = kwargs.get("filename")
 
-        if not filename.endswith(b".pem"):
+        if not filename.endswith(".pem"):
             message = "\n".join(
                 [
-                    f"'{args[1][0]}' do not have a valid extension.",
+                    f"'{filename}' do not have a valid extension.",
                     "Valid files ends with '.pem'",
                 ]
             )
@@ -233,7 +254,7 @@ class VerifyScreen(ActionerScreen):
             LoggedCache.append("ksigner", "pubkey", filename)
             self._add_icon(
                 id="verify_screen_load_pubkey",
-                text="Public key certificate file loaded"
+                text="Public key certificate file loaded",
             )
 
     def on_press_load_file(self):
@@ -250,7 +271,7 @@ class VerifyScreen(ActionerScreen):
         self._on_release(id="verify_screen_load_file")
         self.info("opening <Popup>")
         self._load_file_popup.open()
-        
+
     def on_submit_file_to_be_verified(self, *args):
         """
         Cache filename to be verified, changes icon
@@ -281,11 +302,11 @@ class VerifyScreen(ActionerScreen):
     def on_submit_signature(self, *args):
         """
         Check if its is a valid signature file,
-        cache signature's file to be verified 
+        cache signature's file to be verified
         and close a popup
         """
         self._on_submit_signature(filename=args[1][0])
-        
+
         # Close the popup
         msg = "Closing <Popup>"
         self.info(msg)
@@ -304,17 +325,16 @@ class VerifyScreen(ActionerScreen):
         """
         self._on_release(id="verify_screen_load_pubkey")
         self.info("opening <Popup>")
-        self._load_pubkey_popup.open()
+        self._load_public_key_popup.open()
 
-    
     def on_submit_public_key(self, *args):
         """
         Check if its is a valid public key file,
-        cache public key's file to be verified 
+        cache public key's file to be verified
         and close a popup
         """
         self._on_submit_signature(filename=args[1][0])
-        
+
         # Close the popup
         msg = "Closing <Popup>"
         self.info(msg)
