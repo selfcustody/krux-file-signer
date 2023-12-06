@@ -215,6 +215,7 @@ class ActionerScreen(Screen, KLogger):
             if self.manager.current == "sign":
                 self._set_screen(name="main", direction="left")
             elif self.manager.current == "export-sha256":
+                self.clear_widgets()
                 self._set_screen(name="sign", direction="left")
             elif self.manager.current == "import-signature":
                 self._set_screen(name="sign", direction="left")

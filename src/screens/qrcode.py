@@ -146,6 +146,7 @@ class QRCodeScreen(ActionerScreen):
         Event fired when user clicked and release the left mouse button
         (or the touchable screen)
         """
+        self.clear_widgets()
         self._set_screen(name="sign", direction="right")
 
     def set_image(self):
