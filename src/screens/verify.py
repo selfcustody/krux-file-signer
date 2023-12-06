@@ -257,6 +257,26 @@ class VerifyScreen(ActionerScreen):
                 text="Public key certificate file loaded",
             )
 
+    def _on_verify(self, **kwargs):
+        file = kwargs.get("file")
+        sig = kwargs.get("signature")
+        pub = kwargs.get("pubkey")
+
+        # Verify
+        self.debug("Building verification")
+        verifyer = Verifyer(file=file, signature=sig, pubkey=pub)
+
+        result = verifyer.verify()
+        msg = f"verification result: {result}"
+        self.info(msg)
+
+        # Verification popup
+        self.debug("Creating <BoxLayout> for <Popup>")
+        _verification_box_popup = BoxLayout(orientation="vertical")
+
+        # show an alert
+        self._make_alert(title="Verification result", message=result, markup=True)
+
     def on_press_load_file(self):
         """
         Change background color of :data:`verify_screen_load_file_button` widget
@@ -358,17 +378,20 @@ class VerifyScreen(ActionerScreen):
         sig = LoggedCache.get("ksigner", "signature")
         pub = LoggedCache.get("ksigner", "pubkey")
 
-        # Verify
-        self.debug("Building verification")
-        verifyer = Verifyer(file=file, signature=sig, pubkey=pub)
+        print(file)
+        msg = []
+        if file is None:
+            msg.append("File to be verified cannot be 'None'")
 
-        result = verifyer.verify()
-        msg = f"verification result: {result}"
-        self.info(msg)
+        if sig is None:
+            msg.append("Signature file cannot be 'None'")
 
-        # Verification popup
-        self.debug("Creating <BoxLayout> for <Popup>")
-        _verification_box_popup = BoxLayout(orientation="vertical")
+        if pub is None:
+            msg.append("Public key certificate cannot be 'None'")
 
-        # show an alert
-        self._make_alert(title="Verification result", message=result, markup=True)
+        if len(msg) > 0:
+            self._make_alert(
+                title="Verification cannot be done", message="\n\n".join(msg)
+            )
+        else:
+            self._on_verify(file=file, signature=sig, pubkey=pub)
