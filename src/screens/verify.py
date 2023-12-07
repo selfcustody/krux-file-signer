@@ -206,7 +206,7 @@ class VerifyScreen(ActionerScreen):
         LoggedCache.append("ksigner", "file_input", filename)
 
         # Change icon
-        self._add_icon(id="verify_screen_load_file", text="File to verified loaded")
+        self._add_icon(id="verify_screen_load_file", text="File to be verified loaded")
 
     def _on_submit_signature(self, **kwargs):
         """
