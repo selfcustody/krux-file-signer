@@ -10,7 +10,7 @@ license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.8,<=3.11.6"
+python = ">=3.8,<=3.11.7"
 qrcode = "^7.4.2"
 pillow = "^10.0.1"
 kivy = "^2.2.1"
