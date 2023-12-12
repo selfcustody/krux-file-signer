@@ -42,11 +42,23 @@ jobs:
       # into github-action worker
       # will cause a "Couldn't connect to X Server"
       # To fix that, setup a headless window server
-      - name: Build executables
+      - name: Build executables for linux
+        if: ${{ runner.os == 'Linux' }}
         uses: coactions/setup-xvfb@v1
         with:
           run: poetry run poe build
 
+      # Github-action with windows
+      # will show `GL: Minimum required OpenGL version (2.0) NOT found!`
+      # to fix that use the given solution:
+      # https://github.com/kivy/kivy/issues/5248#issuecomment-384308843
+      - name: Build executables for Windows
+        if: ${{ runner.os == 'Windows' }}
+        env:
+          KIVY_GL_BACKEND: angle_sdl2
+        run: poetry run poe build
+
+      # Upload artifacts
       - name: Upload ksigner-cli and ksigner-gui artifacts
         uses: actions/upload-artifact@v3
         with:
