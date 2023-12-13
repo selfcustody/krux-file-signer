@@ -20,53 +20,37 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 """
-qr.py
+filechooser.py
 
-utility to generate QRcodes
+implements a inherited class of FileChooserIconView    
 """
 ####################
-# Standart libraries
+# Standard libraries
 ####################
-from io import StringIO
+import os
 
-#######################
-# Thrid party libraries
-#######################
-from qrcode import QRCode
+########################
+# Thirdy party libraries
+########################
+from kivy.uix.filechooser import FileChooserListView
+
+# @see stackoverflow.complex/questions/65547279/
+#      /no-name-object-property-in-module-kivy-properties
+#      -pylint-no-name-in-module
+# pylint: disable=no-name-in-module
+from kivy.properties import ObjectProperty, BooleanProperty
 
 
-def make_qr_code(**kwargs) -> str:
+class LoadDialog(FileChooserListView):
     """
-    Builds the ascii data to QR code
+    FileChooser
 
-    Kwargs:
-    -------
-        :param data
-            The data to be encoded in qrcode
-        :param verbose
-            Apply verbose or not
+    Class to manage the file to choose in SignScreen and VerifyScreen
+    classes. In SignScreen, it will choose the file to load a content,
+    write it in a .sha256.txt file and show qrcode content.
     """
-    qr_data = kwargs.get("data")
-    qr_code = QRCode()
-    qr_code.add_data(qr_data)
-    qr_string = StringIO()
-    qr_code.print_ascii(out=qr_string, invert=True)
-    return qr_string.getvalue()
 
-
-def make_qr_code_image(**kwargs) -> str:
-    """
-    Creates a QR code image
-
-    Kwargs:
-    -------
-        :param data
-            The data to be encoded in qrcode
-        :param verbose
-            Apply verbose or not
-    """
-    qr_data = kwargs.get("data")
-    qr_code = QRCode()
-    qr_code.add_data(qr_data)
-    qr_image = qr_code.make_image()
-    return qr_image
+    load = ObjectProperty(None)
+    cancel = ObjectProperty(None)
+    dirseclect = BooleanProperty(True)
+    path = os.path.expanduser("~")

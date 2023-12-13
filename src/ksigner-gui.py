@@ -39,13 +39,13 @@ from kivysome.iconfonts import register
 #################
 # Local libraries
 #################
-from cli.getsome import info
+from utils.info import info
+from utils.klogger import KLogger
 from screens.main import MainScreen
 from screens.sign import SignScreen
 from screens.verify import VerifyScreen
 from screens.qrcode import QRCodeScreen
 from screens.scan import ScanScreen
-from utils.klogger import KLogger
 
 
 class KSignerApp(App, KLogger):

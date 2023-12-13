@@ -22,10 +22,9 @@
 """
 verifyer.py
 
-functions that use openssl as a wrapper
-to verify signatures
 
-TODO: replace for pyca/cryptography or pyOpenSSL 
+Export a :class:`Verifyer` class to be used in `ksigner-cli` and
+`ksigner-gui` during `verify` process.
 """
 
 ####################
@@ -36,21 +35,20 @@ import os
 #######################
 # Third party libraries
 #######################
-# from OpenSSL.crypto import load_publickey, FILETYPE_PEM, verify, X509
 from OpenSSL import crypto
 
-#################
-# Local libraries
-#################
-from cli.actioner import Actioner
 
-
-class Verifyer(Actioner):
+class Verifyer:
     """
     Verifyer is the class
-    that manages the `verify` verify_openssl_command
-    with given :param:`file`, :param:`pubkey` and
-    :param:`signature`
+    that manages the `verify`
+
+    Kwargs:
+    -------
+
+        :param:`file` the path of file to be verified
+        :param:`pubkey` the path of public key file
+        :param:`signature` the path of signature file
     """
 
     def __init__(self, **kwargs):
@@ -58,41 +56,58 @@ class Verifyer(Actioner):
         self.file = os.path.abspath(kwargs.get("file"))
         self.pubkey = os.path.abspath(kwargs.get("pubkey"))
         self.signature = os.path.abspath(kwargs.get("signature"))
+        self.x509 = crypto.X509()
+        self.file_data = None
+        self.signature_data = None
+        self.pubkey_data = None
+
+    def _load_file(self):
+        """
+        Loads file to be verified
+        """
+        with open(self.file, "rb") as f_data:
+            self.file_data = f_data.read()
+
+    def _load_signature(self):
+        """
+        Loads the signature file
+        """
+        with open(self.signature, "rb") as f_data:
+            self.signature_data = f_data.read()
+
+    def _load_public_key(self):
+        """
+        Loads the public key file
+        """
+        with open(self.pubkey, encoding="utf-8") as f_data:
+            self.pubkey_data = f_data.read()
+
+    def build(self):
+        """
+        Build verification before verify itself
+        """
+        self._load_file()
+        self._load_signature()
+        self._load_public_key()
+
+        # Set public key
+        pkey = crypto.load_publickey(crypto.FILETYPE_PEM, self.pubkey_data)
+        self.x509.set_pubkey(pkey)
 
     def verify(self) -> str:
         """
-        Use pyopenssl to verify a file with its signature and public key
-        provided in class instantiation
+        Use :module:`OpenSSl.crypto` to verify a
+        the authenticity of a file with given both
+        signature and public key
         """
         msg = ""
         try:
-            self.debug("Loading X509 object")
-            x509 = crypto.X509()
-
-            # load data
-            self.debug("Loading file data")
-            with open(self.file, "rb") as f_data:
-                file_data = f_data.read()
-
-            # load signature
-            self.debug("Loading signature bytes")
-            with open(self.signature, "rb") as f_data:
-                signature = f_data.read()
-
-            # load public key
-            self.debug("Loading public key certificate")
-            with open(self.pubkey, encoding="utf-8") as f_data:
-                pubkey_data = f_data.read()
-
-            pkey = crypto.load_publickey(crypto.FILETYPE_PEM, pubkey_data)
-            x509.set_pubkey(pkey)
-
             # Now verify
             # According de documentation found in
             # https://pyopenssl.org/en/stable/api/crypto.html#OpenSSL.crypto.verify
             # it will return :data:`None` if signature is correct
-            self.debug("Verifying...")
-            crypto.verify(x509, signature, file_data, "sha256")
+            print("Verifying...")
+            crypto.verify(self.x509, self.signature_data, self.file_data, "sha256")
             msg = "Signature verified with success"
 
         # pylint: disable=broad-exception-caught

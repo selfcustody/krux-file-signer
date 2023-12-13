@@ -253,7 +253,9 @@ class ActionerScreen(Screen, KLogger):
             [
                 f"[color={_color}]",
                 f"[size={self.height // 25}]",
-                f"[font={_root_path}/{_font_name}.ttf]✅[/font]",
+                f"[font={_root_path}/{_font_name}.ttf]",
+                "✅",
+                "[/font]",
                 "[/size]",
                 "[/color]",
             ]

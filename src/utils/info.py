@@ -20,11 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 """
-getsome.py
+info.py
 
 Check whether the calling function is really a method defined in a class
 """
-
+####################
+# Stardard libraries
+####################
 import inspect
 
 
@@ -33,7 +35,8 @@ def info():
     we can loop through the self's
     MRO and try to find the method
     that called us.
-    see htps://stackoverflow.com/questions/
+
+    :see: https://stackoverflow.com/questions/
     53153075/get-a-class-name-of-calling-method
     """
     # get the call frame of the calling method
@@ -56,6 +59,7 @@ def info():
         # check if the calling function is really a method
         self_type = type(self_obj)
         func_name = codeobj.co_name
+
         # iterate through all classes in the MRO
         for cls in self_type.__mro__:
             # see if this class has a method with the name
@@ -78,6 +82,7 @@ def info():
 
         # if we didn't find a matching method, return None
         return None
+
     finally:
         # make sure to clean up the frame at the end to avoid ref cycles
         del frame

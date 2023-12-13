@@ -1,8 +1,29 @@
+# The MIT License (MIT)
+
+# Copyright (c) 2021-2023 Krux contributors
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
 """
 signer.py
 
-Functions to be used during `sign` (sign function)
-and `verify` (on_verify) operations.
+Export a :class:`Signer` class to be used in `ksigner-cli` and
+`ksigner-gui` during `sign` process.
 """
 ####################
 # Standard libraries
@@ -15,33 +36,29 @@ import base64
 #################
 from utils.constants import KSIGNER_COMPRESSED_PUBKEY_PREPEND
 from utils.qr import make_qr_code
-from cli.actioner import Actioner
 from cli.scanner import Scanner
 
 
-class Signer(Actioner):
+class Signer:
     """
-    Signer is the class
-    that manages the `sign` command
+    Signer is the class that manages the `sign` command.
 
     Kwargs:
     -------
         :param:`file` the file to be signer
         :param:`owner` the owner of file
-        :param:`uncompressed` if the file will use
-                uncompressed format for public files
-
     """
 
     def __init__(self, **kwargs):
         super().__init__()
         self.file = kwargs.get("file")
         self.owner = kwargs.get("owner")
-        self.uncompressed = kwargs.get("uncompressed")
         self.scanner = Scanner()
 
     def sign(self):
         """
+        Sign process will:
+
         (1) Read a file;
         (2) Save in a .sha256.txt file;
         (3) Requires the user loads a xpriv key on his/her device:
@@ -72,9 +89,6 @@ class Signer(Actioner):
         """
         Shows warning messages before hash
         """
-        self.debug("Showing warning messages to sign")
-
-        # Shows some message
         print("")
         print("To sign this file with Krux: ")
         print(" (a) load a 12/24 words key with or without password;")
@@ -86,51 +100,33 @@ class Signer(Actioner):
         """
         Creates a hash file before sign
         """
-        msg = f"Opening {self.file}"
-        self.debug(msg)
-
         with open(self.file, "rb") as f_sig:
-            self.debug("Reading bytes...")
             _bytes = f_sig.read()
-            self.debug("Hashing...")
             data = hashlib.sha256(_bytes).hexdigest()
-            msg = f"Hash data='{data}'"
-            self.debug(msg)
             return data
 
     def save_hash_file(self, data):
         """
         Save the hash file in sha256sum format
         """
-        # Saves a hash file
-        __hash_file__ = f"{self.file}.sha256sum.txt"
-        msg = f"Saving {__hash_file__}"
-        self.debug(msg)
+        name = f"{self.file}.sha256sum.txt"
 
-        with open(__hash_file__, mode="w", encoding="utf-8") as hash_file:
+        with open(name, mode="w", encoding="utf-8") as hashfile:
             content = f"{data} {self.file}"
-            hash_file.write(content)
-            msg = f"{__hash_file__} content data='{content}'"
-            self.debug(msg)
-            msg = f"{__hash_file__} saved"
-            self.debug(msg)
+            hashfile.write(content)
 
     def _print_qrcode(self, data):
         """
         Print QRCode to console
         """
         # Prints the QR code
-        msg = f"Creating QRCode data='{data}'"
-        self.debug(msg)
         __qrcode__ = make_qr_code(data=data)
-        print(f"{__qrcode__}")
+        print(f"{__qrcode__}\n{data}\n")
 
     def scan_sig(self):
         """
         Make signature file from scanning qrcode
         """
-        # Scans the signature QR code
-        self.debug("Creating signature")
         return self.scanner.scan_signature()
 
     def save_signature(self, signature):
@@ -147,7 +143,6 @@ class Signer(Actioner):
         with open(signature_file, "wb") as sig_file:
             sig_file.write(binary_signature)
             msg = f"Signature saved on {signature_file}"
-            self.info(msg)
             print(msg)
 
     def make_pubkey_certificate(self):
@@ -155,7 +150,6 @@ class Signer(Actioner):
         Make public key file from scanning qrcode
         """
         # Scans the public KeyboardInterruptardInterrupt
-        self.debug("Creating public key certificate")
         pubkey = self.scanner.scan_public_key()
         self.save_pubkey_certificate(pubkey)
 
@@ -166,27 +160,20 @@ class Signer(Actioner):
 
         Choose if will be compressed or uncompressed
         """
-        self.debug("Creating compressed public key")
         __public_key_data__ = "".join(
             [KSIGNER_COMPRESSED_PUBKEY_PREPEND, pubkey.upper()]
         )
 
         # Convert pubkey data to bytes
-        self.debug("Converting public key to bytes")
         __public_key_data_bytes__ = bytes.fromhex(__public_key_data__)
-        msg = f"pubkey data bytes: {__public_key_data_bytes__}"
-        self.debug(msg)
 
-        self.debug("Encoding bytes to base64 format")
+        # Encoding bytes to base64 format
         __public_key_data_b64__ = base64.b64encode(__public_key_data_bytes__)
-        msg = f"encoded base64 pubkey: {__public_key_data_b64__}"
-        self.debug(msg)
 
-        self.debug("Decoding bas64 to utf8")
+        # Decode bas64 to utf8
         __public_key_data_b64_utf8__ = __public_key_data_b64__.decode("utf8")
-        msg = f"decoded base64 utf8: {__public_key_data_b64_utf8__}"
-        self.debug(msg)
 
+        # Format pubkey
         formated_pubkey = "\n".join(
             [
                 "-----BEGIN PUBLIC KEY-----",
@@ -194,11 +181,11 @@ class Signer(Actioner):
                 "-----END PUBLIC KEY-----",
             ]
         )
-        msg = f"formated pubkey: {formated_pubkey}"
-        __public_key_name__ = f"{self.owner}.pem"
 
-        with open(__public_key_name__, mode="w", encoding="utf-8") as pb_file:
+        # give a filename
+        pubkey_name = f"{self.owner}.pem"
+
+        with open(pubkey_name, mode="w", encoding="utf-8") as pb_file:
             pb_file.write(formated_pubkey)
-            msg = f"{__public_key_name__} saved"
-            self.info(msg)
+            msg = f"{pubkey_name} saved"
             print(msg)

@@ -22,24 +22,19 @@
 """
 scanner.py
 
-some video utilities to scan qrcodes. 
+Export a :class:`Scanner` class to be used :class:`Signer` and :class:`Verifyer`.
+To be used only with `ksigner-cli`.
 """
 #######################
 # Thrid party libraries
 #######################
 import cv2
 
-#################
-# Local libraries
-#################
-from utils.log import now
-from cli.actioner import Actioner
 
-
-class Scanner(Actioner):
+class Scanner:
     """
-    Scanner is the cli utility to scan
-    Signature and PublicKey
+    Scanner is the cli utility to scan signatures and public keys
+    when user uses `ksigner-cli` utility.
     """
 
     def _scan(self) -> str:
@@ -49,20 +44,14 @@ class Scanner(Actioner):
         Can be applyed some normalization
         or gray scale
         """
-        self.debug("Starting OpenCV capture")
         vid = cv2.VideoCapture(0)
-
-        self.debug("Starting OpenSV QRCode detector")
         detector = cv2.QRCodeDetector()
-
         qr_data = None
 
         while True:
             # Capture the video frame by frame
             # use some dummy vars (__+[a-zA-Z0-9]*?$)
             # to avoid the W0612 'Unused variable' pylint message
-            self.warning("Waiting for data...")
-
             _ret, frame = vid.read()
 
             # delattrtect qrcode
@@ -70,7 +59,6 @@ class Scanner(Actioner):
 
             # Verify null data
             if len(qr_data) > 0:
-                self.debug("QRCode detected")
                 break
 
             # Display the resulting frame
@@ -80,13 +68,9 @@ class Scanner(Actioner):
             # quitting button you may use any
             # desired button of your choice
             if cv2.waitKey(1) & 0xFF == ord("q"):
-                self.debug("Key 'q' pressed: exiting")
                 break
 
-        self.debug("Releasing video")
         vid.release()
-
-        self.debug("Destroying video window")
         cv2.destroyAllWindows()
 
         return qr_data
@@ -95,23 +79,14 @@ class Scanner(Actioner):
         """
         Scan with camera the generated signatue
         """
-
         _ = input("Press enter to scan signature")
         signature = self._scan()
-
-        # Encode data
-        self.debug("Encoding signature")
-
-        msg = f"Signature data='{signature}'"
-        self.debug(msg)
         return signature
 
     def scan_public_key(self) -> str:
         """
         Scan with camera the generated public key
         """
-        _ = input(f"[{now()}] Press enter to scan public key")
+        _ = input("Press enter to scan public key")
         public_key = self._scan()
-
-        self.debug("Public Key (data={%s})" % public_key)
         return public_key

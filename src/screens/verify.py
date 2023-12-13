@@ -41,7 +41,7 @@ from kivy.properties import StringProperty, ListProperty
 from cli.verifyer import Verifyer
 from screens.actioner import ActionerScreen
 from screens.cacher import LoggedCache
-from filechooser import LoadDialog
+from utils.filechooser import LoadDialog
 
 
 # pylint: disable=too-many-ancestors

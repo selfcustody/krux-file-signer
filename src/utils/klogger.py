@@ -20,10 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 """
-logscreen.py
+klogger.py
 
-Implements an inherited kivy.uix.screenmanager.Screen
-with inner logger. Use it as super class
+Clas to be co-inherited in any kivy class to enable
+some logging with information about which class is called.
 """
 ####################
 # Standard libraries
@@ -38,7 +38,7 @@ from kivy.logger import Logger, LOG_LEVELS
 #################
 # Local libraries
 #################
-from cli.getsome import info
+from utils.info import info
 
 
 class KLogger:

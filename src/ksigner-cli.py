@@ -20,17 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 """
-This python script is a tool to create air-gapped signatures of files using Krux.
-The script can also convert hex publics exported from Krux to PEM public keys so
-signatures can be verified using openssl.
-
-Requirements:
-    - opencv, qrcode
-    pip install opencv-python qrcode
-
-    - This script also calls a openssl bash command, 
-    so it is required to have verification functionality
- """
+This python script is a tool to create air-gapped signatures of files using
+a Krux device and convert hex publics exported from Krux to PEM public keys.
+"""
 
 ####################
 # Standart libraries
@@ -59,7 +51,7 @@ parser.add_argument(
 # Subparsers: sign and verify
 subparsers = parser.add_subparsers(help="sub-command help", dest="command")
 
-# Sign compilemmand
+# Sign subparser commmand
 signer = subparsers.add_parser("sign", help="sign a file")
 signer.add_argument("-f", "--file", help="path to file to sign")
 signer.add_argument(
@@ -75,7 +67,7 @@ signer.add_argument(
     help="flag to create a uncompreesed public key (default: False)",
 )
 
-# Verify command
+# Verify subparsercommand
 verifier = subparsers.add_parser("verify", help="verify signature")
 verifier.add_argument("-f", "--file", help="path to file to verify")
 verifier.add_argument("-s", "--sig-file", help="path to signature file")
@@ -86,26 +78,30 @@ if __name__ == "__main__":
     # parse arguments
     args = parser.parse_args()
 
-    # on --version
+    # on ksigner-cli --version
     if args.version:
         print(KSIGNER_VERSION)
 
+    # on ksigner-cli --help
     elif args.command is None:
         parser.print_help()
 
+    # on ksigner-cli sign --file <some file> [--owner <some owner>]
     elif args.command == "sign":
-        # first sign
         signer = Signer(
             file=args.file, owner=args.owner, uncompressed=args.uncompressed
         )
         signer.sign()
         signer.make_pubkey_certificate()
 
+    # on ksigner-cli verify \
+    #                --file <some file> \
+    #                --sig-file <some sig file> \
+    #                --pub-file <some pub file>
     elif args.command == "verify":
         verifyer = Verifyer(
             file=args.file,
             pubkey=args.pub_file,
             signature=args.sig_file,
         )
-        # COMMAND = verifyer.make_openssl_command()
         print(verifyer.verify())

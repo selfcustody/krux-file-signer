@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 """
-signscreen.py
+sign.py
 
 An inherited implementations of kivy.uix.screenmanager Screen    
 """
@@ -38,8 +38,8 @@ from kivy.properties import StringProperty, ListProperty
 #################
 from screens.actioner import ActionerScreen
 from screens.cacher import LoggedCache
+from utils.filechooser import LoadDialog
 from cli.signer import Signer
-from filechooser import LoadDialog
 
 
 # pylint: disable=too-many-ancestors
