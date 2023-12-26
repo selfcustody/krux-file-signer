@@ -28,7 +28,6 @@ jobs:
           filters: |
             change:
               - '.pylintrc'
-              - 'poetry.lock'
               - 'src/terminus.ttf'
               - 'src/fa-regular-6.4.2.css'
               - 'src/fa-regular-6.4.2.ttf'
@@ -44,7 +43,6 @@ jobs:
             try {
               const badFilesArray = [
                 '.pylintrc',
-                'poetry.lock',
                 'src/terminus.ttf',
                 'src/fa-regular-6.4.2.css',
                 'src/fa-regular-6.4.2.ttf',
