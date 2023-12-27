@@ -84,8 +84,8 @@ class VerifyScreen(ActionerScreen):
         self._set_load_file_popup()
         self._set_load_signature_dialog()
         self._set_load_signature_popup()
-        self._set_load_signature_dialog()
-        self._set_load_signature_popup()
+        self._set_load_public_key_dialog()
+        self._set_load_public_key_popup()
 
         # pylint: disable=unused-argument
         def _on_drop_file(window, filename, x_pos, y_pos, *args):
@@ -265,6 +265,7 @@ class VerifyScreen(ActionerScreen):
         # Verify
         self.debug("Building verification")
         verifyer = Verifyer(file=file, signature=sig, pubkey=pub)
+        verifyer.build()
 
         result = verifyer.verify()
         msg = f"verification result: {result}"
@@ -353,7 +354,7 @@ class VerifyScreen(ActionerScreen):
         cache public key's file to be verified
         and close a popup
         """
-        self._on_submit_signature(filename=args[1][0])
+        self._on_submit_public_key(filename=args[1][0])
 
         # Close the popup
         msg = "Closing <Popup>"

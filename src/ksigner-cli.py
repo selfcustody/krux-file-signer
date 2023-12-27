@@ -104,4 +104,6 @@ if __name__ == "__main__":
             pubkey=args.pub_file,
             signature=args.sig_file,
         )
-        print(verifyer.verify())
+        verifyer.build()
+        result = verifyer.verify()
+        print(result)

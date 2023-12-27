@@ -160,24 +160,22 @@ class Signer:
 
         Choose if will be compressed or uncompressed
         """
-        __public_key_data__ = "".join(
-            [KSIGNER_COMPRESSED_PUBKEY_PREPEND, pubkey.upper()]
-        )
+        pub_key_data = f"{KSIGNER_COMPRESSED_PUBKEY_PREPEND}{pubkey}"
 
         # Convert pubkey data to bytes
-        __public_key_data_bytes__ = bytes.fromhex(__public_key_data__)
+        pub_key_data_bytes = bytes.fromhex(pub_key_data)
 
         # Encoding bytes to base64 format
-        __public_key_data_b64__ = base64.b64encode(__public_key_data_bytes__)
+        pub_key_data_b64 = base64.b64encode(pub_key_data_bytes)
 
         # Decode bas64 to utf8
-        __public_key_data_b64_utf8__ = __public_key_data_b64__.decode("utf8")
+        pub_key_data_b64_utf8 = pub_key_data_b64.decode("utf8")
 
         # Format pubkey
         formated_pubkey = "\n".join(
             [
                 "-----BEGIN PUBLIC KEY-----",
-                __public_key_data_b64_utf8__,
+                pub_key_data_b64_utf8,
                 "-----END PUBLIC KEY-----",
             ]
         )

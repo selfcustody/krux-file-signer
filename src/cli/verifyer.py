@@ -90,8 +90,11 @@ class Verifyer:
         self._load_signature()
         self._load_public_key()
 
+        # convert string to bytes
+        pub_key_data_bytes = str.encode(self.pubkey_data)
+
         # Set public key
-        pkey = crypto.load_publickey(crypto.FILETYPE_PEM, self.pubkey_data)
+        pkey = crypto.load_publickey(crypto.FILETYPE_PEM, pub_key_data_bytes)
         self.x509.set_pubkey(pkey)
 
     def verify(self) -> str:
