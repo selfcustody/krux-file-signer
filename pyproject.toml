@@ -16,7 +16,7 @@ pillow = "^10.0.1"
 kivy = "^2.2.1"
 zbarcam = "^2020.524"
 kivysome = "^0.2.1"
-pyopenssl = "^23.3.0"
+pyopenssl = "^24.0.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.12.1"
