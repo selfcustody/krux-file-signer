@@ -21,7 +21,7 @@ pyopenssl = "^23.3.0"
 [tool.poetry.group.dev.dependencies]
 black = "^23.12.1"
 pylint = "^3.0.3"
-pyinstaller = "^6.3.0"
+pyinstaller = "^6.5.0"
 poethepoet = "^0.24.4"
 
 [tool.poe.tasks]
