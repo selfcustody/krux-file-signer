@@ -10,18 +10,18 @@ license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.8,<=3.11.7"
+python = ">=3.8,<=3.13.0"
 qrcode = "^7.4.2"
 pillow = "^10.3.0"
-kivy = "^2.2.1"
+kivy = "^2.3.0"
 zbarcam = "^2020.524"
 kivysome = "^0.2.1"
-pyopenssl = "^23.3.0"
+pyopenssl = "^24.1.0"
 
 [tool.poetry.group.dev.dependencies]
-black = "^23.12.1"
+black = "^24.3.0"
 pylint = "^3.0.3"
-pyinstaller = "^6.3.0"
+pyinstaller = "^6.5.0"
 poethepoet = "^0.24.4"
 
 [tool.poe.tasks]
