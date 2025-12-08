@@ -11,7 +11,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.12,<=3.14.0"
-qrcode = "^7.4.2"
+qrcode = "^8.2.0"
 pillow = "^10.3.0"
 kivy = "^2.3.0"
 zbarcam = "^2020.524"
