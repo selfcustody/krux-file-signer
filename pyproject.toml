@@ -22,7 +22,7 @@ pyopenssl = "^24.1.0"
 black = "^24.3.1"
 pylint = "^3.0.3"
 pyinstaller = "^6.5.0"
-poethepoet = "^0.24.4"
+poethepoet = "^0.38.0"
 
 [tool.poe.tasks]
 dev-gui = "python src/ksigner-gui.py"
