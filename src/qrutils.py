@@ -4,18 +4,17 @@ qrutils.py
 Utilities to generate QR codes.
 """
 
+import logging
 from io import StringIO
 
 from qrcode import QRCode
 
-from logutils import verbose_log
+log = logging.getLogger(__name__)
 
 
-def make_qr_code(data: str, verbose: bool = False) -> str:
+def make_qr_code(data: str) -> str:
     """Return `data` encoded as an ASCII-art QR code."""
-    if verbose:
-        verbose_log(f"Adding (data={data})")
-
+    log.debug("Adding (data=%s)", data)
     qr_code = QRCode()
     qr_code.add_data(data)
 

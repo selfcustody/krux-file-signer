@@ -5,26 +5,25 @@ Utilities to scan QR codes from the camera.
 """
 
 import base64
+import logging
 
 import cv2
 
-from logutils import verbose_log, now
+from logutils import now
 from processingutils import normalization_transform, gray_transform
 
+log = logging.getLogger(__name__)
 
-def scan(
-    is_normalized: bool = False,
-    is_gray_scale: bool = False,
-    verbose: bool = False,
-) -> str:
+
+def scan(is_normalized: bool = False, is_gray_scale: bool = False) -> str:
     """
     Open the camera and return the data of the first QR code detected.
     Press 'q' to abort.
     """
-    verbose_log("Opening camera")
+    log.info("Opening camera")
     vid = cv2.VideoCapture(0)
 
-    verbose_log("Starting detection")
+    log.info("Starting detection")
     detector = cv2.QRCodeDetector()
 
     qr_data = ""
@@ -32,13 +31,12 @@ def scan(
         _ret, frame = vid.read()
 
         if is_normalized:
-            normalization_transform(frame, verbose=verbose)
+            normalization_transform(frame)
         if is_gray_scale:
-            frame = gray_transform(frame, verbose=verbose)
+            frame = gray_transform(frame)
 
         qr_data, _bbox, _straight = detector.detectAndDecode(frame)
-        if verbose:
-            verbose_log(f"reading (qr_data={qr_data}, len={len(qr_data)})")
+        log.debug("reading (qr_data=%s, len=%s)", qr_data, len(qr_data))
 
         if len(qr_data) > 0:
             break
@@ -46,8 +44,7 @@ def scan(
         cv2.imshow("frame", frame)
         # 'q' aborts the detection
         if cv2.waitKey(1) & 0xFF == ord("q"):
-            if verbose:
-                verbose_log("quiting QRCode detection...")
+            log.debug("quiting QRCode detection...")
             break
 
     vid.release()
@@ -56,37 +53,24 @@ def scan(
 
 
 def scan_and_save_signature(
-    signature_file: str,
-    is_normalized: bool = False,
-    is_gray_scale: bool = False,
-    verbose: bool = False,
+    signature_file: str, is_normalized: bool = False, is_gray_scale: bool = False
 ):
     """Scan the signature QR code and save its bytes to `signature_file`."""
     input(f"[{now()}] Press enter to scan signature")
-    signature = scan(
-        is_normalized=is_normalized, is_gray_scale=is_gray_scale, verbose=verbose
-    )
+    signature = scan(is_normalized=is_normalized, is_gray_scale=is_gray_scale)
 
     binary_signature = base64.b64decode(signature.encode())
-    if verbose:
-        verbose_log(f"Signature: {binary_signature}")
+    log.debug("Signature: %s", binary_signature)
 
-    verbose_log(f"Saving a signature file: {signature_file}")
+    log.info("Saving a signature file: %s", signature_file)
     with open(signature_file, "wb") as sig_file:
         sig_file.write(binary_signature)
 
 
-def scan_public_key(
-    is_normalized: bool = False,
-    is_gray_scale: bool = False,
-    verbose: bool = False,
-) -> str:
+def scan_public_key(is_normalized: bool = False, is_gray_scale: bool = False) -> str:
     """Scan and return the public key QR code data."""
     input(f"[{now()}] Press enter to scan public key")
-    public_key = scan(
-        is_normalized=is_normalized, is_gray_scale=is_gray_scale, verbose=verbose
-    )
+    public_key = scan(is_normalized=is_normalized, is_gray_scale=is_gray_scale)
 
-    if verbose:
-        verbose_log(f"Public key: {public_key}")
+    log.debug("Public key: %s", public_key)
     return public_key

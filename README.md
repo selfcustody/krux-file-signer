@@ -53,18 +53,23 @@ poetry run python src/ksigner.py --help
 Running `poetry run python src/ksigner.py --help` will show:
 
 ```bash
-usage: ksigner [-h] {sign,verify} ...
+usage: ksigner [-h] [-v] [-V] [-n] [-g] {sign,verify} ...
 
-This python script is a tool to create air-gapped signatures of files using Krux. The script can also convert hex
-publics exported from Krux to PEM public keys so signatures can be verified using openssl.
+This python script is a tool to create air-gapped signatures of files using
+Krux. The script can also convert hex publics exported from Krux to PEM public
+keys so signatures can be verified using openssl.
 
 positional arguments:
-  {sign,verify}  sub-command help
-    sign         sign a file
-    verify       verify signature
+  {sign,verify}     sub-command help
+    sign            sign a file
+    verify          verify signature
 
 options:
-  -h, --help     show this help message and exit
+  -h, --help        show this help message and exit
+  -v, --version     shows version
+  -V, --verbose     verbose output (default: False)
+  -n, --normalize   normalizes the image of camera (default: False)
+  -g, --gray-scale  apply gray-scale filter on camera's image (default: False)
 ```
 
 #### sign
@@ -72,17 +77,20 @@ options:
 Running `poetry run python src/ksigner.py sign --help`, will show:
 
 ```bash
-usage: ksigner sign [-h] [-f FILE_TO_SIGN] [-o FILE_OWNER] [-u] [-l]
+usage: ksigner sign [-h] -f FILE_TO_SIGN [-o FILE_OWNER] [-s SIG_FILE] [-u]
 
 options:
   -h, --help            show this help message and exit
   -f FILE_TO_SIGN, --file FILE_TO_SIGN
                         path to file to sign
   -o FILE_OWNER, --owner FILE_OWNER
-                        the owner's name of public key certificate, i.e, the .pem file (default: 'pubkey')
-  -u, --uncompressed    flag to create a uncompreesed public key (default: False)
-  -l, --verbose-log     verbose output (default: False)
-
+                        the owner's name of public key certificate, i.e, the
+                        .pem file (default: 'pubkey')
+  -s SIG_FILE, --sig-file SIG_FILE
+                        path to save the signature file (default:
+                        '<file_to_sign>.sig')
+  -u, --uncompressed    flag to create a uncompreesed public key (default:
+                        False)
 ```
 
 #### verify
@@ -90,7 +98,7 @@ options:
 Running `poetry run python src/ksigner.py verify --help`, will show:
 
 ```bash
-usage: ksigner verify [-h] [-f VERIFY_FILE] [-s SIG_FILE] [-p PUB_FILE]
+usage: ksigner verify [-h] -f VERIFY_FILE -s SIG_FILE -p PUB_FILE
 
 options:
   -h, --help            show this help message and exit

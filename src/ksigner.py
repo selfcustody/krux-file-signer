@@ -52,6 +52,7 @@ if "QT_QPA_FONTDIR" not in os.environ and os.path.isdir(SYSTEM_FONTDIR):
 #################
 import callbacks
 from constants import KSIGNER_CLI_DESCRIPTION
+from logutils import configure_logging
 
 ################
 # Command parser
@@ -96,7 +97,9 @@ subparsers = parser.add_subparsers(help="sub-command help", dest="command")
 
 # Sign command
 signer = subparsers.add_parser("sign", help="sign a file")
-signer.add_argument("-f", "--file", dest="file_to_sign", help="path to file to sign")
+signer.add_argument(
+    "-f", "--file", dest="file_to_sign", required=True, help="path to file to sign"
+)
 
 signer.add_argument(
     "-o",
@@ -124,19 +127,24 @@ signer.add_argument(
 
 # Verify command
 verifier = subparsers.add_parser("verify", help="verify signature")
-verifier.add_argument("-f", "--file", dest="verify_file", help="path to file to verify")
 verifier.add_argument(
-    "-s", "--sig-file", dest="sig_file", help="path to signature file"
+    "-f", "--file", dest="verify_file", required=True, help="path to file to verify"
 )
-verifier.add_argument("-p", "--pub-file", dest="pub_file", help="path to pubkey file")
+verifier.add_argument(
+    "-s", "--sig-file", dest="sig_file", required=True, help="path to signature file"
+)
+verifier.add_argument(
+    "-p", "--pub-file", dest="pub_file", required=True, help="path to pubkey file"
+)
 
 if __name__ == "__main__":
     args = parser.parse_args()
+    configure_logging(args.verbose)
     if args.version:
-        callbacks.on_version(parser)
+        callbacks.on_version()
     elif args.command == "sign":
-        callbacks.on_sign(parser)
+        callbacks.on_sign(args)
     elif args.command == "verify":
-        callbacks.on_verify(parser)
+        callbacks.on_verify(args)
     else:
         parser.print_help()

@@ -6,9 +6,10 @@ Use openssl as a wrapper to verify signatures.
 TODO: replace with pyca/cryptography or pyOpenSSL.
 """
 
+import logging
 import subprocess
 
-from logutils import verbose_log
+log = logging.getLogger(__name__)
 
 
 def verify_openssl_command(file: str, pubkey: str, signature: str) -> str:
@@ -23,12 +24,9 @@ def verify_openssl_command(file: str, pubkey: str, signature: str) -> str:
     )
 
 
-def verify(filename: str, pubkey: str, sigfile: str, verbose: bool = False):
+def verify(filename: str, pubkey: str, sigfile: str):
     """Verify `filename` against `sigfile` and `pubkey` using openssl."""
-    verbose_log("Verifying signature:")
-
+    log.info("Verifying signature:")
     command = verify_openssl_command(file=filename, pubkey=pubkey, signature=sigfile)
-    if verbose:
-        verbose_log(command)
-
+    log.debug("%s", command)
     subprocess.run(command, check=True, shell=True)

@@ -1,31 +1,28 @@
 """
 logutils.py
 
-simple log utilities
+Logging setup for ksigner. Call `configure_logging()` once at start-up,
+then use `logging.getLogger(__name__)` in each module.
 """
 
+import logging
 import time
 
 
 def now() -> str:
-    """Return some formated time"""
+    """Return the current time formatted for interactive prompts."""
     return time.strftime("%X %x %Z")
 
 
-def verbose_log(v_data: str):
+def configure_logging(verbose: bool = False):
     """
-    Prints verbose data preceded by current time
+    Send timestamped logs to the console.
 
-    Example:
-
-    ```bash
-    >>> import logutils
-    >>> verbose_log('Hello world')
-    [08:08:08 8/8/88 -08] Hello World
-
-    ```
-    Args:
-        :param v_data
-            the message to be verbose
+    INFO is shown by default; DEBUG (the verbose detail) is shown when
+    `verbose` is True.
     """
-    print(f"[{now()}] {v_data}")
+    logging.basicConfig(
+        format="[%(asctime)s] %(message)s",
+        datefmt="%X %x %Z",
+        level=logging.DEBUG if verbose else logging.INFO,
+    )

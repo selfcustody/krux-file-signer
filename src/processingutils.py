@@ -4,12 +4,14 @@ processingutils.py
 Optional video frame post-processing helpers.
 """
 
+import logging
+
 import cv2
 
-from logutils import verbose_log
+log = logging.getLogger(__name__)
 
 
-def normalization_transform(frame, verbose: bool = False):
+def normalization_transform(frame):
     """
     Normalize `frame` in place; cameras vary in contrast and brightness.
 
@@ -17,13 +19,11 @@ def normalization_transform(frame, verbose: bool = False):
     controlling-contrast-and-brightness-of-video-stream-in-opencv-and-python
     """
     cv2.normalize(frame, frame, 0, 255, cv2.NORM_MINMAX)
-    if verbose:
-        verbose_log(f"normalized (frame={frame})")
+    log.debug("normalized (frame=%s)", frame)
 
 
-def gray_transform(frame, verbose: bool = False):
+def gray_transform(frame):
     """Return a grayscale copy of `frame`."""
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    if verbose:
-        verbose_log(f"gray scale (frame={gray})")
+    log.debug("gray scale (frame=%s)", gray)
     return gray
