@@ -68,7 +68,10 @@ def on_sign(parser: argparse.ArgumentParser):
         print(f"\n{__qrcode__}")
 
         # Scans the signature QR code
+        # When no output is given, default to '<file_to_sign>.sig'
+        signature_file = args.sig_file or f"{args.file_to_sign}.sig"
         scan_and_save_signature(
+            signature_file=signature_file,
             is_normalized=args.is_normalized,
             is_gray_scale=args.is_gray_scale,
             verbose=args.verbose,

@@ -1,25 +1,28 @@
-[tool.poetry]
+[project]
 name = "krux-file-signer"
 version = "0.0.1"
 description = "A python script to sign files and verify signatures in a airgapped manner"
 authors = [
-  "odudex <eduardo.schoenknecht@gmail.com>",
-  "qlrddev <qlrddev@gmail.com>"
+  {name = "odudex", email = "eduardo.schoenknecht@gmail.com"},
+  {name = "qlrddev", email = "qlrddev@gmail.com"},
 ]
 license = "MIT"
 readme = "README.md"
+requires-python = ">=3.10,<3.13"
+dependencies = [
+  "opencv-python (>=4.8.0.76,<5.0.0)",
+  "qrcode (>=8.0,<9.0)",
+]
 
-[tool.poetry.dependencies]
-python = ">=3.8,<=3.11.5"
-opencv-python = "^4.8.0.76"
-qrcode = "^7.4.2"
-pillow = "^10.0.1"
-pyzbar = "^0.1.9"
+[tool.poetry]
+# This repo is a set of standalone scripts under src/, not an installable
+# package, so Poetry is used for dependency management only.
+package-mode = false
 
 [tool.poetry.group.dev.dependencies]
-black = "^23.9.1"
-pylint = "^2.17.5"
-pyinstaller = "^5.13.2"
+black = "^26.0"
+pylint = "^4.0"
+pyinstaller = "^6.0"
 
 [build-system]
 requires = ["poetry-core"]

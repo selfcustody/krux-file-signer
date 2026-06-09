@@ -60,16 +60,16 @@ def create_public_key_certificate(**kwargs):
     if verbose:
         verbose_log(f"pubkey bytes: {__public_key_data_bytes__}")
 
-    # Decode to utf8
-    __public_key_data_utf8__ = __public_key_data_bytes__.decode("utf-8")
+    # Encode the raw DER bytes as base64 (this is the body of a PEM file)
+    __public_key_data_b64__ = base64.b64encode(__public_key_data_bytes__).decode("ascii")
     if verbose:
-        verbose_log(f"pubkey utf8: {__public_key_data_utf8__}")
+        verbose_log(f"pubkey base64: {__public_key_data_b64__}")
 
-    # Encode to formated base64
+    # Wrap in PEM armor
     __pem_pub_key__ = "\n".join(
         [
             "-----BEGIN PUBLIC KEY-----",
-            base64.b64encode(__public_key_data_utf8__),
+            __public_key_data_b64__,
             "-----END PUBLIC KEY-----",
         ]
     )

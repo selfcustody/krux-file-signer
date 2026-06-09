@@ -2,7 +2,6 @@
 
 Is a python script to help make airgapped signatures with Krux devices.
 It also can verify the signatures.
-There's also a GUI version in development
 
 ## Development
 
@@ -48,22 +47,6 @@ poetry run pyinstaller ./src/ksigner.py
 
 The generated executable will be placed on 
 `dist/ksigner/ksigner`
-
-
-### Run the GUI version
-
-```bash
-poetry run python src/ksignerGUI.py
-```
-
-### Build the GUI version executable
-
-```bash
-poetry run pyinstaller ./src/ksignerGUI.py
-```
-
-The generated executable will be placed on 
-`dist/ksignerGUI/ksignerGUI`
 
 
 ## Usage

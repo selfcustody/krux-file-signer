@@ -37,6 +37,15 @@ Requirements:
 # Standart libraries
 ####################
 import argparse
+import os
+
+# The opencv-python wheel bundles its own Qt build but ships no fonts, so it
+# emits a noisy "QFontDatabase: Cannot find font directory" warning whenever a
+# camera window is opened. Point Qt at the system fonts (when present) before
+# cv2 is imported (transitively, via callbacks) to silence it.
+__system_fontdir__ = "/usr/share/fonts/truetype/dejavu"
+if "QT_QPA_FONTDIR" not in os.environ and os.path.isdir(__system_fontdir__):
+    os.environ["QT_QPA_FONTDIR"] = __system_fontdir__
 
 #################
 # Local libraries
@@ -98,6 +107,14 @@ signer.add_argument(
 )
 
 signer.add_argument(
+    "-s",
+    "--sig-file",
+    dest="sig_file",
+    help="path to save the signature file (default: '<file_to_sign>.sig')",
+    default=None,
+)
+
+signer.add_argument(
     "-u",
     "--uncompressed",
     dest="uncompressed_pub_key",
@@ -114,6 +131,12 @@ verifier.add_argument(
 verifier.add_argument("-p", "--pub-file", dest="pub_file", help="path to pubkey file")
 
 if __name__ == "__main__":
-    callbacks.on_version(parser)
-    callbacks.on_sign(parser)
-    callbacks.on_verify(parser)
+    args = parser.parse_args()
+    if args.version:
+        callbacks.on_version(parser)
+    elif args.command == "sign":
+        callbacks.on_sign(parser)
+    elif args.command == "verify":
+        callbacks.on_verify(parser)
+    else:
+        parser.print_help()

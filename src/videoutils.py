@@ -115,6 +115,8 @@ def scan_and_save_signature(**kwargs):
     Scan with camera the generated signatue
 
     Kwargs:
+        :signature_file
+            Path where the scanned signature will be saved
         :is_normalized
             Apply normalization on video
         :is_gray_scale
@@ -124,7 +126,7 @@ def scan_and_save_signature(**kwargs):
     is_normalized = kwargs.get("is_normalized")
     is_gray_scale = kwargs.get("is_gray_scale")
     verbose = kwargs.get("verbose")
-    filename = kwargs.get("filename")
+    signature_file = kwargs.get("signature_file")
 
     _ = input(f"[{now()}] Press enter to scan signature")
     signature = scan(
@@ -137,7 +139,6 @@ def scan_and_save_signature(**kwargs):
         verbose_log(f"Signature: {binary_signature}")
 
     # Saves a signature
-    signature_file = f"{filename}.sig"
     verbose_log(f"Saving a signature file: {signature_file}")
     with open(signature_file, "wb") as sig_file:
         sig_file.write(binary_signature)
