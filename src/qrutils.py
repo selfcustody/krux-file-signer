@@ -1,48 +1,24 @@
 """
 qrutils.py
 
-utils to generate QRcodes
+Utilities to generate QR codes.
 """
-####################""
-# Standart libraries
-####################
+
 from io import StringIO
 
-#######################
-# Thrid party libraries
-#######################
 from qrcode import QRCode
 
-#################
-# Local libraries
-#################
 from logutils import verbose_log
 
 
-def make_qr_code(**kwargs) -> str:
-    """
-    Builds the ascii data to QR code
-
-    Kwargs:
-        :param data
-            The data to be encoded in qrcode
-        :param verbose
-            Apply verbose or not
-    """
-    qr_data = kwargs.get("data")
-    verbose = kwargs.get("verbose")
+def make_qr_code(data: str, verbose: bool = False) -> str:
+    """Return `data` encoded as an ASCII-art QR code."""
+    if verbose:
+        verbose_log(f"Adding (data={data})")
 
     qr_code = QRCode()
-
-    if verbose:
-        verbose_log(f"Adding (data={qr_data})")
-
-    qr_code.add_data(qr_data)
-
-    if verbose:
-        verbose_log("Converting data to ascii")
+    qr_code.add_data(data)
 
     qr_string = StringIO()
     qr_code.print_ascii(out=qr_string, invert=True)
-
     return qr_string.getvalue()

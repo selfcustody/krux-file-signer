@@ -1,8 +1,9 @@
-""" 
+"""
 logutils.py
 
 simple log utilities
 """
+
 import time
 
 

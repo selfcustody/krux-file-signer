@@ -1,72 +1,42 @@
 """
 hashutils.py
 
-Utility for create and save
-files in sha256sum format
+Utilities to create and save files in sha256sum format.
 """
-####################
-# Standard libraries
-####################
+
 import hashlib
 
-#################
-# Local libraries
-#################
 from logutils import verbose_log
 
 
-def open_and_hash_file(**kwargs) -> str:
-    """ "
-    Read file from --file argument on `sign` command and return its hash
-
-    Kwargs:
-        :param path
-            The path of file to be hashed
-        :param verbose
-            Apply verbose or not
+def open_and_hash_file(path: str, verbose: bool = False) -> str:
     """
-    __filename__ = kwargs.get("path")
-    verbose = kwargs.get("verbose")
-
+    Read the file at `path` (the `sign` command's --file) and return its
+    sha256 hex digest.
+    """
     try:
-        with open(__filename__, "rb") as f_to_be_sig:
-            _bytes = f_to_be_sig.read()  # read file as bytes
-
-            if verbose:
-                verbose_log(f"Read bytes: {_bytes}")
-
-            __readable_hash__ = hashlib.sha256(_bytes).hexdigest()
-
-            # Prints the hash of the file
-            if verbose:
-                verbose_log(f"Hash of {__filename__}: {__readable_hash__}")
-
-            return __readable_hash__
+        with open(path, "rb") as file_to_sign:
+            file_bytes = file_to_sign.read()
     except FileNotFoundError as exc:
-        raise FileNotFoundError(f"Unable to read target file: {__filename__}") from exc
-
-
-def save_hashed_file(**kwargs):
-    """
-    Appends '.sha256.txt' to `**kwargs<path>`
-    and creates its hashed file with `data` content
-
-    Kwargs:
-        :param data
-            The data to hashed
-        :param path
-            The <path>.sha256.txt
-        :param verbose
-            Apply verbose or not
-    """
-    __data__ = kwargs.get("data")
-    __path__ = kwargs.get("path")
-    verbose = kwargs.get("verbose")
-
-    __hash_file__ = f"{__path__}.sha256sum.txt"
+        raise FileNotFoundError(f"Unable to read target file: {path}") from exc
 
     if verbose:
-        verbose_log(f"Saving a hash file: {__hash_file__}")
+        verbose_log(f"Read bytes: {file_bytes}")
 
-    with open(__hash_file__, mode="w", encoding="utf-8") as hash_file:
-        hash_file.write(f"{__data__} {__hash_file__}")
+    readable_hash = hashlib.sha256(file_bytes).hexdigest()
+    if verbose:
+        verbose_log(f"Hash of {path}: {readable_hash}")
+
+    return readable_hash
+
+
+def save_hashed_file(data: str, path: str, verbose: bool = False):
+    """
+    Write `data` (a hash) to '<path>.sha256sum.txt' in sha256sum format.
+    """
+    hash_file = f"{path}.sha256sum.txt"
+    if verbose:
+        verbose_log(f"Saving a hash file: {hash_file}")
+
+    with open(hash_file, mode="w", encoding="utf-8") as file:
+        file.write(f"{data}  {path}")

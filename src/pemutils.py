@@ -1,85 +1,53 @@
 """
 pemutils.py
 
-Utility for create public key certificates (aka .pem files),
-in uncompressed or compressed formats
+Create public key certificates (.pem files) in compressed or
+uncompressed format.
 
 @see src/constants.py::KSIGNER_UNCOMPRESSED_PUBKEY_PREPEND
 @see src/constants.py::KSIGNER_COMPRESSED_PUBKEY_PREPEND
 """
 
-####################
-# Stardard libraries
-####################
 import base64
 
-#################
-# Local libraries
-#################
 from constants import KSIGNER_COMPRESSED_PUBKEY_PREPEND
 from constants import KSIGNER_UNCOMPRESSED_PUBKEY_PREPEND
 from logutils import verbose_log
 
 
-def create_public_key_certificate(**kwargs):
+def create_public_key_certificate(
+    pubkey: str,
+    uncompressed: bool = False,
+    owner: str = "pubkey",
+    verbose: bool = False,
+):
     """
-    Create public key certifficate file (.pem)
-
-    Kwargs:
-        :param pubkey
-            The generated public key
-        :param uncompressed
-            Flag to create a uncompressed public key certificate
-        :param owner
-            Owner of public key certificate
-        :is_normalized
-            Apply or not normalization on image
-        :is_gray_scale
-            Apply or not gray scale on image
-        :param verbose
-            Apply verbose or not
+    Build a PEM public key certificate from the hex `pubkey` and save it
+    as '<owner>.pem'.
     """
-    hex_pubkey = kwargs.get("pubkey")
-    uncompressed = kwargs.get("uncompressed")
-    owner = kwargs.get("owner")
-    verbose = kwargs.get("verbose")
-
-    # Choose if will be compressed or uncompressed
-    if uncompressed:
-        if verbose:
-            verbose_log("Creating uncompressed public key certificate")
-        __public_key_data__ = f"{KSIGNER_UNCOMPRESSED_PUBKEY_PREPEND}{hex_pubkey}"
-
-    else:
-        if verbose:
-            verbose_log("Creating compressed public key certificate")
-        __public_key_data__ = f"{KSIGNER_COMPRESSED_PUBKEY_PREPEND}{hex_pubkey}"
-
-    # Convert pubkey data to bytes
-    __public_key_data_bytes__ = bytes.fromhex(__public_key_data__)
-    if verbose:
-        verbose_log(f"pubkey bytes: {__public_key_data_bytes__}")
-
-    # Encode the raw DER bytes as base64 (this is the body of a PEM file)
-    __public_key_data_b64__ = base64.b64encode(__public_key_data_bytes__).decode("ascii")
-    if verbose:
-        verbose_log(f"pubkey base64: {__public_key_data_b64__}")
-
-    # Wrap in PEM armor
-    __pem_pub_key__ = "\n".join(
-        [
-            "-----BEGIN PUBLIC KEY-----",
-            __public_key_data_b64__,
-            "-----END PUBLIC KEY-----",
-        ]
+    prepend = (
+        KSIGNER_UNCOMPRESSED_PUBKEY_PREPEND
+        if uncompressed
+        else KSIGNER_COMPRESSED_PUBKEY_PREPEND
     )
-
     if verbose:
-        verbose_log(__pem_pub_key__)
+        verbose_log(
+            f"Creating {'uncompressed' if uncompressed else 'compressed'} "
+            "public key certificate"
+        )
 
-    __pem_key_file__ = f"{owner}.pem"
+    # prepend + pubkey is a DER (binary) key; a PEM body is just its base64.
+    der_bytes = bytes.fromhex(f"{prepend}{pubkey}")
+    pem_body = base64.b64encode(der_bytes).decode("ascii")
+    pem = "\n".join(
+        ["-----BEGIN PUBLIC KEY-----", pem_body, "-----END PUBLIC KEY-----"]
+    )
     if verbose:
-        verbose_log(f"Saving public key file: {__pem_key_file__}")
+        verbose_log(pem)
 
-    with open(file=__pem_key_file__, mode="w", encoding="utf-8") as pem_file:
-        pem_file.write(__pem_pub_key__)
+    pem_file = f"{owner}.pem"
+    if verbose:
+        verbose_log(f"Saving public key file: {pem_file}")
+
+    with open(pem_file, mode="w", encoding="utf-8") as file:
+        file.write(pem)

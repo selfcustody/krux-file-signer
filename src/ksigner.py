@@ -29,9 +29,9 @@ Requirements:
     - opencv, qrcode
     pip install opencv-python qrcode
 
-    - This script also calls a openssl bash command, 
+    - This script also calls a openssl bash command,
     so it is required to have verification functionality
- """
+"""
 
 ####################
 # Standart libraries
@@ -43,9 +43,9 @@ import os
 # emits a noisy "QFontDatabase: Cannot find font directory" warning whenever a
 # camera window is opened. Point Qt at the system fonts (when present) before
 # cv2 is imported (transitively, via callbacks) to silence it.
-__system_fontdir__ = "/usr/share/fonts/truetype/dejavu"
-if "QT_QPA_FONTDIR" not in os.environ and os.path.isdir(__system_fontdir__):
-    os.environ["QT_QPA_FONTDIR"] = __system_fontdir__
+SYSTEM_FONTDIR = "/usr/share/fonts/truetype/dejavu"
+if "QT_QPA_FONTDIR" not in os.environ and os.path.isdir(SYSTEM_FONTDIR):
+    os.environ["QT_QPA_FONTDIR"] = SYSTEM_FONTDIR
 
 #################
 # Local libraries
