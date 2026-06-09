@@ -13,9 +13,8 @@ git clone https://github.com/selfcustody/krux-file-signer.git
 
 ### Install dev tools
 
-The `ksigner` code is a Python script
-that should be installed with Poetry. To generate
-a new `poetry.lock` file use: `poetry lock --no-update`.
+The `ksigner` code is a set of Python scripts whose dependencies are
+managed with Poetry. To regenerate the `poetry.lock` file use: `poetry lock`.
 
 With `pip`, you can do:
 
@@ -24,8 +23,8 @@ pip install poetry
 poetry install
 ```
 
-This will also install all development tools so that you can run pylint,
-format code with black, and build an agnostic OS executable. 
+This will install all development tools so that you can run pylint and
+format code with black.
 
 ### Format code
 
@@ -39,15 +38,11 @@ poetry run black ./src
 poetry run pylint ./src
 ```
 
-### Build executable
+### Run
 
 ```bash
-poetry run pyinstaller ./src/ksigner.py
+poetry run python src/ksigner.py --help
 ```
-
-The generated executable will be placed on 
-`dist/ksigner/ksigner`
-
 
 ## Usage
 
@@ -55,7 +50,7 @@ The generated executable will be placed on
 
 #### Help
 
-Running `./dist/ksigner/ksigner --help` will show:
+Running `poetry run python src/ksigner.py --help` will show:
 
 ```bash
 usage: ksigner [-h] {sign,verify} ...
@@ -74,7 +69,7 @@ options:
 
 #### sign
 
-Running `./dist/ksigner/ksigner sign --help`, will show:
+Running `poetry run python src/ksigner.py sign --help`, will show:
 
 ```bash
 usage: ksigner sign [-h] [-f FILE_TO_SIGN] [-o FILE_OWNER] [-u] [-l]
@@ -92,7 +87,7 @@ options:
 
 #### verify
 
-Running `/dist/krux-file-signer/krux-file-signer verify --help`, will show:
+Running `poetry run python src/ksigner.py verify --help`, will show:
 
 ```bash
 usage: ksigner verify [-h] [-f VERIFY_FILE] [-s SIG_FILE] [-p PUB_FILE]

@@ -22,8 +22,3 @@ package-mode = false
 [tool.poetry.group.dev.dependencies]
 black = "^26.0"
 pylint = "^4.0"
-pyinstaller = "^6.0"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
