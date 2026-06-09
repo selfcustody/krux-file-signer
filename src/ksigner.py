@@ -37,15 +37,6 @@ Requirements:
 # Standart libraries
 ####################
 import argparse
-import os
-
-# The opencv-python wheel bundles its own Qt build but ships no fonts, so it
-# emits a noisy "QFontDatabase: Cannot find font directory" warning whenever a
-# camera window is opened. Point Qt at the system fonts (when present) before
-# cv2 is imported (transitively, via callbacks) to silence it.
-SYSTEM_FONTDIR = "/usr/share/fonts/truetype/dejavu"
-if "QT_QPA_FONTDIR" not in os.environ and os.path.isdir(SYSTEM_FONTDIR):
-    os.environ["QT_QPA_FONTDIR"] = SYSTEM_FONTDIR
 
 #################
 # Local libraries
