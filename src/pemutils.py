@@ -18,11 +18,10 @@ log = logging.getLogger(__name__)
 
 
 def create_public_key_certificate(
-    pubkey: str, uncompressed: bool = False, owner: str = "pubkey"
+    pubkey: str, uncompressed: bool = False, path: str = "pubkey.pem"
 ):
     """
-    Build a PEM public key certificate from the hex `pubkey` and save it
-    as '<owner>.pem'.
+    Build a PEM public key certificate from the hex `pubkey` and save it to `path`.
     """
     prepend = (
         KSIGNER_UNCOMPRESSED_PUBKEY_PREPEND
@@ -42,7 +41,6 @@ def create_public_key_certificate(
     )
     log.debug("%s", pem)
 
-    pem_file = f"{owner}.pem"
-    log.debug("Saving public key file: %s", pem_file)
-    with open(pem_file, mode="w", encoding="utf-8") as file:
+    log.debug("Saving public key file: %s", path)
+    with open(path, mode="w", encoding="utf-8") as file:
         file.write(pem)

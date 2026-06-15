@@ -94,10 +94,10 @@ signer.add_argument(
 
 signer.add_argument(
     "-o",
-    "--owner",
-    dest="file_owner",
-    help="the owner's name of public key certificate, i.e, the .pem file (default: 'pubkey')",
-    default="pubkey",
+    "--pub-file",
+    dest="pub_file",
+    help="path to save the public key PEM file (default: 'pubkey.pem')",
+    default="pubkey.pem",
 )
 
 signer.add_argument(
