@@ -14,13 +14,14 @@ git clone https://github.com/selfcustody/krux-file-signer.git
 ### Install dev tools
 
 The `ksigner` code is a set of Python scripts whose dependencies are
-managed with Poetry. To regenerate the `poetry.lock` file use: `poetry lock`.
+managed with [uv](https://docs.astral.sh/uv/). To regenerate the `uv.lock`
+file use: `uv lock`.
 
-With `pip`, you can do:
+Install uv (see [the docs](https://docs.astral.sh/uv/getting-started/installation/)),
+then sync the project (including the `dev` group):
 
 ```bash
-pip install poetry
-poetry install
+uv sync
 ```
 
 This will install all development tools so that you can run pylint and
@@ -29,19 +30,19 @@ format code with black.
 ### Format code
 
 ```bash
-poetry run black ./src
+uv run black ./src
 ```
 
 ### Lint code
 
 ```bash
-poetry run pylint ./src
+uv run pylint ./src
 ```
 
 ### Run
 
 ```bash
-poetry run python src/ksigner.py --help
+uv run python src/ksigner.py --help
 ```
 
 ## Usage
@@ -50,7 +51,7 @@ poetry run python src/ksigner.py --help
 
 #### Help
 
-Running `poetry run python src/ksigner.py --help` will show:
+Running `uv run python src/ksigner.py --help` will show:
 
 ```bash
 usage: ksigner [-h] [-v] [-V] [-n] [-g] {sign,verify} ...
@@ -74,7 +75,7 @@ options:
 
 #### sign
 
-Running `poetry run python src/ksigner.py sign --help`, will show:
+Running `uv run python src/ksigner.py sign --help`, will show:
 
 ```bash
 usage: ksigner sign [-h] -f FILE_TO_SIGN [-o FILE_OWNER] [-s SIG_FILE] [-u]
@@ -95,7 +96,7 @@ options:
 
 #### verify
 
-Running `poetry run python src/ksigner.py verify --help`, will show:
+Running `uv run python src/ksigner.py verify --help`, will show:
 
 ```bash
 usage: ksigner verify [-h] -f VERIFY_FILE -s SIG_FILE -p PUB_FILE

@@ -1,6 +1,6 @@
 [project]
 name = "krux-file-signer"
-version = "0.0.1"
+version = "0.0.2"
 description = "A python script to sign files and verify signatures in a airgapped manner"
 authors = [
   {name = "odudex", email = "eduardo.schoenknecht@gmail.com"},
@@ -10,15 +10,36 @@ license = "MIT"
 readme = "README.md"
 requires-python = ">=3.10,<3.13"
 dependencies = [
-  "opencv-python (>=4.8.0.76,<5.0.0)",
-  "qrcode (>=8.0,<9.0)",
+  "opencv-python>=4.8.0.76,<5.0.0",
+  "qrcode>=8.0,<9.0",
 ]
 
-[tool.poetry]
-# This repo is a set of standalone scripts under src/, not an installable
-# package, so Poetry is used for dependency management only.
-package-mode = false
+[dependency-groups]
+dev = [
+  "black>=26.0,<27.0",
+  "pylint>=4.0,<5.0",
+  "poethepoet>=0.42,<1.0",
+]
 
-[tool.poetry.group.dev.dependencies]
-black = "^26.0"
-pylint = "^4.0"
+[tool.uv]
+package = false
+
+[tool.poe.tasks]
+# format
+format-src = "black src"
+format.ref = "format-src"
+black.ref = "format"
+
+# lint
+lint-src = "pylint src"
+lint.ref = "lint-src"
+pylint.ref = "lint"
+
+# pre-commit
+pre-commit = ["format", "lint"]
+
+# ksigner shortcuts
+# e.g. `uv run poe sign -f ../krux/README.md -o ../krux/pubkey.pem`
+sign = "python src/ksigner.py sign"
+verify = "python src/ksigner.py verify"
+version = "python src/ksigner.py --version"
