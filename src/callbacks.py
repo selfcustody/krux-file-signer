@@ -29,7 +29,8 @@ def on_sign(args: argparse.Namespace):
     (1) hash the file given with --file and save it as '<file>.sha256sum.txt';
     (2) print its hash as a QR code to sign with Krux (Sign > Message);
     (3) scan the signature QR code and save it (default '<file>.sig');
-    (4) scan the public key QR code and save it as a '<owner>.pem' certificate.
+    (4) scan the public key QR code and save it as a PEM certificate at the
+        path given with --pub-file (default 'pubkey.pem').
     """
     data = open_and_hash_file(args.file_to_sign)
     save_hashed_file(data, args.file_to_sign)
@@ -53,7 +54,7 @@ def on_sign(args: argparse.Namespace):
         is_normalized=args.is_normalized, is_gray_scale=args.is_gray_scale
     )
     create_public_key_certificate(
-        pubkey, uncompressed=args.uncompressed_pub_key, owner=args.file_owner
+        pubkey, uncompressed=args.uncompressed_pub_key, path=args.pub_file
     )
 
 
