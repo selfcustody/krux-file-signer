@@ -45,6 +45,9 @@ example for setup of 'pre' public key strings above:
 KSIGNER_VERSION = "0.0.1-alpha-0"
 KSIGNER_UNCOMPRESSED_PUBKEY_PREPEND = "3056301006072A8648CE3D020106052B8104000A034200"
 KSIGNER_COMPRESSED_PUBKEY_PREPEND = "3036301006072A8648CE3D020106052B8104000A032200"
+
+# secp256k1 field prime, for recovering y from a compressed point (y^2 = x^3 + 7).
+KSIGNER_SECP256K1_P = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
 KSIGNER_CLI_DESCRIPTION = "".join(
     [
         "This python script is a tool to create air-gapped signatures of files using Krux. ",
